@@ -1,0 +1,34 @@
+{
+  "FAQS": [
+    {
+      "q": "How do I reset my password?",
+      "a": "Go to the login page and click \"Forgot password\". You will receive a reset link by email. If you do not receive it within a few minutes, check your spam folder or contact support.",
+      "id": "IyG-6mc9HZFTvZmOt5OLH"
+    },
+    {
+      "q": "How do I cancel my subscription?",
+      "a": "Log in to your dashboard, go to Billing, and select Cancel Subscription. Your access continues until the end of the current billing period. For billing disputes, contact us directly.",
+      "id": "MavSQiRYvk_z2dUQ_gMjZ"
+    },
+    {
+      "q": "How do I request a copy of my data?",
+      "a": "Log in to your dashboard, go to Data & Privacy, and submit a Subject Access Request. We will respond within 30 days in line with UK GDPR.",
+      "id": "FIacTa-Zz0epceWyNYwFK"
+    },
+    {
+      "q": "How do I report a profile?",
+      "a": "Visit the public profile page and click \"Report this profile\". Select the reason and provide details. Our moderation team reviews all reports.",
+      "id": "jscwFPZ-qlhd4ivMAwQjO"
+    },
+    {
+      "q": "I think my account has been compromised. What should I do?",
+      "a": "Change your password immediately from the login page. Then contact us using the form below, selecting \"Security concern\" as the category. We will prioritise your request.",
+      "id": "vlmYS32zpl3Fc7e0nftPj"
+    },
+    {
+      "q": "Can I use JA Profile Studio if I am outside the UK?",
+      "a": "Account creation, purchasing, and profile management is available to UK-based users aged 18 and over only. Public profiles can be viewed worldwide.",
+      "id": "TI_XFsnS_CJkgkgRBVKk_"
+    }
+  ]
+}

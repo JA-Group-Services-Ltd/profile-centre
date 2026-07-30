@@ -1,0 +1,38 @@
+{
+  "FAQS": [
+    {
+      "q": "Do I need to create an account to try this?",
+      "a": "This page is a public demo — no account needed. When you're ready to create your own profile, sign up for free. No credit card required.",
+      "id": "Bs1aHVheQPgho25seRp48"
+    },
+    {
+      "q": "Is there a free plan?",
+      "a": "Yes. The free plan gives you a personal profile, QR code, and basic links — forever free. Paid plans add business profiles, analytics, email signatures, and more.",
+      "id": "w7_HXoHjeri5ccR0G-Kv5"
+    },
+    {
+      "q": "Can I use this for my business?",
+      "a": "Absolutely. The Business Profile plan gives you a full business page with services, gallery, team, FAQs, and reviews — everything a customer needs to find and trust you.",
+      "id": "NWVU6FX1EQNt9YX-S-PGf"
+    },
+    {
+      "q": "How do I share my profile?",
+      "a": "You get a unique link (e.g. japrofilestudio.jagroupservices.co.uk/profile/yourname), a QR code you can download, and an NFC-ready format. Share it anywhere.",
+      "id": "ili8TKP58P2hMKrNu7FlZ"
+    },
+    {
+      "q": "Is my data safe?",
+      "a": "Yes. JA Profile Studio is operated by JA Group Services Ltd, a UK-registered company. Your data is stored securely in the UK and processed in line with UK GDPR.",
+      "id": "mLIR7u8sM6fsI0278aYrt"
+    }
+  ],
+  "bars": [
+    40,
+    65,
+    45,
+    80,
+    55,
+    90,
+    70
+  ]
+}

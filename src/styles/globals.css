@@ -1,0 +1,401 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* ── LIGHT THEME (default) ─────────────────────────────────────────────── */
+  :root {
+    /* Core Colors — clean white base */
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 94%;
+    --secondary-foreground: 222 47% 20%;
+    --muted: 210 40% 94%;
+    --muted-foreground: 215 25% 30%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 88%;
+    --input: 214 32% 88%;
+    --ring: 221 83% 53%;
+
+    /* Glass surface tokens — light */
+    --glass-bg: 0 0% 100% / 0.65;
+    --glass-border: 214 32% 80% / 0.6;
+    --glass-shadow: 221 83% 53% / 0.08;
+    --glow-primary: 221 83% 53% / 0.15;
+    --glow-accent: 217 91% 60% / 0.10;
+
+    /* Extended Colors */
+    --chart-1: 221 84% 83%;
+    --chart-2: 221 83% 68%;
+    --chart-3: 221 83% 53%;
+    --chart-4: 221 84% 38%;
+    --chart-5: 221 83% 23%;
+
+    /* Sidebar Colors — light */
+    --sidebar: 210 40% 96%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 40% 90%;
+    --sidebar-accent-foreground: 222 47% 20%;
+    --sidebar-border: 214 32% 88%;
+    --sidebar-ring: 221 83% 53%;
+
+    /* Typography */
+    --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-heading: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-serif: ui-serif, Georgia, "Times New Roman", serif;
+    --font-mono: ui-monospace, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+
+    /* Border Radius */
+    --radius: 0.625rem;
+
+    /* Shadows — light */
+    --shadow-2xs: 0 1px 3px 0px hsl(221 83% 53% / 0.06);
+    --shadow-xs:  0 1px 4px 0px hsl(221 83% 53% / 0.08);
+    --shadow-sm:  0 2px 8px -1px hsl(221 83% 53% / 0.10), 0 1px 3px -1px hsl(0 0% 0% / 0.06);
+    --shadow:     0 2px 12px -2px hsl(221 83% 53% / 0.12), 0 1px 4px -1px hsl(0 0% 0% / 0.06);
+    --shadow-md:  0 4px 16px -4px hsl(221 83% 53% / 0.14), 0 2px 6px -2px hsl(0 0% 0% / 0.08);
+    --shadow-lg:  0 8px 24px -6px hsl(221 83% 53% / 0.16), 0 4px 8px -4px hsl(0 0% 0% / 0.08);
+    --shadow-xl:  0 16px 40px -8px hsl(221 83% 53% / 0.18), 0 8px 16px -6px hsl(0 0% 0% / 0.10);
+    --shadow-2xl: 0 24px 60px -12px hsl(221 83% 53% / 0.22);
+  }
+
+  /* ── DARK THEME ────────────────────────────────────────────────────────── */
+  .dark {
+    --background: 222 47% 8%;
+    --foreground: 210 40% 96%;
+    --card: 222 47% 12%;
+    --card-foreground: 210 40% 96%;
+    --popover: 222 47% 12%;
+    --popover-foreground: 210 40% 96%;
+    --primary: 221 83% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 222 47% 18%;
+    --secondary-foreground: 210 40% 90%;
+    --muted: 222 47% 16%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 91% 65%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 222 47% 22%;
+    --input: 222 47% 18%;
+    --ring: 221 83% 60%;
+
+    /* Glass surface tokens — dark */
+    --glass-bg: 222 47% 100% / 0.06;
+    --glass-border: 221 83% 80% / 0.12;
+    --glass-shadow: 221 83% 53% / 0.20;
+    --glow-primary: 221 83% 53% / 0.25;
+    --glow-accent: 217 91% 60% / 0.18;
+
+    --sidebar: 222 47% 10%;
+    --sidebar-foreground: 210 40% 96%;
+    --sidebar-primary: 221 83% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 222 47% 18%;
+    --sidebar-accent-foreground: 210 40% 90%;
+    --sidebar-border: 222 47% 20%;
+    --sidebar-ring: 221 83% 60%;
+
+    --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.20);
+    --shadow-xs:  0 1px 4px 0px hsl(0 0% 0% / 0.25);
+    --shadow-sm:  0 2px 8px -1px hsl(0 0% 0% / 0.30), 0 1px 3px -1px hsl(0 0% 0% / 0.20);
+    --shadow:     0 2px 12px -2px hsl(0 0% 0% / 0.35), 0 1px 4px -1px hsl(0 0% 0% / 0.20);
+    --shadow-md:  0 4px 16px -4px hsl(0 0% 0% / 0.40), 0 2px 6px -2px hsl(0 0% 0% / 0.25);
+    --shadow-lg:  0 8px 24px -6px hsl(0 0% 0% / 0.45), 0 4px 8px -4px hsl(0 0% 0% / 0.30);
+    --shadow-xl:  0 16px 40px -8px hsl(0 0% 0% / 0.50), 0 8px 16px -6px hsl(0 0% 0% / 0.35);
+    --shadow-2xl: 0 24px 60px -12px hsl(0 0% 0% / 0.60);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  /* ── Base typography — accessibility-first ─────────────────────────────── */
+  html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.65;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading) !important;
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: hsl(var(--foreground));
+  }
+
+  /* Ensure paragraph text is always readable */
+  p {
+    line-height: 1.7;
+    color: hsl(var(--foreground));
+  }
+
+  /* Focus ring — accessible, high-contrast */
+  :focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 3px;
+    border-radius: var(--radius);
+  }
+
+  /* Remove default focus for mouse users, keep for keyboard */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Ensure interactive elements have minimum touch target size */
+  button, [role="button"], a, input, select, textarea {
+    min-height: 0; /* don't force height, but allow it */
+  }
+
+  /* Screen reader only utility */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+  .focus\:not-sr-only:focus {
+    position: fixed;
+    width: auto;
+    height: auto;
+    padding: revert;
+    margin: revert;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+}
+
+/* ── Glass utility classes ─────────────────────────────────────────────────── */
+@layer utilities {
+  /* Light glass panel */
+  .glass {
+    background: hsl(var(--glass-bg, 0 0% 100% / 0.65));
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    border: 1px solid hsl(var(--glass-border, 214 32% 80% / 0.6));
+    border-radius: 1rem;
+  }
+
+  /* Stronger glass for hero cards */
+  .glass-strong {
+    background: hsl(var(--glass-bg, 0 0% 100% / 0.80));
+    backdrop-filter: blur(32px) saturate(1.6);
+    -webkit-backdrop-filter: blur(32px) saturate(1.6);
+    border: 1px solid hsl(var(--glass-border, 214 32% 80% / 0.7));
+    border-radius: 1.25rem;
+    box-shadow: 0 8px 32px -8px hsl(var(--glass-shadow, 221 83% 53% / 0.12)),
+                0 2px 8px -2px hsl(0 0% 0% / 0.06),
+                inset 0 1px 0 hsl(0 0% 100% / 0.5);
+  }
+
+  /* Subtle glow ring on hover */
+  .glass-hover {
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  .glass-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px -8px hsl(var(--glow-primary, 221 83% 53% / 0.20)),
+                0 4px 12px -4px hsl(0 0% 0% / 0.08);
+    border-color: hsl(var(--primary) / 0.3);
+  }
+
+  /* Glow blob backgrounds */
+  .glow-blob {
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    position: absolute;
+  }
+
+  /* Gradient text — iOS Safari safe */
+  .text-gradient {
+    /* Solid colour fallback — always visible even if gradient-clip fails */
+    color: hsl(var(--primary));
+    background: linear-gradient(135deg, hsl(221 83% 45%) 0%, hsl(217 91% 55%) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    /* inline-block forces the browser to paint the background before clipping;
+       fixes the invisible-text bug on iOS Safari inside composited (motion) layers */
+    display: inline-block;
+    /* Ensures background repaints correctly when box is broken across lines */
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    /* Prevent GPU compositing from discarding the background paint */
+    position: relative;
+    z-index: 0;
+  }
+
+  /* Ensure gradient text is always visible — override transparent fill in light mode */
+  :root .text-gradient {
+    -webkit-text-fill-color: transparent;
+    color: hsl(221 83% 45%);
+  }
+
+  /* Shimmer border */
+  .shimmer-border {
+    position: relative;
+  }
+  .shimmer-border::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg,
+      hsl(var(--primary) / 0.4),
+      transparent 40%,
+      hsl(var(--accent) / 0.3) 70%,
+      transparent
+    );
+    z-index: -1;
+  }
+
+  .animate-in {
+    animation-duration: 0.2s;
+    animation-fill-mode: both;
+  }
+
+  .fade-in {
+    animation-name: fadeIn;
+  }
+
+  /* Float animation for hero cards */
+  .animate-float-slow   { animation: float-slow   5s ease-in-out infinite; }
+  .animate-float-medium { animation: float-medium 4s ease-in-out infinite; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50%       { transform: translateY(-10px) rotate(0.5deg); }
+}
+@keyframes float-medium {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50%       { transform: translateY(-7px) rotate(-0.5deg); }
+}
+
+/* ── Admin portal — clean light theme with blue accent ───────────────────────
+   The admin portal always runs in light mode. We override CSS variables so
+   the portal has a crisp white/slate look with a blue primary accent, giving
+   it a visually distinct identity from the customer-facing site.
+   ─────────────────────────────────────────────────────────────────────────── */
+.admin-portal {
+  --background:           0 0% 97%;
+  --foreground:           222 47% 11%;
+  --card:                 0 0% 100%;
+  --card-foreground:      222 47% 11%;
+  --popover:              0 0% 100%;
+  --popover-foreground:   222 47% 11%;
+  --primary:              221 83% 53%;
+  --primary-foreground:   0 0% 100%;
+  --secondary:            0 0% 94%;
+  --secondary-foreground: 222 47% 20%;
+  --muted:                0 0% 94%;
+  --muted-foreground:     215 16% 47%;
+  --accent:               221 83% 53%;
+  --accent-foreground:    0 0% 100%;
+  --destructive:          0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border:               214 32% 88%;
+  --input:                214 32% 88%;
+  --ring:                 221 83% 53%;
+  --sidebar:              0 0% 100%;
+  --sidebar-foreground:   222 47% 11%;
+  --sidebar-primary:      221 83% 53%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent:       214 100% 97%;
+  --sidebar-accent-foreground: 221 83% 40%;
+  --sidebar-border:       214 32% 88%;
+  --sidebar-ring:         221 83% 53%;
+}
+
+/* Unless told otherwise, keep it for smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ── Toast / Notification — global positioning override ──────────────────────
+   The Toaster is mounted at the App root (outside router, sidebar, and any
+   overflow/transform container). These rules lock it to top-centre on every
+   viewport and ensure it always sits above the sidebar (z ~5000), mobile
+   drawer overlay (~8000), and modals (~50000).
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* Sonner's own container element */
+[data-sonner-toaster] {
+  position: fixed !important;
+  top: calc(env(safe-area-inset-top, 0px) + 16px) !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: translateX(-50%) !important;
+  width: auto !important;
+  max-width: calc(100vw - 24px) !important;
+  z-index: 999999 !important;
+  pointer-events: none;
+}
+
+/* Individual toast items */
+[data-sonner-toaster] [data-sonner-toast] {
+  pointer-events: auto;
+  width: 100%;
+  max-width: 420px;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  line-height: 1.4;
+}
+
+/* Close button must always be clickable */
+[data-sonner-toaster] [data-close-button] {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  [data-sonner-toaster] {
+    top: calc(env(safe-area-inset-top, 0px) + 12px) !important;
+    width: calc(100vw - 24px) !important;
+    max-width: calc(100vw - 24px) !important;
+  }
+
+  [data-sonner-toaster] [data-sonner-toast] {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}

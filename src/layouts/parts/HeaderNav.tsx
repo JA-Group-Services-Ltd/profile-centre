@@ -1,0 +1,226 @@
+// @refresh reset
+// v8 — paired with RootLayout v8; imported directly as SiteNavHeader
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, X, LayoutDashboard, LogOut, User, ChevronDown } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { useBranding } from '@/lib/branding';
+import { Button } from '@/components/ui/button';
+import ThemeToggle from '@/components/ThemeToggle';
+import { useAuth } from '@/lib/auth';
+
+export default function SiteNavHeader() {
+  const location = useLocation();
+  const branding = useBranding();
+  const { user, loading, logout } = useAuth();
+  const [open, setOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const isHome = location.pathname === '/';
+
+  const navItems = [
+    { href: '#features', label: 'Features', homeOnly: true },
+    { href: '#pricing',  label: 'Pricing',  homeOnly: true },
+    { href: '#faq',      label: 'FAQ',      homeOnly: true },
+    { href: '/help',     label: 'Help',     homeOnly: false, isLink: true },
+    { href: '/status',   label: 'Status',   homeOnly: false, isLink: true },
+  ];
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
+  const firstName = user?.name?.split(' ')[0] ?? 'Account';
+
+  return (
+    <header className="sticky top-0 z-50 border-b border-border bg-card shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 md:h-[72px] items-center justify-between gap-4">
+
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2.5 flex-shrink-0 group" aria-label="JA Profile Studio — home">
+            {branding.platform_logo_url ? (
+              <img
+                src={branding.platform_logo_url}
+                alt={branding.platform_name || 'JA Profile Studio'}
+                className="h-9 w-auto object-contain shrink-0 md:h-11"
+              />
+            ) : (
+              <span className="font-extrabold text-lg tracking-tight text-foreground">
+                JA <span className="text-primary">Profile Studio</span>
+              </span>
+            )}
+          </Link>
+
+          {/* Desktop nav */}
+          <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
+            {navItems.filter(i => !i.homeOnly || isHome).map(item =>
+              item.isLink ? (
+                <Link key={item.href} to={item.href}
+                  className="px-3.5 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-150">
+                  {item.label}
+                </Link>
+              ) : (
+                <a key={item.href} href={item.href}
+                  className="px-3.5 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-150">
+                  {item.label}
+                </a>
+              )
+            )}
+          </nav>
+
+          {/* Desktop right */}
+          <div className="hidden md:flex items-center gap-2.5">
+            <ThemeToggle />
+
+            {loading ? (
+              <div className="h-8 w-24 rounded-xl bg-muted animate-pulse" />
+            ) : user ? (
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setDropdownOpen(v => !v)}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-border bg-card hover:bg-muted transition-colors text-sm font-medium text-foreground"
+                  aria-expanded={dropdownOpen}
+                  aria-haspopup="true"
+                >
+                  <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                    {firstName.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="max-w-[100px] truncate">{firstName}</span>
+                  <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {dropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-60 rounded-2xl border border-border bg-card shadow-xl py-1.5 z-50">
+                    <div className="px-3 py-2 border-b border-border mb-1">
+                      <p className="text-xs font-semibold text-foreground truncate">{user.name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                    </div>
+                    <Link to="/dashboard/overview" onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors">
+                      <LayoutDashboard className="w-4 h-4 text-primary" /> Dashboard
+                    </Link>
+                    <Link to="/dashboard/profile" onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors">
+                      <User className="w-4 h-4 text-primary" /> All Profiles
+                    </Link>
+                    <div className="border-t border-border mt-1 pt-1">
+                      <button
+                        onClick={() => { setDropdownOpen(false); logout(); }}
+                        className="flex items-start gap-2.5 w-full px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
+                        <LogOut className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                        <span>
+                          <span className="block font-medium">Sign out</span>
+                          <span className="block text-[10px] text-red-500/70 dark:text-red-400/70 font-normal leading-tight mt-0.5">
+                            Signs you out of JA Group Services ID
+                          </span>
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground font-medium">
+                    Log In
+                  </Button>
+                </Link>
+                <Link to="/login">
+                  <Button size="sm" className="bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/25 font-semibold rounded-xl px-5 transition-all duration-200 hover:shadow-blue-600/40 hover:-translate-y-px">
+                    Create Profile
+                  </Button>
+                </Link>
+              </>
+            )}
+          </div>
+
+          {/* Mobile: theme toggle + hamburger */}
+          <div className="md:hidden flex items-center gap-2">
+            <ThemeToggle />
+            <button
+              onClick={() => setOpen(!open)}
+              className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              aria-label={open ? 'Close menu' : 'Open menu'}
+              aria-expanded={open}
+              aria-controls="mobile-menu"
+            >
+              {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile menu */}
+      {open && (
+        <div id="mobile-menu" className="md:hidden border-t border-border bg-card px-4 py-4 space-y-1"
+          style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
+          {navItems.filter(i => !i.homeOnly || isHome).map(item =>
+            item.isLink ? (
+              <Link key={item.href} to={item.href}
+                className="flex items-center px-4 py-3.5 rounded-xl text-sm font-medium text-foreground hover:bg-muted transition-colors min-h-[48px]"
+                onClick={() => setOpen(false)}>
+                {item.label}
+              </Link>
+            ) : (
+              <a key={item.href} href={item.href}
+                className="flex items-center px-4 py-3.5 rounded-xl text-sm font-medium text-foreground hover:bg-muted transition-colors min-h-[48px]"
+                onClick={() => setOpen(false)}>
+                {item.label}
+              </a>
+            )
+          )}
+
+          {!loading && (
+            <div className="pt-3 border-t border-border space-y-2">
+              {user ? (
+                <>
+                  <div className="px-4 py-2 rounded-xl bg-muted/40">
+                    <p className="text-xs font-semibold text-foreground">{user.name}</p>
+                    <p className="text-xs text-muted-foreground">{user.email}</p>
+                  </div>
+                  <Link to="/dashboard/overview" onClick={() => setOpen(false)}>
+                    <Button variant="outline" className="w-full justify-start gap-2 min-h-[48px] text-sm font-medium">
+                      <LayoutDashboard className="w-4 h-4" /> Dashboard
+                    </Button>
+                  </Link>
+                  <Link to="/dashboard/profile" onClick={() => setOpen(false)}>
+                    <Button variant="outline" className="w-full justify-start gap-2 min-h-[48px] text-sm font-medium">
+                      <User className="w-4 h-4" /> All Profiles
+                    </Button>
+                  </Link>
+                  <Button variant="ghost"
+                    className="w-full justify-start gap-2 min-h-[52px] text-sm font-medium text-destructive hover:bg-destructive/10"
+                    onClick={() => { setOpen(false); logout(); }}>
+                    <LogOut className="w-4 h-4 flex-shrink-0" />
+                    <span className="text-left">
+                      <span className="block">Sign out</span>
+                      <span className="block text-[10px] font-normal opacity-70 leading-tight">Signs you out of JA Group Services ID</span>
+                    </span>
+                  </Button>
+                </>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <Link to="/login" className="w-full" onClick={() => setOpen(false)}>
+                    <Button variant="outline" className="w-full min-h-[52px] text-sm font-semibold">Log In</Button>
+                  </Link>
+                  <Link to="/login" className="w-full" onClick={() => setOpen(false)}>
+                    <Button className="w-full min-h-[52px] text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/25">
+                      Create Profile
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </header>
+  );
+}

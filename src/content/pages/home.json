@@ -1,0 +1,39 @@
+{
+  "FAQ": [
+    {
+      "q": "What is JA Profile Studio?",
+      "a": "JA Profile Studio is a digital profile service that helps you share your contact details, links, QR code and business information in one place.",
+      "id": "Bjfm5-QgEwHZR07TzF_1W"
+    },
+    {
+      "q": "Can I add my QR code to business cards?",
+      "a": "Yes, business cards can include a QR code linking to your JA Profile Studio. We can help arrange printed business cards through third-party print providers.",
+      "id": "U5Fzn0ITcyC6lKdCq92DZ"
+    },
+    {
+      "q": "Who operates JA Profile Studio?",
+      "a": "JA Profile Studio is a service brand operated by JA Group Services Ltd, a company registered in England and Wales.",
+      "id": "CARYnSYdtiwfZsfC0HrU6"
+    },
+    {
+      "q": "Do you print the business cards yourselves?",
+      "a": "Business cards may be arranged through third-party print providers, including VistaPrint or other print providers where used. Separate provider terms, prices, delivery times and refund rules may apply.",
+      "id": "hpezqnTZWlS2mmNJu5UqX"
+    },
+    {
+      "q": "Can I update my profile later?",
+      "a": "Where supported by your plan or dashboard, profile details may be updated after setup.",
+      "id": "wLS7X94m4ZkXl4p0nGhkr"
+    },
+    {
+      "q": "How do I get started?",
+      "a": "Sign in through JA Group Services ID to create your account. Your account is created automatically on first sign-in — no separate registration needed.",
+      "id": "jkd6ZjaVHyA5Vte7yEoJx"
+    },
+    {
+      "q": "Do separate terms apply?",
+      "a": "Separate terms may apply to third-party apps, add-ons, print providers, platforms or connected services where used.",
+      "id": "um5JHyIZ0x05dNk6LWecI"
+    }
+  ]
+}
