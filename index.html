@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script nonce="<!--csp-nonce-->">
+      (function () {
+        try {
+          var u = new URL(location.href);
+          if (u.searchParams.has('airoShareToken')) {
+            u.searchParams.delete('airoShareToken');
+            history.replaceState(null, '', u.toString());
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <meta name="referrer" content="same-origin" />
+    <link rel="icon" type="image/png" href="/assets/JAPROFILESTUDIO FAVICON.PNG" />
+    <link rel="apple-touch-icon" href="/assets/JAPROFILESTUDIO FAVICON.PNG" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/assets/JAPROFILESTUDIO FAVICON.PNG" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/assets/JAPROFILESTUDIO FAVICON.PNG" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#2563eb" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="JA Profile Studio" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/src/styles/globals.css" />
+    <!--app-head-->
+    <script src="/airo-video-slots.js" nonce="<!--csp-nonce-->"></script>
+  </head>
+  <body class="fs-unmask-airo-app-builder">
+    <div id="app" class="fs-unmask-airo-app-builder"><!--app-html--></div>
+    <script type="module" src="/src/main.tsx" nonce="<!--csp-nonce-->"></script>
+    <script src="/analytics.js" nonce="<!--csp-nonce-->"></script>
+  </body>
+</html>
