@@ -1,0 +1,20 @@
+# Copy to .dev.vars for local development only.
+# Never commit real secrets.
+
+ENVIRONMENT=development
+SITE_ORIGIN=http://localhost:8788
+
+# Authentication
+SESSION_SECRET=replace-with-a-long-random-secret
+OIDC_CLIENT_ID=replace-with-microsoft-entra-client-id
+OIDC_CLIENT_SECRET=replace-with-microsoft-entra-client-secret
+OIDC_ISSUER_URL=https://login.microsoftonline.com/replace-tenant-id/v2.0
+OIDC_REDIRECT_URI=http://localhost:8788/auth/callback
+
+# Payments
+STRIPE_SECRET_KEY=replace-with-stripe-secret-key
+STRIPE_WEBHOOK_SECRET=replace-with-stripe-webhook-secret
+
+# Email
+RESEND_API_KEY=replace-with-resend-api-key
+EMAIL_FROM=Profile Centre <no-reply@example.invalid>
