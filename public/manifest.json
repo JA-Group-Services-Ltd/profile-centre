@@ -1,0 +1,76 @@
+{
+  "name": "JA Profile Studio",
+  "short_name": "JA Profile Studio",
+  "description": "Your digital profile hub — personal and business cards, links, QR codes and more.",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui", "browser"],
+  "orientation": "portrait-primary",
+  "background_color": "#0f172a",
+  "theme_color": "#2563eb",
+  "lang": "en-GB",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "handle_links": "preferred",
+  "icons": [
+    {
+      "src": "/assets/JAPROFILESTUDIO FAVICON.PNG",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/JAPROFILESTUDIO FAVICON.PNG",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/JAPROFILESTUDIO FAVICON.PNG",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/JAPROFILESTUDIO FAVICON.PNG",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Go to your dashboard",
+      "url": "/dashboard",
+      "icons": [{ "src": "/assets/JAPROFILESTUDIO FAVICON.PNG", "sizes": "192x192" }]
+    },
+    {
+      "name": "My Profile",
+      "short_name": "Profile",
+      "description": "View and edit your profile",
+      "url": "/dashboard/profile",
+      "icons": [{ "src": "/assets/JAPROFILESTUDIO FAVICON.PNG", "sizes": "192x192" }]
+    },
+    {
+      "name": "Links Manager",
+      "short_name": "Links",
+      "description": "Manage your profile links",
+      "url": "/dashboard/links",
+      "icons": [{ "src": "/assets/JAPROFILESTUDIO FAVICON.PNG", "sizes": "192x192" }]
+    },
+    {
+      "name": "Help Centre",
+      "short_name": "Help",
+      "description": "Get help and support",
+      "url": "/help",
+      "icons": [{ "src": "/assets/JAPROFILESTUDIO FAVICON.PNG", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": [],
+  "categories": ["business", "productivity"],
+  "prefer_related_applications": false
+}

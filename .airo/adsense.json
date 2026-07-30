@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "publisherId": null,
+  "scriptSnippet": "",
+  "adsTxt": {
+    "enabled": false,
+    "content": ""
+  },
+  "appAdsTxt": {
+    "enabled": false,
+    "content": ""
+  },
+  "updatedAt": "2026-07-03T17:48:16.724Z"
+}

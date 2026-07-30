@@ -1,0 +1,23 @@
+# JA Profile Studio — robots.txt
+# Public profile pages and marketing pages are indexable.
+# All admin, dashboard, auth, and internal pages are blocked.
+
+User-agent: *
+
+# Public pages — allow explicitly
+Allow: /$
+Allow: /profile/
+Allow: /legal/
+
+# Private / internal — block everything else
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /conversation/
+Disallow: /login
+Disallow: /register
+Disallow: /logged-out
+Disallow: /invite/
+Disallow: /report-issue
+
+# Sitemap is served dynamically — see /sitemap.xml
