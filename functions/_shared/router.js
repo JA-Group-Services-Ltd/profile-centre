@@ -47,6 +47,7 @@ import {
   setAdminPin,
   verifyAdminPin,
 } from "./admin-pin.js";
+import { getBranchSecurityState, processHeadOfficeCommands } from "./head-office.js";
 
 function integer(value, name = "id") {
   const result = Number(value);
@@ -278,7 +279,7 @@ async function dispatch(context, requestId) {
 
   if (path === "/auth/me") {
     if (method !== "GET") return methodNotAllowed(["GET"], requestId);
-    const { user } = await requireUser(request, database);
+    const { user } = await requireUser(request, database, context.env);
     return json(await currentUserResponse(database, user));
   }
   if (path === "/auth/admin/me") {
@@ -323,17 +324,17 @@ async function dispatch(context, requestId) {
 
   if (path === "/profiles/me") {
     if (method !== "GET") return methodNotAllowed(["GET"], requestId);
-    const { user } = await requireUser(request, database);
+    const { user } = await requireUser(request, database, context.env);
     return json(await getMyProfiles(database, user.id));
   }
   if (path === "/profiles") {
     if (method !== "POST") return methodNotAllowed(["POST"], requestId);
-    const { user } = await requireUser(request, database);
+    const { user } = await requireUser(request, database, context.env);
     return json(await createProfile(request, database, user), 201);
   }
   const profileMatch = path.match(/^\/profiles\/(\d+)$/);
   if (profileMatch) {
-    const { user } = await requireUser(request, database);
+    const { user } = await requireUser(request, database, context.env);
     const profileId = integer(profileMatch[1], "profile ID");
     if (["PUT", "PATCH"].includes(method)) {
       return json(await updateProfile(request, database, user, profileId));
@@ -346,24 +347,24 @@ async function dispatch(context, requestId) {
     if (!["POST", "PATCH", "PUT"].includes(method)) {
       return methodNotAllowed(["POST", "PATCH", "PUT"], requestId);
     }
-    const { user } = await requireUser(request, database);
+    const { user } = await requireUser(request, database, context.env);
     return json(await setPublished(
       request, database, user, integer(publishMatch[1], "profile ID"), publishMatch[2] === "publish",
     ));
   }
   if (path === "/links") {
     if (method !== "POST") return methodNotAllowed(["POST"], requestId);
-    const { user } = await requireUser(request, database);
+    const { user } = await requireUser(request, database, context.env);
     return json(await createLink(request, database, user), 201);
   }
   if (path === "/links/reorder") {
     if (method !== "PUT") return methodNotAllowed(["PUT"], requestId);
-    const { user } = await requireUser(request, database);
+    const { user } = await requireUser(request, database, context.env);
     return json(await reorderLinks(request, database, user));
   }
   const linksMatch = path.match(/^\/links\/(\d+)$/);
   if (linksMatch) {
-    const { user } = await requireUser(request, database);
+    const { user } = await requireUser(request, database, context.env);
     const id = integer(linksMatch[1]);
     if (method === "GET") return json(await getLinks(database, user.id, id));
     if (["PUT", "PATCH"].includes(method)) return json(await updateLink(request, database, user, id));
@@ -372,12 +373,12 @@ async function dispatch(context, requestId) {
   }
   if (path === "/subscriptions") {
     if (method !== "GET") return methodNotAllowed(["GET"], requestId);
-    const { user } = await requireUser(request, database);
+    const { user } = await requireUser(request, database, context.env);
     return json(await subscriptions(database, user.id));
   }
   if (path === "/business-cards") {
     if (!["GET", "POST"].includes(method)) return methodNotAllowed(["GET", "POST"], requestId);
-    const { user } = await requireUser(request, database);
+    const { user } = await requireUser(request, database, context.env);
     if (method === "GET") return json(await myBusinessCardOrders(database, user));
     return json(await createBusinessCardOrder(request, database, user), 201);
   }
@@ -385,22 +386,36 @@ async function dispatch(context, requestId) {
     if (!["GET", "POST", "DELETE"].includes(method)) {
       return methodNotAllowed(["GET", "POST", "DELETE"], requestId);
     }
-    const { user } = await requireUser(request, database);
+    const { user } = await requireUser(request, database, context.env);
     return json(await accountClosure(request, database, user, method));
   }
   if (path === "/me/data-requests") {
     if (!["GET", "POST"].includes(method)) return methodNotAllowed(["GET", "POST"], requestId);
-    const { user } = await requireUser(request, database);
+    const { user } = await requireUser(request, database, context.env);
     return json(await dataRequests(request, database, user, method), method === "POST" ? 201 : 200);
   }
   if (["/users/me/preferences", "/account/settings"].includes(path)) {
     if (!["GET", "PUT", "PATCH"].includes(method)) return methodNotAllowed(["GET", "PUT", "PATCH"], requestId);
-    const { user } = await requireUser(request, database);
+    const { user } = await requireUser(request, database, context.env);
     return json(await preferences(request, database, user, method));
   }
 
   if (path.startsWith("/admin/")) {
     const { user: admin } = await requireAdmin(request, database);
+    if (path === "/admin/head-office/commands/sync") {
+      if (method !== "POST") return methodNotAllowed(["POST"], requestId);
+      return json({ success: true, data: await processHeadOfficeCommands(context.env) });
+    }
+    const securityMatch = path.match(/^\/admin\/users\/(\d+)\/head-office-security$/);
+    if (securityMatch) {
+      if (method !== "GET") return methodNotAllowed(["GET"], requestId);
+      const customer = await database.prepare(`
+        SELECT id, customer_number, head_office_link_status
+        FROM users WHERE id=?1 LIMIT 1
+      `).bind(integer(securityMatch[1], "user ID")).first();
+      if (!customer) throw new HttpError(404, "User not found.", "user_not_found");
+      return json({ success: true, data: await getBranchSecurityState(context.env, customer.customer_number) });
+    }
     if (path === "/admin/plans") {
       if (method === "GET") return json(await getPlans(database, true, true));
       if (method === "POST") return json(await createPlan(request, database, admin), 201);

@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import Database from "better-sqlite3";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { handleApiRequest } from "../functions/_shared/router.js";
 import { resolveUser } from "../functions/_shared/auth.js";
 
@@ -60,7 +60,11 @@ function request(path, init = {}) {
 
 function context(database, path, init = {}) {
   return {
-    env: { DB: database },
+    env: {
+      DB: database,
+      HEAD_OFFICE_API_BASE_URL: "https://head-office.example.test",
+      HEAD_OFFICE_PLATFORM_KEY: "test-platform-key",
+    },
     params: { path: path.split("/").filter(Boolean) },
     request: request(path, init),
   };
@@ -84,6 +88,7 @@ describe("Cloudflare API router", () => {
   beforeEach(() => {
     sqlite = new Database(":memory:");
     sqlite.exec(fs.readFileSync("migrations/0002_full_d1_schema.sql", "utf8"));
+    sqlite.exec(fs.readFileSync("migrations/0003_head_office_connector.sql", "utf8"));
     sqlite.exec(`
       INSERT INTO plans (id, name, slug, max_links, is_active, is_public)
       VALUES (1, 'Free', 'free', 5, 1, 1);
@@ -106,9 +111,31 @@ describe("Cloudflare API router", () => {
       INSERT INTO admin_settings (key, value) VALUES ('business_cards_enabled', '1');
     `);
     d1 = new D1Database(sqlite);
+    vi.stubGlobal("fetch", vi.fn(async requestValue => {
+      const url = String(requestValue);
+      if (url.includes("/api/platform/access/decision")) {
+        return Response.json({
+          customer: {
+            id: "central-customer-1",
+            customerNumber: "1000000001",
+            securityStatus: "clear",
+          },
+          access: {
+            decision: "allow",
+            revokeSessions: false,
+            restrictions: [],
+            ageAssurance: { contractVersion: "ja-head-office-age-assurance-v1", decision: "allow" },
+          },
+        });
+      }
+      return Response.json({ error: { code: "unexpected_test_request" } }, { status: 500 });
+    }));
   });
 
-  afterEach(() => sqlite.close());
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    sqlite.close();
+  });
 
   it("returns JSON 404 for unknown API paths", async () => {
     const response = await handleApiRequest(context(d1, "/test-not-found"));
@@ -129,6 +156,33 @@ describe("Cloudflare API router", () => {
     const response = await handleApiRequest(context(d1, "/profiles/me"));
     expect(response.status).toBe(401);
     expect(response.headers.get("content-type")).toContain("application/json");
+  });
+
+  it("fails closed and revokes a customer session when Head Office denies access", async () => {
+    fetch.mockResolvedValueOnce(Response.json({
+      customer: {
+        id: "central-customer-1",
+        customerNumber: "1000000001",
+        securityStatus: "review",
+      },
+      access: {
+        decision: "deny",
+        revokeSessions: true,
+        restrictions: [{ restrictionType: "BLOCK_SIGN_IN", confidentialReasonWithheld: true }],
+        ageAssurance: { contractVersion: "ja-head-office-age-assurance-v1", decision: "allow" },
+      },
+    }));
+    const response = await handleApiRequest(context(d1, "/profiles/me", authenticated()));
+    expect(response.status).toBe(403);
+    expect(await response.json()).toMatchObject({ code: "head_office_access_denied" });
+    expect(sqlite.prepare("SELECT COUNT(*) count FROM sessions WHERE sid='test-session'").get().count).toBe(0);
+  });
+
+  it("fails closed when Head Office is unavailable and no fresh allow is cached", async () => {
+    fetch.mockRejectedValueOnce(new Error("central service unavailable"));
+    const response = await handleApiRequest(context(d1, "/profiles/me", authenticated()));
+    expect(response.status).toBe(503);
+    expect(await response.json()).toMatchObject({ code: "head_office_security_unavailable" });
   });
 
   it("joins normalized profile tables without exposing PIN hashes", async () => {

@@ -1,4 +1,5 @@
 import { HttpError, json, redirect } from "./http.js";
+import { enforceCustomerAccess, synchroniseCustomer } from "./head-office.js";
 
 export const SESSION_COOKIE = "ja_profile_studio_session";
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
@@ -88,18 +89,20 @@ export async function destroySession(request, database) {
   return sessionCookie("", 0);
 }
 
-export async function requireUser(request, database) {
+export async function requireUser(request, database, env = null) {
   const session = await getSession(request, database);
   const userId = Number(session?.data?.userId);
   if (!Number.isInteger(userId) || userId < 1) {
     throw new HttpError(401, "Authentication required", "authentication_required");
   }
   const user = await database.prepare(`
-    SELECT id, email, name, role, plan_id, account_status, is_paused, is_blocked
+    SELECT id, email, name, role, plan_id, account_status, is_paused, is_blocked,
+           customer_number, head_office_access_decision, head_office_access_decided_at
     FROM users WHERE id = ?1 LIMIT 1
   `).bind(userId).first();
   if (!user) throw new HttpError(401, "User not found", "authentication_required");
   if (Number(user.is_blocked) === 1) throw new HttpError(403, "Account is blocked", "account_blocked");
+  if (env) await enforceCustomerAccess(env, user);
   return { session, user };
 }
 
@@ -239,12 +242,12 @@ export async function resolveUser(database, claims, admin, requiredRole) {
 
   const oidColumn = admin ? "admin_entra_oid" : "entra_oid";
   let user = await database.prepare(`
-    SELECT id, email, name, role, plan_id FROM users
+    SELECT id, email, name, role, plan_id, created_at FROM users
     WHERE ${oidColumn} = ?1 ${admin ? "AND role = 'admin'" : ""} LIMIT 1
   `).bind(oid).first();
   if (!user && email) {
     user = await database.prepare(`
-      SELECT id, email, name, role, plan_id FROM users
+      SELECT id, email, name, role, plan_id, created_at FROM users
       WHERE lower(email) = ?1 ${admin ? "AND role = 'admin'" : ""} LIMIT 1
     `).bind(email).first();
   }
@@ -313,6 +316,7 @@ export async function completeOidc(request, env, flow) {
   }
   const claims = await verifyIdToken(tokens.id_token, metadata, config, stateData.nonce);
   const user = await resolveUser(env.DB, claims, config.admin, config.requiredRole);
+  if (!config.admin) await synchroniseCustomer(env, user, claims, config.tenantId);
   const session = await createSession(
     env.DB,
     config.admin
