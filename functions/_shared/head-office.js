@@ -332,6 +332,7 @@ export async function sendOperationalEvent(env, user, eventType, payload = {}) {
     summary: payload.summary || null,
     displayInTimeline: payload.displayInTimeline !== false,
     metadata: payload.metadata || {},
+    session: payload.session || undefined,
   };
   await env.DB.prepare(`
     INSERT INTO head_office_event_outbox(event_id,user_id,event_type,payload_json,correlation_id,next_attempt_at)
