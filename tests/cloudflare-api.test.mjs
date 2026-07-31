@@ -88,10 +88,14 @@ describe("Cloudflare API router", () => {
       VALUES (1, 'Free', 'free', 5, 1, 1);
       INSERT INTO users (id, email, name, role, plan_id, entra_oid)
       VALUES (1, 'customer@example.test', 'Test Customer', 'user', 1, 'test-oid');
+      INSERT INTO users (id, email, name, role, plan_id, entra_oid)
+      VALUES (2, 'admin@example.test', 'Test Admin', 'admin', 1, 'test-admin-oid');
       INSERT INTO sessions (sid, data, expires_at)
       VALUES ('test-session', '{"userId":1}', 4102444800000);
       INSERT INTO sessions (sid, data, expires_at)
       VALUES ('non-admin-session', '{"adminUserId":1}', 4102444800000);
+      INSERT INTO sessions (sid, data, expires_at)
+      VALUES ('admin-session', '{"adminUserId":2,"flow":"admin"}', 4102444800000);
       INSERT INTO profiles (id, user_id, username, display_name, profile_type, is_published)
       VALUES (10, 1, 'test-profile', 'Test Profile', 'personal', 0);
       INSERT INTO profile_business_details (id, business_name) VALUES (10, 'Example Ltd');
@@ -173,6 +177,24 @@ describe("Cloudflare API router", () => {
     }));
     expect(response.status).toBe(403);
     expect(response.headers.get("content-type")).toContain("application/json");
+  });
+
+  it("returns the authenticated admin session used by the portal guard", async () => {
+    const response = await handleApiRequest(context(d1, "/auth/admin/me", {
+      method: "GET",
+      headers: { cookie: "ja_profile_studio_session=admin-session" },
+    }));
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      success: true,
+      data: {
+        user: {
+          id: 2,
+          email: "admin@example.test",
+          role: "admin",
+        },
+      },
+    });
   });
 
   it("writes and joins normalized business-card order tables", async () => {
