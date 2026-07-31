@@ -48,7 +48,7 @@ interface ResolvedUser {
   id: number;
   email: string;
   name: string;
-  user_number?: string | null;
+  customer_number?: string | null;
 }
 
 const ACCESS_AREAS = [
@@ -81,19 +81,14 @@ function fmtDate(iso: string | null | undefined): string {
   } catch { return iso; }
 }
 
-function fmtUserNumber(n: string | null | undefined): string {
-  if (!n) return '';
-  return n.replace(/(\d{3})(\d{3})(\d{3})(\d{3})/, '$1 $2 $3 $4');
-}
-
 // ── Search hint helper ────────────────────────────────────────────────────
 
-function detectQueryType(val: string): 'email' | 'user_number' | 'id' | 'name' | 'empty' | 'short' {
+function detectQueryType(val: string): 'email' | 'ucn' | 'id' | 'name' | 'empty' | 'short' {
   const t = val.trim();
   if (!t) return 'empty';
   if (t.includes('@')) return 'email';
   const digits = t.replace(/\s+/g, '');
-  if (/^\d+$/.test(digits) && digits.length === 12) return 'user_number';
+  if (/^\d+$/.test(digits) && digits.length === 10) return 'ucn';
   if (/^\d+$/.test(t) && t.length < 10) return 'id';
   if (t.length < 2) return 'short';
   return 'name';
@@ -228,7 +223,7 @@ function NewRequestForm({ onCreated }: { onCreated: () => void }) {
           <div className="flex flex-wrap gap-1.5 mb-1">
             {[
               { icon: Mail,   label: 'Email',       hint: 'user@example.com' },
-              { icon: Hash,   label: 'User Number',  hint: '742 918 305 614' },
+              { icon: Hash,   label: 'UCN',          hint: '1000000001' },
               { icon: AtSign, label: 'Name',         hint: 'Jane Smith' },
               { icon: User,   label: 'Account ID',   hint: '42' },
             ].map(({ icon: Icon, label, hint }) => (
@@ -250,7 +245,7 @@ function NewRequestForm({ onCreated }: { onCreated: () => void }) {
             <Input
               value={query}
               onChange={e => handleQueryChange(e.target.value)}
-              placeholder="Email, user number, name, or account ID…"
+              placeholder="Email, UCN, name, or account ID…"
               className="bg-background border-border text-sm pl-8 pr-8"
               autoComplete="off"
             />
@@ -282,9 +277,9 @@ function NewRequestForm({ onCreated }: { onCreated: () => void }) {
                 <p className="text-xs text-muted-foreground truncate">{resolvedUser.email}</p>
                 <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                   <span className="text-xs text-muted-foreground/60">ID #{resolvedUser.id}</span>
-                  {resolvedUser.user_number && (
+                  {resolvedUser.customer_number && (
                     <span className="text-xs text-muted-foreground/60 font-mono">
-                      · {fmtUserNumber(resolvedUser.user_number)}
+                      · UCN {resolvedUser.customer_number}
                     </span>
                   )}
                 </div>
@@ -304,7 +299,7 @@ function NewRequestForm({ onCreated }: { onCreated: () => void }) {
             <div className="flex items-start gap-2 p-2.5 rounded-lg bg-muted/20 border border-border/50">
               <Info className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0 mt-0.5" />
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Search by <strong className="text-foreground">email address</strong>, <strong className="text-foreground">12-digit user number</strong> (e.g. 742 918 305 614), <strong className="text-foreground">full or partial name</strong>, or <strong className="text-foreground">numeric account ID</strong>.
+                Search by <strong className="text-foreground">email address</strong>, <strong className="text-foreground">Head Office UCN</strong>, <strong className="text-foreground">full or partial name</strong>, or <strong className="text-foreground">numeric account ID</strong>.
               </p>
             </div>
           )}

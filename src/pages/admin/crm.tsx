@@ -43,6 +43,7 @@ interface CrmUser {
   marketing_consent: number;
   subscription_status: string | null; billing_interval: string | null;
   profile_count: number; pending_requests: number;
+  customer_number: string | null;
 }
 
 interface CrmProfile {
@@ -1537,7 +1538,10 @@ export default function AdminCRM() {
   // ── Telephone PIN Verify ──────────────────────────────────────────────────
   const [pinInput, setPinInput] = useState('');
   const [pinVerifyResult, setPinVerifyResult] = useState<{
-    user: { id: number; name: string; email: string; plan_name: string | null; plan_slug: string | null };
+    user: {
+      id: number; name: string; email: string; plan_name: string | null;
+      plan_slug: string | null; customer_number: string | null;
+    };
     expiresAt: string; secondsRemaining: number;
   } | null>(null);
   const [pinVerifyLoading, setPinVerifyLoading] = useState(false);
@@ -1641,9 +1645,9 @@ export default function AdminCRM() {
                     <p className="text-sm font-semibold text-green-500 mb-0.5">Identity Verified</p>
                     <p className="text-base font-bold text-foreground">{pinVerifyResult.user.name || '(no name)'}</p>
                     <p className="text-sm text-muted-foreground">{pinVerifyResult.user.email}</p>
-                    {pinVerifyResult.user.user_number && (
+                    {pinVerifyResult.user.customer_number && (
                       <p className="text-xs font-mono text-muted-foreground mt-0.5">
-                        {String(pinVerifyResult.user.user_number).replace(/(\d{3})(\d{3})(\d{3})(\d{3})/, '$1 $2 $3 $4')}
+                        UCN {pinVerifyResult.user.customer_number}
                       </p>
                     )}
                     {pinVerifyResult.user.plan_name && <p className="text-xs text-muted-foreground mt-0.5">Plan: {pinVerifyResult.user.plan_name}</p>}
@@ -1742,9 +1746,9 @@ export default function AdminCRM() {
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-                    {user.user_number && (
+                    {user.customer_number && (
                       <p className="text-xs text-muted-foreground font-mono">
-                        {String(user.user_number).replace(/(\d{3})(\d{3})(\d{3})(\d{3})/, '$1 $2 $3 $4')}
+                        UCN {user.customer_number}
                       </p>
                     )}
                   </div>

@@ -189,6 +189,7 @@ function AdminTrialControls({ userId, onRefresh }: { userId: number; onRefresh: 
 /* ─── Types ──────────────────────────────────────────────────────────────── */
 interface CrmUser {
   id: number; email: string; name: string; role: string; phone?: string;
+  customer_number?: string | null;
   plan_id: number | null; plan_name: string | null; plan_slug: string | null;
   max_seats: number | null; has_messaging: number | null;
   price_monthly: number | null; max_profiles: number | null; max_links: number | null;
@@ -401,6 +402,8 @@ export default function AdminUserDetail() {
   const [sarLoading, setSarLoading] = useState(false);
   const [sarPinPending, setSarPinPending] = useState<'view' | 'export' | null>(null);
   const [sarData, setSarData] = useState<Record<string, unknown> | null>(null);
+  const [headOfficeSecurity, setHeadOfficeSecurity] = useState<Record<string, any> | null>(null);
+  const [headOfficeSecurityError, setHeadOfficeSecurityError] = useState('');
 
   const handleBlock = async (block: boolean) => {
     if (!userId) return;
@@ -462,6 +465,20 @@ export default function AdminUserDetail() {
   };
 
   useEffect(() => { load(); }, [userId]);
+  useEffect(() => {
+    if (!userId) return;
+    setHeadOfficeSecurityError('');
+    fetch(`/api/admin/users/${userId}/head-office-security`, { credentials: 'include' })
+      .then(async response => ({ response, body: await response.json() }))
+      .then(({ response, body }) => {
+        if (!response.ok || !body.success) {
+          setHeadOfficeSecurityError(body.error || 'Head Office security state is unavailable.');
+          return;
+        }
+        setHeadOfficeSecurity(body.data);
+      })
+      .catch(() => setHeadOfficeSecurityError('Head Office security state is unavailable.'));
+  }, [userId]);
 
   const handleAddNote = async () => {
     if (!noteText.trim() || !userId) return;
@@ -590,6 +607,40 @@ export default function AdminUserDetail() {
         </div>
       )}
 
+      <Card className="mb-4 bg-card border-border">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm flex items-center gap-2">
+            <Shield className="w-4 h-4 text-blue-400" /> Head Office Security
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-0">
+          {headOfficeSecurityError ? (
+            <p className="text-xs text-muted-foreground">{headOfficeSecurityError}</p>
+          ) : !headOfficeSecurity ? (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" /> Loading branch-safe security state…
+            </div>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+              <div><span className="block text-muted-foreground">UCN</span>
+                <span className="font-mono">{headOfficeSecurity.customer?.customerNumber || 'Not linked'}</span></div>
+              <div><span className="block text-muted-foreground">Account</span>
+                <span>{headOfficeSecurity.customer?.accountStatus || 'Unknown'}</span></div>
+              <div><span className="block text-muted-foreground">Security</span>
+                <span>{headOfficeSecurity.customer?.securityStatus || 'Unknown'}</span></div>
+              <div><span className="block text-muted-foreground">Access decision</span>
+                <span>{headOfficeSecurity.access?.decision || headOfficeSecurity.state?.access?.decision || 'Unknown'}</span></div>
+              <div className="sm:col-span-2 lg:col-span-4 text-muted-foreground">
+                Restrictions: {(headOfficeSecurity.restrictions || headOfficeSecurity.state?.restrictions || []).length}
+                {' · '}Age assurance: {headOfficeSecurity.ageAssurance?.decision
+                  || headOfficeSecurity.state?.ageAssurance?.decision || 'not enforced'}
+                {' · '}Confidential case reasoning is retained by Head Office.
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* ── Main layout: sidebar + content ── */}
       <div className="grid lg:grid-cols-[220px_1fr] gap-5 items-start">
 
@@ -717,10 +768,10 @@ export default function AdminUserDetail() {
                 <Row label="Full name" value={user.name || '—'} />
                 <Row label="Email" value={user.email} />
                 <Row label="Phone" value={user.phone || 'Not provided'} />
-                {user.user_number && (
+                {user.customer_number && (
                   <Row
-                    label="JA Profile Studio User Number"
-                    value={String(user.user_number).replace(/(\d{3})(\d{3})(\d{3})(\d{3})/, '$1 $2 $3 $4')}
+                    label="Universal Customer Number (UCN)"
+                    value={user.customer_number}
                     mono
                   />
                 )}

@@ -1,0 +1,252 @@
+import { HttpError } from "./http.js";
+
+const PLATFORM_CODE = "PROFILE_CENTRE";
+const DEGRADED_ALLOW_WINDOW_MS = 5 * 60 * 1000;
+const ALLOWED_DECISIONS = new Set(["allow", "deny", "review", "step_up"]);
+
+function configured(env) {
+  return Boolean(env.HEAD_OFFICE_API_BASE_URL && env.HEAD_OFFICE_PLATFORM_KEY);
+}
+
+function endpoint(env, path) {
+  return new URL(path, `${String(env.HEAD_OFFICE_API_BASE_URL).replace(/\/+$/, "")}/`).toString();
+}
+
+export async function requestHeadOffice(env, path, init = {}) {
+  if (!configured(env)) {
+    throw new HttpError(503, "Head Office security authority is not configured.", "head_office_not_configured");
+  }
+  const response = await fetch(endpoint(env, path), {
+    ...init,
+    headers: {
+      accept: "application/json",
+      authorization: `Bearer ${env.HEAD_OFFICE_PLATFORM_KEY}`,
+      ...(init.body ? { "content-type": "application/json" } : {}),
+      ...(init.headers || {}),
+    },
+  });
+  const payload = await response.json().catch(() => null);
+  if (!response.ok) {
+    const code = payload?.error?.code || payload?.code || "head_office_request_failed";
+    const error = new HttpError(response.status >= 500 ? 503 : response.status,
+      "Head Office could not authorise this customer request.", code);
+    error.headOfficeStatus = response.status;
+    throw error;
+  }
+  return payload;
+}
+
+function safeJson(value, fallback) {
+  try {
+    return JSON.stringify(value ?? fallback);
+  } catch {
+    return JSON.stringify(fallback);
+  }
+}
+
+async function storeDecision(database, userId, customer, access, error = null) {
+  const decision = String(access?.decision || access?.action || "");
+  await database.prepare(`
+    UPDATE users SET
+      head_office_customer_id = COALESCE(?1, head_office_customer_id),
+      customer_number = COALESCE(?2, customer_number),
+      head_office_link_status = CASE WHEN ?1 IS NULL THEN head_office_link_status ELSE 'linked' END,
+      head_office_last_synced_at = CASE WHEN ?1 IS NULL THEN head_office_last_synced_at ELSE CURRENT_TIMESTAMP END,
+      head_office_access_decision = CASE WHEN ?3 = '' THEN head_office_access_decision ELSE ?3 END,
+      head_office_access_decided_at = CASE WHEN ?3 = '' THEN head_office_access_decided_at ELSE CURRENT_TIMESTAMP END,
+      head_office_security_status = COALESCE(?4, head_office_security_status),
+      head_office_restrictions_json = CASE WHEN ?3 = '' THEN head_office_restrictions_json ELSE ?5 END,
+      head_office_age_assurance_json = CASE WHEN ?3 = '' THEN head_office_age_assurance_json ELSE ?6 END,
+      head_office_connector_error = ?7,
+      updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?8
+  `).bind(
+    customer?.id || null,
+    customer?.customerNumber || null,
+    decision,
+    customer?.securityStatus || null,
+    safeJson(access?.restrictions, []),
+    safeJson(access?.ageAssurance, {}),
+    error,
+    userId,
+  ).run();
+}
+
+function enforceDecision(decision) {
+  if (decision === "allow") return;
+  if (decision === "deny") {
+    throw new HttpError(403, "Head Office has denied access to Profile Centre.", "head_office_access_denied");
+  }
+  if (decision === "step_up") {
+    throw new HttpError(403, "Additional identity assurance is required before access can continue.",
+      "head_office_step_up_required");
+  }
+  throw new HttpError(403, "Head Office review is required before access can continue.",
+    "head_office_review_required");
+}
+
+export async function synchroniseCustomer(env, user, claims, tenantId) {
+  const payload = await requestHeadOffice(env, "/api/platform/customers/upsert", {
+    method: "POST",
+    body: JSON.stringify({
+      entraTenantId: String(claims.tid || tenantId || ""),
+      entraObjectId: String(claims.oid || claims.sub || ""),
+      platformCustomerId: String(user.id),
+      displayName: String(claims.name || user.name || user.email),
+      givenName: claims.given_name || null,
+      surname: claims.family_name || null,
+      email: String(claims.email || claims.preferred_username || user.email).toLowerCase(),
+      userPrincipalName: claims.preferred_username || null,
+      accountEnabled: true,
+      accountStatus: "active",
+      createdAt: user.created_at || null,
+      lastSignInAt: new Date().toISOString(),
+      platformMetadata: { platformCode: PLATFORM_CODE },
+    }),
+  });
+  const access = payload?.enforcement || {};
+  const decision = String(access.decision || access.action || "");
+  if (!payload?.customer?.id || !payload?.customer?.customerNumber || !ALLOWED_DECISIONS.has(decision)) {
+    throw new HttpError(503, "Head Office returned an invalid customer decision.", "head_office_invalid_response");
+  }
+  await storeDecision(env.DB, user.id, payload.customer, access);
+  if (access.revokeSessions) {
+    await env.DB.prepare("DELETE FROM sessions WHERE json_extract(data, '$.userId') = ?1").bind(user.id).run();
+  }
+  enforceDecision(decision);
+  await sendOperationalEvent(
+    env,
+    { ...user, customer_number: payload.customer.customerNumber },
+    "customer.sign_in",
+    { outcome: "success" },
+  );
+  return payload;
+}
+
+export async function enforceCustomerAccess(env, user) {
+  try {
+    const payload = await requestHeadOffice(env, "/api/platform/access/decision", {
+      method: "POST",
+      body: JSON.stringify({
+        customerNumber: user.customer_number || undefined,
+        platformCustomerId: String(user.id),
+      }),
+    });
+    const access = payload?.access || {};
+    const decision = String(access.decision || "");
+    if (!ALLOWED_DECISIONS.has(decision)) {
+      throw new HttpError(503, "Head Office returned an invalid access decision.", "head_office_invalid_response");
+    }
+    await storeDecision(env.DB, user.id, payload.customer, access);
+    if (access.revokeSessions) {
+      await env.DB.prepare("DELETE FROM sessions WHERE json_extract(data, '$.userId') = ?1").bind(user.id).run();
+    }
+    enforceDecision(decision);
+    return access;
+  } catch (error) {
+    if (error instanceof HttpError && [
+      "head_office_access_denied", "head_office_step_up_required", "head_office_review_required",
+    ].includes(error.code)) throw error;
+    await storeDecision(env.DB, user.id, null, null, String(error?.code || error?.message || error).slice(0, 200));
+    const decidedAt = Date.parse(user.head_office_access_decided_at || "");
+    if (user.head_office_access_decision === "allow"
+      && Number.isFinite(decidedAt)
+      && Date.now() - decidedAt <= DEGRADED_ALLOW_WINDOW_MS) return { decision: "allow", degraded: true };
+    throw new HttpError(503, "Head Office security authority is temporarily unavailable.",
+      "head_office_security_unavailable");
+  }
+}
+
+export async function getBranchSecurityState(env, customerNumber) {
+  if (!customerNumber) {
+    throw new HttpError(409, "This customer is not linked to a Head Office UCN.", "head_office_customer_not_linked");
+  }
+  return requestHeadOffice(env, `/api/platform/security/state?ucn=${encodeURIComponent(customerNumber)}`);
+}
+
+export async function processHeadOfficeCommands(env) {
+  const payload = await requestHeadOffice(env, "/api/platform/commands");
+  const commands = Array.isArray(payload?.commands) ? payload.commands : [];
+  const results = [];
+  for (const command of commands) {
+    const existing = await env.DB.prepare(
+      "SELECT status FROM head_office_command_receipts WHERE command_id=?1",
+    ).bind(command.id).first();
+    if (existing?.status === "acknowledged") {
+      results.push({ commandId: command.id, status: "already_acknowledged" });
+      continue;
+    }
+    const user = await env.DB.prepare(`
+      SELECT id FROM users
+      WHERE customer_number=?1 OR CAST(id AS TEXT)=?2 LIMIT 1
+    `).bind(command.customer_number || null, command.platform_customer_id || "").first();
+    await env.DB.prepare(`
+      INSERT INTO head_office_command_receipts
+        (command_id, command, user_id, status, payload_json)
+      VALUES (?1, ?2, ?3, 'received', ?4)
+      ON CONFLICT(command_id) DO NOTHING
+    `).bind(command.id, command.command, user?.id || null, safeJson(command, {})).run();
+    let success = true;
+    let message = "Command applied idempotently.";
+    try {
+      if (!user) throw new Error("The linked Profile Centre customer was not found.");
+      if (String(command.command).includes("revoke") || String(command.command).includes("deny")) {
+        await env.DB.prepare("DELETE FROM sessions WHERE json_extract(data, '$.userId')=?1").bind(user.id).run();
+      }
+      await env.DB.prepare(`
+        UPDATE head_office_command_receipts
+        SET status='applied', applied_at=CURRENT_TIMESTAMP, error=NULL WHERE command_id=?1
+      `).bind(command.id).run();
+    } catch (error) {
+      success = false;
+      message = String(error?.message || error).slice(0, 200);
+      await env.DB.prepare(`
+        UPDATE head_office_command_receipts SET status='failed', error=?1 WHERE command_id=?2
+      `).bind(message, command.id).run();
+    }
+    await requestHeadOffice(env, `/api/platform/commands/${encodeURIComponent(command.id)}`, {
+      method: "POST",
+      body: JSON.stringify({ success, message }),
+    });
+    await env.DB.prepare(`
+      UPDATE head_office_command_receipts
+      SET status=?1, acknowledged_at=CURRENT_TIMESTAMP WHERE command_id=?2
+    `).bind(success ? "acknowledged" : "failed", command.id).run();
+    results.push({ commandId: command.id, status: success ? "acknowledged" : "failed" });
+  }
+  return { received: commands.length, results };
+}
+
+export async function sendOperationalEvent(env, user, eventType, payload = {}) {
+  if (!user?.customer_number) return { skipped: true };
+  const eventId = crypto.randomUUID();
+  await env.DB.prepare(`
+    INSERT INTO head_office_event_outbox(event_id, user_id, event_type, payload_json)
+    VALUES (?1, ?2, ?3, ?4)
+  `).bind(eventId, user.id, eventType, safeJson(payload, {})).run();
+  try {
+    const result = await requestHeadOffice(env, "/api/platform/events", {
+      method: "POST",
+      body: JSON.stringify({
+        externalEventId: eventId,
+        eventType,
+        customerNumber: user.customer_number,
+        platformCustomerId: String(user.id),
+        occurredAt: new Date().toISOString(),
+        data: payload,
+      }),
+    });
+    await env.DB.prepare(`
+      UPDATE head_office_event_outbox
+      SET status='sent', attempts=attempts+1, last_attempt_at=CURRENT_TIMESTAMP,
+          sent_at=CURRENT_TIMESTAMP, error=NULL WHERE event_id=?1
+    `).bind(eventId).run();
+    return result;
+  } catch (error) {
+    await env.DB.prepare(`
+      UPDATE head_office_event_outbox
+      SET attempts=attempts+1, last_attempt_at=CURRENT_TIMESTAMP, error=?1 WHERE event_id=?2
+    `).bind(String(error?.code || error?.message || error).slice(0, 200), eventId).run();
+    return { queued: true };
+  }
+}
