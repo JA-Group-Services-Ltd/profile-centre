@@ -86,10 +86,6 @@ export default function BillingPage() {
   const [portalLoading, setPortalLoading] = useState(false);
 
   useEffect(() => {
-    // Proactively link the user's sign-in email to a Stripe customer record
-    // so that webhook events can be matched even before first checkout.
-    fetch('/api/billing/init-customer', { method: 'POST', credentials: 'include' }).catch(() => {});
-
     fetch('/api/plans?include_lifetime=1')
       .then(r => r.json())
       .then(d => {
@@ -482,17 +478,6 @@ export default function BillingPage() {
               </div>
             )}
 
-            {/* Stripe customer portal — shown whenever user has/had a paid subscription */}
-            {(hasActiveSub || user?.subscription_status === 'cancelled') && (
-              <div className="mt-4 pt-4 border-t border-border/50">
-                <Button onClick={openBillingPortal} disabled={portalLoading} variant="outline" size="sm" className="border-border gap-1.5">
-                  {portalLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ExternalLink className="w-3.5 h-3.5" />} Manage Subscription
-                </Button>
-                <p className="text-xs text-muted-foreground mt-1.5">
-                  Update payment method, download invoices, or manage your billing details.
-                </p>
-              </div>
-            )}
           </CardContent>
         </Card>
       ) : (
@@ -528,6 +513,23 @@ export default function BillingPage() {
                 <p className="text-xs text-red-300">Your free trial has expired. Select a plan below to restore access to your profile and features.</p>
               </div>
             )}
+          </CardContent>
+        </Card>
+      )}
+
+      {Boolean(user?.has_stripe_customer) && (
+        <Card className="bg-muted/30 border-border mb-6">
+          <CardContent className="p-5 flex items-center justify-between gap-4 flex-wrap">
+            <div>
+              <p className="text-sm font-semibold text-foreground">Stripe billing</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Update payment details, download invoices, or manage an existing subscription securely in Stripe.
+              </p>
+            </div>
+            <Button onClick={openBillingPortal} disabled={portalLoading} variant="outline" className="border-border gap-1.5 flex-shrink-0">
+              {portalLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ExternalLink className="w-4 h-4" />}
+              Manage billing
+            </Button>
           </CardContent>
         </Card>
       )}

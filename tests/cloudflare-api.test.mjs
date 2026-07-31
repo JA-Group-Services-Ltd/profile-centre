@@ -164,6 +164,35 @@ describe("Cloudflare API router", () => {
     expect(response.headers.get("content-type")).toContain("application/json");
   });
 
+  it("reports only whether the authenticated account has a valid linked Stripe customer", async () => {
+    sqlite.prepare("UPDATE users SET stripe_customer_id=? WHERE id=1").run("cus_ProfileCentreLinked1");
+    const response = await handleApiRequest(context(d1, "/auth/me", authenticated()));
+    expect(response.status).toBe(200);
+    const payload = await response.json();
+    expect(payload.data.user.has_stripe_customer).toBe(1);
+    expect(payload.data.user).not.toHaveProperty("stripe_customer_id");
+  });
+
+  it("does not create a Stripe customer when an unlinked account requests the billing portal", async () => {
+    fetch.mockImplementation(async requestValue => {
+      if (String(requestValue).includes("/api/platform/access/decision")) {
+        return Response.json({
+          customer: { id: "central-customer-1", customerNumber: "1000000001", securityStatus: "clear" },
+          access: { decision: "allow", revokeSessions: false, restrictions: [] },
+        });
+      }
+      if (String(requestValue).endsWith("/v1/account")) {
+        return Response.json({ id: "acct_1TfUSWDLIZgCwhkL" });
+      }
+      return Response.json({ error: { code: "unexpected_test_request" } }, { status: 500 });
+    });
+    const response = await handleApiRequest(context(d1, "/billing/portal", authenticated("POST")));
+    expect(response.status).toBe(409);
+    expect(await response.json()).toMatchObject({ code: "stripe_customer_required" });
+    expect(fetch.mock.calls.map(([requestValue]) => String(requestValue)))
+      .not.toContainEqual(expect.stringContaining("/v1/customers"));
+  });
+
   it("reports a genuine operational heartbeat and throttles subsequent activity", async () => {
     fetch.mockImplementation(async (requestValue, init) => {
       expect(String(requestValue)).toContain("/api/platform/heartbeat");
