@@ -273,6 +273,11 @@ async function dispatch(context, requestId) {
     const { user } = await requireUser(request, database);
     return json(await currentUserResponse(database, user));
   }
+  if (path === "/auth/admin/me") {
+    if (method !== "GET") return methodNotAllowed(["GET"], requestId);
+    const { user } = await requireAdmin(request, database);
+    return json({ success: true, data: { user } });
+  }
   if (path === "/auth/logout") {
     if (!["GET", "POST"].includes(method)) return methodNotAllowed(["GET", "POST"], requestId);
     return json({ success: true }, 200, { "set-cookie": await destroySession(request, database) });
