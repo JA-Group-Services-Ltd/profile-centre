@@ -83,6 +83,7 @@ async function currentUserResponse(database, user) {
     SELECT u.id, u.email, u.name, u.role, u.plan_id, u.lifetime_access, u.created_at,
            COALESCE(u.is_paused, 0) AS is_paused, u.pause_reason,
            u.account_status, u.appearance_preference, u.customer_number,
+           CASE WHEN u.stripe_customer_id GLOB 'cus_[A-Za-z0-9]*' THEN 1 ELSE 0 END AS has_stripe_customer,
            p.name AS plan_name, p.slug AS plan_slug, p.has_messaging, p.max_seats,
            COALESCE(p.max_org_profiles, 0) AS max_org_profiles,
            s.status AS subscription_status, s.billing_interval, s.current_period_end

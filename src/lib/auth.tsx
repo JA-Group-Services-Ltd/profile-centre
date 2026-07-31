@@ -35,6 +35,7 @@ export interface User {
   lifetime_access: number;
   created_at: string;
   customer_number: string | null;
+  has_stripe_customer: number;
   plan_name: string | null;
   plan_slug: string | null;
   has_messaging: number | null;

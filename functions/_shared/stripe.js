@@ -126,10 +126,12 @@ export async function createBillingPortal(env, userId, origin) {
   const user = await env.DB.prepare(`SELECT id,email,name,customer_number,stripe_customer_id FROM users WHERE id=?1`)
     .bind(userId).first();
   if (!user?.customer_number) throw new HttpError(409, "Head Office UCN linkage is required.", "ucn_required");
-  const customer = await customerForUser(env, user);
+  if (!/^cus_[A-Za-z0-9]+$/.test(user.stripe_customer_id || "")) {
+    throw new HttpError(409, "Complete Checkout before managing Stripe billing.", "stripe_customer_required");
+  }
   const session = await stripeRequest(env, "/billing_portal/sessions", {
     method: "POST", idempotencyKey: `profile-centre-portal-${user.id}-${crypto.randomUUID()}`,
-    entries: [["customer", customer], ["return_url", `${origin}/dashboard/billing`]],
+    entries: [["customer", user.stripe_customer_id], ["return_url", `${origin}/dashboard/billing`]],
   });
   return { success: true, url: session.url };
 }
