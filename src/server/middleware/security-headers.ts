@@ -48,29 +48,21 @@ export function securityHeaders(req: Request, res: Response, next: NextFunction)
     'camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()'
   );
 
-  // Content Security Policy — nonce-based for scripts (no unsafe-inline)
-  // - script-src: only same-origin scripts + the per-request nonce
-  // - style-src: 'unsafe-inline' is still required for Tailwind/Radix inline styles
-  //   (eliminating it would require a full CSS-in-JS rewrite — tracked separately)
-  // - img-src: self + data URIs (QR codes) + blob + airo assets CDN
-  // - connect-src: self + Microsoft OIDC / B2C / CIAM endpoints
-  // - frame-ancestors 'none': belt-and-braces clickjacking protection
+  // Content Security Policy — nonce-based for first-party scripts.
+  // The narrowly scoped tawk.to sources are required for the approved
+  // group-wide customer-support widget, its iframe, assets and websocket.
   const csp = [
     "default-src 'self'",
-    // nonce covers inline hydration script; 'self' covers sw.js + all JS bundles
-    `script-src 'self' 'nonce-${nonce}'`,
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "font-src 'self' https://fonts.gstatic.com",
-    "img-src 'self' data: blob: https://airo-assets.imgix.net https://*.airoapp.ai",
-    // connect-src must cover both page fetches AND service worker fetches
-    "connect-src 'self' https://login.microsoftonline.com https://*.b2clogin.com https://*.ciamlogin.com",
-    // worker-src: allows the browser to load and execute /sw.js as a service worker
-    // Without this, strict CSP implementations (Chrome on Android, Firefox) silently
-    // block SW registration even though the file is same-origin.
+    `script-src 'self' 'nonce-${nonce}' https://*.tawk.to https://cdn.jsdelivr.net`,
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.tawk.to https://cdn.jsdelivr.net",
+    "font-src 'self' https://fonts.gstatic.com https://*.tawk.to",
+    "img-src 'self' data: blob: https://airo-assets.imgix.net https://*.airoapp.ai https://*.tawk.to https://tawk.link https://cdn.jsdelivr.net https://s3.amazonaws.com",
+    "connect-src 'self' https://login.microsoftonline.com https://*.b2clogin.com https://*.ciamlogin.com https://*.tawk.to https://*.tawk.help wss://*.tawk.to",
+    "frame-src https://*.tawk.to",
     "worker-src 'self'",
     "frame-ancestors 'none'",
     "base-uri 'self'",
-    "form-action 'self'",
+    "form-action 'self' https://*.tawk.to",
     "object-src 'none'",
   ].join('; ');
   res.setHeader('Content-Security-Policy', csp);
