@@ -58,14 +58,15 @@ export async function reportPlatformHeartbeat(env, options = {}) {
   }
 
   const now = new Date().toISOString();
-  const [customerRow, sessionRow, errorRow] = await Promise.all([
-    env.DB.prepare("SELECT COUNT(*) count FROM users WHERE role='user'").first(),
+  const [customerRow, sessionRow, errorRow, stripeRow] = await Promise.all([
+    env.DB.prepare("SELECT COUNT(*) count FROM users WHERE customer_number IS NOT NULL AND TRIM(customer_number)<>''").first(),
     env.DB.prepare("SELECT COUNT(*) count FROM sessions WHERE expires_at>?1")
       .bind(Date.now()).first(),
     env.DB.prepare(`
       SELECT COUNT(*) count FROM users
       WHERE head_office_connector_error IS NOT NULL AND TRIM(head_office_connector_error)<>''
     `).first(),
+    env.DB.prepare("SELECT value FROM app_settings WHERE key='stripe_production_verified_at' LIMIT 1").first(),
   ]);
   const branch = String(env.CF_PAGES_BRANCH || "");
   const environment = !branch || branch === "main" ? "production" : "preview";
@@ -85,7 +86,11 @@ export async function reportPlatformHeartbeat(env, options = {}) {
       activeSessionCount: Number(sessionRow?.count || 0),
       openErrorCount: Number(errorRow?.count || 0),
       capabilities: ["customer-sync", "ucn", "access-decisions", "security-commands", "events"],
-      integrations: { headOfficeCustomerAuthority: true, microsoftEntraExternalId: true },
+      integrations: {
+        headOfficeCustomerAuthority: true,
+        microsoftEntraExternalId: true,
+        stripe: Boolean(stripeRow?.value),
+      },
       occurredAt: now,
       metadata: { platformCode: PLATFORM_CODE },
     }),
