@@ -228,7 +228,7 @@ async function verifyIdToken(idToken, metadata, config, expectedNonce) {
   return claims;
 }
 
-async function resolveUser(database, claims, admin, requiredRole) {
+export async function resolveUser(database, claims, admin, requiredRole) {
   const oid = String(claims.oid ?? claims.sub ?? "");
   const email = String(claims.email ?? claims.preferred_username ?? "").trim().toLowerCase();
   const name = String(claims.name ?? email.split("@")[0] ?? "JA Profile Studio user").trim();
@@ -237,14 +237,15 @@ async function resolveUser(database, claims, admin, requiredRole) {
     throw new HttpError(403, "Microsoft account does not have the required administrator role.", "admin_role_required");
   }
 
+  const oidColumn = admin ? "admin_entra_oid" : "entra_oid";
   let user = await database.prepare(`
     SELECT id, email, name, role, plan_id FROM users
-    WHERE entra_oid = ?1 ${admin ? "AND role = 'admin'" : "AND role != 'admin'"} LIMIT 1
+    WHERE ${oidColumn} = ?1 ${admin ? "AND role = 'admin'" : ""} LIMIT 1
   `).bind(oid).first();
   if (!user && email) {
     user = await database.prepare(`
       SELECT id, email, name, role, plan_id FROM users
-      WHERE lower(email) = ?1 ${admin ? "AND role = 'admin'" : "AND role != 'admin'"} LIMIT 1
+      WHERE lower(email) = ?1 ${admin ? "AND role = 'admin'" : ""} LIMIT 1
     `).bind(email).first();
   }
   if (!user) {
@@ -256,10 +257,10 @@ async function resolveUser(database, claims, admin, requiredRole) {
   }
   await database.prepare(`
     UPDATE users
-    SET entra_oid = ?1, name = ?2, last_login_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
+    SET ${oidColumn} = ?1, name = ?2, last_login_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
     WHERE id = ?3
   `).bind(oid, name || user.name, user.id).run();
-  return { ...user, entra_oid: oid, name: name || user.name };
+  return { ...user, [oidColumn]: oid, name: name || user.name };
 }
 
 export async function completeOidc(request, env, flow) {

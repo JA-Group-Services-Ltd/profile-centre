@@ -1247,6 +1247,7 @@ CREATE TABLE IF NOT EXISTS "users" (
   "lifetime_customer_note" TEXT,
   "lifetime_can_be_withdrawn" INTEGER DEFAULT 1,
   "entra_oid" TEXT,
+  "admin_entra_oid" TEXT,
   "referred_by_code" TEXT,
   "is_paused" INTEGER DEFAULT 0,
   "pause_reason" TEXT,
@@ -1461,5 +1462,6 @@ CREATE UNIQUE INDEX IF NOT EXISTS "idx_user_achievements_user_id_achievement_key
 CREATE UNIQUE INDEX IF NOT EXISTS "idx_users_user_number" ON "users" ("user_number");
 
 CREATE INDEX IF NOT EXISTS "idx_users_entra_oid" ON "users" ("entra_oid");
+CREATE INDEX IF NOT EXISTS "idx_users_admin_entra_oid" ON "users" ("admin_entra_oid");
 
 CREATE UNIQUE INDEX IF NOT EXISTS "idx_users_email" ON "users" ("email");

@@ -2,6 +2,7 @@ import fs from "node:fs";
 import Database from "better-sqlite3";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { handleApiRequest } from "../functions/_shared/router.js";
+import { resolveUser } from "../functions/_shared/auth.js";
 
 class D1Statement {
   constructor(database, sql, values = []) {
@@ -225,6 +226,30 @@ describe("Cloudflare API router", () => {
       hasPin: true,
       pinVerified: true,
       locked: false,
+    });
+  });
+
+  it("keeps customer and workforce object IDs separate for an administrator", async () => {
+    const customer = await resolveUser(d1, {
+      oid: "customer-admin-oid",
+      email: "admin@example.test",
+      name: "Test Admin",
+    }, false, "Administrator");
+    expect(customer.id).toBe(2);
+
+    const workforce = await resolveUser(d1, {
+      oid: "workforce-admin-oid",
+      email: "admin@example.test",
+      name: "Test Admin",
+      roles: ["Administrator"],
+    }, true, "Administrator");
+    expect(workforce.id).toBe(2);
+
+    expect(sqlite.prepare(
+      "SELECT entra_oid, admin_entra_oid FROM users WHERE id = 2",
+    ).get()).toEqual({
+      entra_oid: "customer-admin-oid",
+      admin_entra_oid: "workforce-admin-oid",
     });
   });
 
