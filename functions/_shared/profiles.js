@@ -1,5 +1,6 @@
 import { HttpError, readJson } from "./http.js";
 import { writeAudit } from "./audit.js";
+import { sendOperationalEvent } from "./head-office.js";
 
 const BASE_FIELDS = [
   "username", "display_name", "job_title", "company", "bio", "phone", "email",
@@ -114,7 +115,7 @@ export async function getMyProfiles(database, userId) {
   return { success: true, data: await loadProfiles(database, userId) };
 }
 
-export async function createProfile(request, database, user) {
+export async function createProfile(request, database, user, env = null) {
   const body = await readJson(request);
   const username = cleanUsername(body.username);
   const profileType = String(body.profile_type ?? "personal");
@@ -150,6 +151,8 @@ export async function createProfile(request, database, user) {
     throw error;
   }
   await writeAudit(database, request, user, "create", "profile", `Created profile ${profileId}`);
+  if (env) await sendOperationalEvent(env,user,"profile.created",{profileId,category:"profile_management",
+    targetType:"profile",targetReference:String(profileId),description:"Profile created",metadata:{profileType}});
   const profiles = await loadProfiles(database, user.id);
   return { success: true, data: profiles.find((profile) => Number(profile.id) === profileId) };
 }
@@ -176,15 +179,17 @@ async function updateProfileData(database, userId, profileId, body) {
   if (updates.length > 0) await database.batch(updates.map((update) => statement(database, update)));
 }
 
-export async function updateProfile(request, database, user, profileId) {
+export async function updateProfile(request, database, user, profileId, env = null) {
   const body = await readJson(request);
   await updateProfileData(database, user.id, profileId, body);
   await writeAudit(database, request, user, "update", "profile", `Updated profile ${profileId}`);
+  if (env) await sendOperationalEvent(env,user,"profile.updated",{profileId,category:"profile_management",
+    targetType:"profile",targetReference:String(profileId),description:"Profile updated"});
   const profiles = await loadProfiles(database, user.id);
   return { success: true, data: profiles.find((profile) => Number(profile.id) === profileId) };
 }
 
-export async function deleteProfile(request, database, user, profileId) {
+export async function deleteProfile(request, database, user, profileId, env = null) {
   const result = await database.prepare("DELETE FROM profiles WHERE id = ?1 AND user_id = ?2")
     .bind(profileId, user.id)
     .run();
@@ -192,6 +197,8 @@ export async function deleteProfile(request, database, user, profileId) {
     throw new HttpError(404, "Profile not found.", "profile_not_found");
   }
   await writeAudit(database, request, user, "delete", "profile", `Deleted profile ${profileId}`);
+  if (env) await sendOperationalEvent(env,user,"profile.closed",{profileId,category:"profile_management",
+    targetType:"profile",targetReference:String(profileId),description:"Profile removed"});
   return { success: true };
 }
 
@@ -292,7 +299,7 @@ export async function reorderLinks(request, database, user) {
   return { success: true };
 }
 
-export async function setPublished(request, database, user, profileId, published) {
+export async function setPublished(request, database, user, profileId, published, env = null) {
   const row = await database.prepare(`
     UPDATE profiles SET is_published = ?1, updated_at = CURRENT_TIMESTAMP
     WHERE id = ?2 AND user_id = ?3 RETURNING id, is_published
@@ -300,6 +307,9 @@ export async function setPublished(request, database, user, profileId, published
   if (!row) throw new HttpError(404, "Profile not found.", "profile_not_found");
   await writeAudit(database, request, user, published ? "publish" : "unpublish", "profile",
     `${published ? "Published" : "Unpublished"} profile ${profileId}`);
+  if (env) await sendOperationalEvent(env,user,published?"profile.activated":"profile.suspended",{profileId,
+    category:"profile_management",targetType:"profile",targetReference:String(profileId),
+    description:published?"Profile published":"Profile unpublished"});
   return { success: true, data: row };
 }
 

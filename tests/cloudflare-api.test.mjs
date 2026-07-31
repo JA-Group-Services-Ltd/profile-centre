@@ -94,6 +94,7 @@ describe("Cloudflare API router", () => {
     sqlite.exec(fs.readFileSync("migrations/0002_full_d1_schema.sql", "utf8"));
     sqlite.exec(fs.readFileSync("migrations/0003_head_office_connector.sql", "utf8"));
     sqlite.exec(fs.readFileSync("migrations/0004_cloudflare_stripe.sql", "utf8"));
+    sqlite.exec(fs.readFileSync("migrations/0005_head_office_customer_integration.sql", "utf8"));
     sqlite.exec(`
       INSERT INTO plans (id, name, slug, max_links, is_active, is_public)
       VALUES (1, 'Free', 'free', 5, 1, 1);

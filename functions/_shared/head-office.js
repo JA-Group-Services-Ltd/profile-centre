@@ -151,13 +151,19 @@ function enforceDecision(decision) {
     "head_office_review_required");
 }
 
-export async function synchroniseCustomer(env, user, claims, tenantId) {
+export async function synchroniseCustomer(env, user, claims, tenantId, options = {}) {
+  const primaryProfile = await env.DB.prepare(`SELECT id,created_at,updated_at FROM profiles
+    WHERE user_id=?1 ORDER BY created_at,id LIMIT 1`).bind(user.id).first();
+  const now = new Date().toISOString();
   const payload = await requestHeadOffice(env, "/api/platform/customers/upsert", {
     method: "POST",
     body: JSON.stringify({
       entraTenantId: String(claims.tid || tenantId || ""),
       entraObjectId: String(claims.oid || claims.sub || ""),
       platformCustomerId: String(user.id),
+      platformPersonId: primaryProfile?.id == null ? null : String(primaryProfile.id),
+      centralCustomerId: user.head_office_customer_id || null,
+      customerNumber: user.customer_number || null,
       displayName: String(claims.name || user.name || user.email),
       givenName: claims.given_name || null,
       surname: claims.family_name || null,
@@ -166,8 +172,10 @@ export async function synchroniseCustomer(env, user, claims, tenantId) {
       accountEnabled: true,
       accountStatus: "active",
       createdAt: user.created_at || null,
-      lastSignInAt: new Date().toISOString(),
-      platformMetadata: { platformCode: PLATFORM_CODE },
+      lastSignInAt: options.recordSignIn === false ? null : now,
+      lastActivityAt: primaryProfile?.updated_at || now,
+      secureRecordUrl: `https://profilecentre.jagroupservices.co.uk/admin/users/${encodeURIComponent(String(user.id))}`,
+      platformMetadata: { platformCode: PLATFORM_CODE, profileCount: primaryProfile ? 1 : 0 },
     }),
   });
   const access = payload?.enforcement || {};
@@ -180,12 +188,18 @@ export async function synchroniseCustomer(env, user, claims, tenantId) {
     await env.DB.prepare("DELETE FROM sessions WHERE json_extract(data, '$.userId') = ?1").bind(user.id).run();
   }
   enforceDecision(decision);
-  await sendOperationalEvent(
-    env,
-    { ...user, customer_number: payload.customer.customerNumber },
-    "customer.sign_in",
-    { outcome: "success" },
-  );
+  if (payload.created) {
+    await sendOperationalEvent(env,{...user,customer_number:payload.customer.customerNumber,
+      head_office_customer_id:payload.customer.id},"account.created",{
+      outcome:"success",category:"account_lifecycle",targetType:"account",description:"Profile Centre account linked"
+    });
+  }
+  if (options.recordSignIn !== false) {
+    await sendOperationalEvent(env,{...user,customer_number:payload.customer.customerNumber,
+      head_office_customer_id:payload.customer.id},"auth.sign_in_succeeded",{
+      outcome:"success",category:"security_event",targetType:"account",description:"Customer signed in successfully"
+    });
+  }
   await reportHeartbeatWithoutBlocking(env, { force: true });
   return payload;
 }
@@ -286,35 +300,117 @@ export async function processHeadOfficeCommands(env) {
 }
 
 export async function sendOperationalEvent(env, user, eventType, payload = {}) {
-  if (!user?.customer_number) return { skipped: true };
-  const eventId = crypto.randomUUID();
+  if (!user?.id) return { skipped: true, reason: "missing_user" };
+  const eventId = payload.eventId || crypto.randomUUID();
+  const profile = payload.profileId == null ? await env.DB.prepare(`SELECT id FROM profiles
+    WHERE user_id=?1 ORDER BY created_at,id LIMIT 1`).bind(user.id).first() : { id: payload.profileId };
+  const category = payload.category || (eventType.startsWith("profile.") ? "profile_management"
+    : eventType.startsWith("auth.") || eventType.startsWith("security.") ? "security_event"
+    : eventType.startsWith("admin.") ? "administrative_action"
+    : eventType.startsWith("head_office.") ? "head_office_instruction"
+    : eventType.startsWith("sync.") ? "synchronisation_event" : "account_lifecycle");
+  const correlationId = payload.correlationId || crypto.randomUUID();
+  const occurredAt = payload.occurredAt || new Date().toISOString();
+  const eventPayload = {
+    eventId,
+    eventType,
+    platformCode: PLATFORM_CODE,
+    sourceSystem: "Profile Centre",
+    centralCustomerId: user.head_office_customer_id || null,
+    customerNumber: user.customer_number || null,
+    platformAccountId: String(user.id),
+    platformPersonId: profile?.id == null ? null : String(profile.id),
+    actorType: payload.actorType || "customer",
+    actorIdentifier: payload.actorIdentifier || String(user.id),
+    occurredAt,
+    outcome: payload.outcome || "success",
+    targetType: payload.targetType || (profile ? "profile" : "account"),
+    targetReference: payload.targetReference || (profile?.id == null ? String(user.id) : String(profile.id)),
+    correlationId,
+    category,
+    description: payload.description || null,
+    summary: payload.summary || null,
+    displayInTimeline: payload.displayInTimeline !== false,
+    metadata: payload.metadata || {},
+  };
   await env.DB.prepare(`
-    INSERT INTO head_office_event_outbox(event_id, user_id, event_type, payload_json)
-    VALUES (?1, ?2, ?3, ?4)
-  `).bind(eventId, user.id, eventType, safeJson(payload, {})).run();
+    INSERT INTO head_office_event_outbox(event_id,user_id,event_type,payload_json,correlation_id,next_attempt_at)
+    VALUES (?1,?2,?3,?4,?5,CURRENT_TIMESTAMP) ON CONFLICT(event_id) DO NOTHING
+  `).bind(eventId,user.id,eventType,safeJson(eventPayload,{}),correlationId).run();
   try {
     const result = await requestHeadOffice(env, "/api/platform/events", {
       method: "POST",
-      body: JSON.stringify({
-        externalEventId: eventId,
-        eventType,
-        customerNumber: user.customer_number,
-        platformCustomerId: String(user.id),
-        occurredAt: new Date().toISOString(),
-        data: payload,
-      }),
+      body: JSON.stringify(eventPayload),
     });
     await env.DB.prepare(`
       UPDATE head_office_event_outbox
       SET status='sent', attempts=attempts+1, last_attempt_at=CURRENT_TIMESTAMP,
-          sent_at=CURRENT_TIMESTAMP, error=NULL WHERE event_id=?1
+          sent_at=CURRENT_TIMESTAMP,completed_at=CURRENT_TIMESTAMP,error=NULL WHERE event_id=?1
     `).bind(eventId).run();
     return result;
   } catch (error) {
     await env.DB.prepare(`
       UPDATE head_office_event_outbox
-      SET attempts=attempts+1, last_attempt_at=CURRENT_TIMESTAMP, error=?1 WHERE event_id=?2
+      SET attempts=attempts+1,last_attempt_at=CURRENT_TIMESTAMP,
+          next_attempt_at=datetime('now','+' || MIN(60,MAX(1,attempts+1)*5) || ' minutes'),error=?1 WHERE event_id=?2
     `).bind(String(error?.code || error?.message || error).slice(0, 200), eventId).run();
     return { queued: true };
   }
+}
+
+export async function retryOperationalEvents(env, limit = 50) {
+  const pending = await env.DB.prepare(`SELECT event_id,user_id,event_type,payload_json FROM head_office_event_outbox
+    WHERE status='pending' AND (next_attempt_at IS NULL OR next_attempt_at<=CURRENT_TIMESTAMP)
+    ORDER BY created_at LIMIT ?1`).bind(Math.max(1,Math.min(100,Number(limit)||50))).all();
+  const results = [];
+  for (const row of pending.results) {
+    const user = await env.DB.prepare(`SELECT id,customer_number,head_office_customer_id FROM users WHERE id=?1`).bind(row.user_id).first();
+    if (!user) continue;
+    let original = {};
+    try { original = JSON.parse(row.payload_json||"{}"); } catch {}
+    results.push(await sendOperationalEvent(env,user,row.event_type,{...original,eventId:row.event_id}));
+  }
+  return {processed:results.length,results};
+}
+
+export async function backfillHeadOfficeCustomers(env, options = {}) {
+  const runId = crypto.randomUUID();
+  const limit = Math.max(1,Math.min(500,Number(options.limit)||250));
+  await env.DB.prepare(`INSERT INTO head_office_sync_runs(id,run_type,status,started_at)
+    VALUES (?1,'customer_backfill','running',CURRENT_TIMESTAMP)`).bind(runId).run();
+  const rows = await env.DB.prepare(`SELECT id,email,name,account_status,created_at,entra_oid,customer_number,
+      head_office_customer_id FROM users WHERE role='user' ORDER BY id LIMIT ?1`).bind(limit).all();
+  const counts = {scanned:0,linked:0,updated:0,skipped:0,unresolved:0,failed:0};
+  for (const user of rows.results) {
+    counts.scanned += 1;
+    const profile = await env.DB.prepare("SELECT id FROM profiles WHERE user_id=?1 ORDER BY created_at,id LIMIT 1").bind(user.id).first();
+    if (!user.entra_oid) {
+      counts.unresolved += 1;
+      await env.DB.prepare(`INSERT INTO head_office_reconciliation_log
+        (id,user_id,profile_id,outcome,reason_code,run_id) VALUES (?1,?2,?3,'unresolved','missing_immutable_identity',?4)`)
+        .bind(crypto.randomUUID(),user.id,profile?.id||null,runId).run();
+      continue;
+    }
+    try {
+      const wasLinked = Boolean(user.head_office_customer_id && user.customer_number);
+      const result = await synchroniseCustomer(env,user,{oid:user.entra_oid,name:user.name,email:user.email},env.OIDC_TENANT_ID,
+        {recordSignIn:false});
+      counts[wasLinked ? "updated" : "linked"] += 1;
+      await env.DB.prepare(`INSERT INTO head_office_reconciliation_log
+        (id,user_id,profile_id,outcome,central_customer_id,customer_number,run_id)
+        VALUES (?1,?2,?3,?4,?5,?6,?7)`).bind(crypto.randomUUID(),user.id,profile?.id||null,
+          wasLinked?"updated":"linked",result.customer.id,result.customer.customerNumber,runId).run();
+    } catch (error) {
+      const unresolved = error?.code === "CUSTOMER_IDENTITY_REVIEW_REQUIRED" || error?.headOfficeStatus === 409;
+      counts[unresolved ? "unresolved" : "failed"] += 1;
+      await env.DB.prepare(`INSERT INTO head_office_reconciliation_log
+        (id,user_id,profile_id,outcome,reason_code,run_id) VALUES (?1,?2,?3,?4,?5,?6)`)
+        .bind(crypto.randomUUID(),user.id,profile?.id||null,unresolved?"unresolved":"failed",
+          String(error?.code||"sync_failed").slice(0,100),runId).run();
+    }
+  }
+  await env.DB.prepare(`UPDATE head_office_sync_runs SET status='completed',scanned_count=?1,linked_count=?2,
+    updated_count=?3,skipped_count=?4,unresolved_count=?5,failed_count=?6,completed_at=CURRENT_TIMESTAMP WHERE id=?7`)
+    .bind(counts.scanned,counts.linked,counts.updated,counts.skipped,counts.unresolved,counts.failed,runId).run();
+  return {runId,...counts};
 }

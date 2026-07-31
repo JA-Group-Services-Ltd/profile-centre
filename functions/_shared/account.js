@@ -1,7 +1,8 @@
 import { HttpError, readJson } from "./http.js";
 import { writeAudit } from "./audit.js";
+import { sendOperationalEvent } from "./head-office.js";
 
-export async function accountClosure(request, database, user, method) {
+export async function accountClosure(request, database, user, method, env = null) {
   if (method === "GET") {
     const row = await database.prepare(`
       SELECT id, reason, status, admin_note, confirmed_at, created_at, updated_at
@@ -20,6 +21,8 @@ export async function accountClosure(request, database, user, method) {
     }
     await writeAudit(database, request, user, "account_closure_cancelled", "user",
       "Cancelled account closure request");
+    if (env) await sendOperationalEvent(env,user,"account.closure_cancelled",{category:"account_lifecycle",
+      targetType:"account",description:"Account closure request cancelled"});
     return { success: true, message: "Closure request cancelled." };
   }
   const body = await readJson(request);
@@ -35,6 +38,8 @@ export async function accountClosure(request, database, user, method) {
   `).bind(user.id, body.reason == null ? null : String(body.reason).slice(0, 2000)).run();
   await writeAudit(database, request, user, "account_closure_requested", "user",
     "Submitted account closure request");
+  if (env) await sendOperationalEvent(env,user,"account.closure_requested",{category:"account_lifecycle",
+    targetType:"account",outcome:"pending",description:"Account closure requested"});
   return {
     success: true,
     message: "Closure request submitted. We will review and confirm within 5 business days.",
