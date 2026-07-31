@@ -1,0 +1,15 @@
+result=failure
+timestamp=2026-07-31T00:31:57Z
+message=The D1 schema creation request failed.
+readiness_http=200
+setup_http=500
+health_http=not-run
+
+--- readiness response ---
+{"status":"ready","schemaVersion":null,"tables":[],"message":"The database is empty and ready for the one-time setup request.","requestId":"94a69c4a-1b98-4978-86db-ce4305cc0c0d"}
+--- setup response ---
+{"status":"error","message":"D1_EXEC_ERROR: Error in line 1: PRAGMA foreign_keys = ON;: incomplete input: SQLITE_ERROR","requestId":"367335ee-260b-497e-a84f-917a9740e59d"}
+--- health response ---
+{}
+
+--- curl errors ---
