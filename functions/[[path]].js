@@ -1,5 +1,6 @@
 import { beginOidc, completeOidc, logout } from "./_shared/auth.js";
 import { errorResponse, methodNotAllowed, withRequestId } from "./_shared/http.js";
+import { handleApiRequest } from "./_shared/router.js";
 
 const AUTH_ROUTES = new Map([
   ["/auth/login", { action: "begin", flow: "customer", methods: ["GET"] }],
@@ -11,7 +12,11 @@ const AUTH_ROUTES = new Map([
 ]);
 
 export async function onRequest(context) {
-  const route = AUTH_ROUTES.get(new URL(context.request.url).pathname);
+  const pathname = new URL(context.request.url).pathname;
+  if (pathname === "/api" || pathname.startsWith("/api/")) {
+    return handleApiRequest(context);
+  }
+  const route = AUTH_ROUTES.get(pathname);
   if (!route) return context.next();
 
   const requestId = crypto.randomUUID();
