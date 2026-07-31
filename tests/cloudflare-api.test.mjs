@@ -197,6 +197,37 @@ describe("Cloudflare API router", () => {
     });
   });
 
+  it("sets an admin PIN as a hash and verifies the PIN session", async () => {
+    const setResponse = await handleApiRequest(context(d1, "/admin/pin/set", {
+      method: "POST",
+      headers: {
+        cookie: "ja_profile_studio_session=admin-session",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ pin: "4826" }),
+    }));
+    expect(setResponse.status).toBe(200);
+    expect(await setResponse.json()).toMatchObject({ success: true });
+
+    const pinRow = sqlite.prepare(
+      "SELECT pin_hash FROM admin_pins WHERE admin_id = 2",
+    ).get();
+    expect(pinRow.pin_hash).not.toBe("4826");
+    expect(pinRow.pin_hash).toMatch(/^\$2[aby]\$/);
+
+    const statusResponse = await handleApiRequest(context(d1, "/admin/pin/status", {
+      method: "GET",
+      headers: { cookie: "ja_profile_studio_session=admin-session" },
+    }));
+    expect(statusResponse.status).toBe(200);
+    expect(await statusResponse.json()).toMatchObject({
+      success: true,
+      hasPin: true,
+      pinVerified: true,
+      locked: false,
+    });
+  });
+
   it("writes and joins normalized business-card order tables", async () => {
     const response = await handleApiRequest(context(d1, "/business-cards", authenticated("POST", {
       profile_id: 10,
