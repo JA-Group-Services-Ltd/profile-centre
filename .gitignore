@@ -8,6 +8,14 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+.migration-output/
+validated.db
+data.sql
+migration-report.json
+profile-centre-production-database-export.zip
+japrofilestudio.db
+japrofilestudio.db-shm
+japrofilestudio.db-wal
 dist
 dist-ssr
 *.local
