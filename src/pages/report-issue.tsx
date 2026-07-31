@@ -231,8 +231,8 @@ export default function ReportIssuePage() {
       <footer className="border-t border-border py-6 text-center">
         <p className="text-xs text-muted-foreground">
           © {new Date().getFullYear()} Profile Centre · JA Group Services Ltd ·{' '}
-          <a href="mailto:japrofilestudio@jagroupservices.co.uk" className="hover:text-foreground transition-colors">
-            japrofilestudio@jagroupservices.co.uk
+          <a href="mailto:profilecentre@jagroupservices.co.uk" className="hover:text-foreground transition-colors">
+            profilecentre@jagroupservices.co.uk
           </a>
         </p>
       </footer>

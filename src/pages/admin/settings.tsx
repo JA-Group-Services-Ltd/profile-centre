@@ -60,12 +60,12 @@ interface AdminUser {
 }
 
 const defaultSettings: Settings = {
-  site_name: 'Profile Centre', site_url: 'https://japrofilestudio.jagroupservices.co.uk',
+  site_name: 'Profile Centre', site_url: 'https://profilecentre.jagroupservices.co.uk',
   platform_name: 'Profile Centre', platform_tagline: 'Your digital business card, reimagined.',
   platform_description: 'A professional digital profile service for UK-based individuals and businesses. Share your contact details, links and QR code in one place.',
-  platform_url: 'https://japrofilestudio.jagroupservices.co.uk',
+  platform_url: 'https://profilecentre.jagroupservices.co.uk',
   footer_tagline: 'Part of JA Group Services Ltd',
-  support_email: 'japrofilestudio@jagroupservices.co.uk', contact_email: 'japrofilestudio@jagroupservices.co.uk',
+  support_email: 'profilecentre@jagroupservices.co.uk', contact_email: 'profilecentre@jagroupservices.co.uk',
   max_free_profiles: '1', max_free_links: '5', allow_registration: '1',
   require_email_verification: '0', maintenance_mode: '0',
   maintenance_message: 'We are performing scheduled maintenance. We will be back shortly.',

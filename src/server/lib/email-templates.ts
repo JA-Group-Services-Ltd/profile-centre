@@ -16,7 +16,7 @@ const BRAND_NAME = 'Profile Centre';
 const BRAND_COMPANY = 'JA Group Services Ltd';
 const BRAND_DOMAIN = 'japrofilestudio.jagroupservices.co.uk';
 const BRAND_URL = `https://${BRAND_DOMAIN}`;
-const SUPPORT_EMAIL = 'japrofilestudio@jagroupservices.co.uk';   // reply-to / support inbox
+const SUPPORT_EMAIL = 'profilecentre@jagroupservices.co.uk';   // reply-to / support inbox
 const NOREPLY_EMAIL = 'noreply@japrofilestudio.jagroupservices.co.uk'; // outbound reply-to
 const PRIVACY_URL = `${BRAND_URL}/legal/privacy`;
 const TERMS_URL = `${BRAND_URL}/legal/terms`;
@@ -28,12 +28,12 @@ const TERMS_URL = `${BRAND_URL}/legal/terms`;
 //   — set by the Airo gateway automatically from the app's attached domain.
 //   — do NOT pass a custom `from` field; the gateway owns this.
 //
-// Reply-To: japrofilestudio@jagroupservices.co.uk
+// Reply-To: profilecentre@jagroupservices.co.uk
 //   — when a recipient hits Reply, their email client opens a compose window
 //     addressed to the support inbox, not the noreply address.
-export const EMAIL_REPLY_TO = SUPPORT_EMAIL;   // japrofilestudio@jagroupservices.co.uk
+export const EMAIL_REPLY_TO = SUPPORT_EMAIL;   // profilecentre@jagroupservices.co.uk
 export const EMAIL_NOREPLY  = NOREPLY_EMAIL;   // noreply@japrofilestudio.jagroupservices.co.uk (for reference)
-export const EMAIL_SUPPORT  = SUPPORT_EMAIL;   // japrofilestudio@jagroupservices.co.uk
+export const EMAIL_SUPPORT  = SUPPORT_EMAIL;   // profilecentre@jagroupservices.co.uk
 
 // ── Colour palette (light, professional) ─────────────────────────────────────
 const C = {

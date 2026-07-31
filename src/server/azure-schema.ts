@@ -742,7 +742,7 @@ async function seedAdminSettings(): Promise<void> {
   console.log('[azure-schema] Seeding admin settings...');
   const settings = [
     ['platform_name',    'Profile Centre'],
-    ['platform_url',     'https://japrofilestudio.jagroupservices.co.uk'],
+    ['platform_url',     'https://profilecentre.jagroupservices.co.uk'],
     ['allow_registration','true'],
     ['plans_paused',     'false'],
   ];

@@ -45,7 +45,7 @@ import { testEmail, EMAIL_REPLY_TO } from '../../lib/email-templates.js';
 // ── Constants ─────────────────────────────────────────────────────────────────
 const SENDING_DOMAIN = 'japrofilestudio.jagroupservices.co.uk';
 const FROM_ADDRESS = 'noreply@japrofilestudio.jagroupservices.co.uk';
-const REPLY_TO_ADDRESS = 'japrofilestudio@jagroupservices.co.uk';
+const REPLY_TO_ADDRESS = 'profilecentre@jagroupservices.co.uk';
 const DKIM_SELECTOR = 'airo';
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 

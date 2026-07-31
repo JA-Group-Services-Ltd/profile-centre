@@ -1097,17 +1097,17 @@ const brandingDefaults: [string, string][] = [
   ['platform_name', 'Profile Centre'],
   ['platform_tagline', 'Your digital business card, reimagined.'],
   ['platform_description', 'Create a stunning digital profile that showcases who you are and what you do — share it with a single link.'],
-  ['platform_url', 'https://japrofilestudio.jagroupservices.co.uk'],
+  ['platform_url', 'https://profilecentre.jagroupservices.co.uk'],
   ['master_brand_name', 'JA Group Services Ltd'],
   ['master_brand_url', 'https://jagroupservices.co.uk'],
   ['legal_company_name', 'JA Group Services Ltd'],
   ['legal_company_number', ''],
   ['legal_registered_address', ''],
   ['legal_vat_number', ''],
-  ['legal_email', 'japrofilestudio@jagroupservices.co.uk'],
+  ['legal_email', 'profilecentre@jagroupservices.co.uk'],
   ['legal_privacy_email', 'privacy@jagroupservices.co.uk'],
-  ['support_email', 'japrofilestudio@jagroupservices.co.uk'],
-  ['contact_email', 'japrofilestudio@jagroupservices.co.uk'],
+  ['support_email', 'profilecentre@jagroupservices.co.uk'],
+  ['contact_email', 'profilecentre@jagroupservices.co.uk'],
   ['footer_tagline', 'Part of JA Group Services Ltd'],
   ['footer_show_legal_name', '1'],
   ['social_twitter', ''],
@@ -1115,7 +1115,7 @@ const brandingDefaults: [string, string][] = [
   ['social_instagram', ''],
   ['social_facebook', ''],
   ['email_from_name', 'Profile Centre'],
-  ['custom_domain_cname_target', 'japrofilestudio.jagroupservices.co.uk'],
+  ['custom_domain_cname_target', 'profilecentre.jagroupservices.co.uk'],
 ];
 const upsertBranding = sqliteDb.prepare('INSERT OR IGNORE INTO admin_settings (key, value) VALUES (?, ?)');
 for (const [k, v] of brandingDefaults) upsertBranding.run(k, v);
@@ -1124,10 +1124,10 @@ for (const [k, v] of brandingDefaults) upsertBranding.run(k, v);
 const correctValues: [string, string][] = [
   ['platform_name',  'Profile Centre'],
   ['site_name',      'Profile Centre'],
-  ['support_email',  'japrofilestudio@jagroupservices.co.uk'],
-  ['contact_email',  'japrofilestudio@jagroupservices.co.uk'],
-  ['legal_email',    'japrofilestudio@jagroupservices.co.uk'],
-  ['platform_url',   'https://japrofilestudio.jagroupservices.co.uk'],
+  ['support_email',  'profilecentre@jagroupservices.co.uk'],
+  ['contact_email',  'profilecentre@jagroupservices.co.uk'],
+  ['legal_email',    'profilecentre@jagroupservices.co.uk'],
+  ['platform_url',   'https://profilecentre.jagroupservices.co.uk'],
 ];
 const fixBranding = sqliteDb.prepare('UPDATE admin_settings SET value = ? WHERE key = ? AND value != ?');
 for (const [k, v] of correctValues) fixBranding.run(v, k, v);

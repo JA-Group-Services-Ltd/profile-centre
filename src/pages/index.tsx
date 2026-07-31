@@ -63,7 +63,7 @@ function DemoProfileCard() {
             <div className="w-2.5 h-2.5 rounded-full bg-green-400/70" />
           </div>
           <div className="flex-1 mx-2 bg-black/6 dark:bg-white/10 rounded-md px-2.5 py-1 text-[10px] text-muted-foreground font-mono truncate">
-            japrofilestudio.jagroupservices.co.uk/profile/<span className="text-primary">alex-johnson</span>
+            profilecentre.jagroupservices.co.uk/profile/<span className="text-primary">alex-johnson</span>
           </div>
         </div>
         <div className="px-5 py-5">
@@ -117,7 +117,7 @@ function DemoBusinessCard() {
         <div className="space-y-1.5 mb-4">
           {[
             { icon: <Globe className="w-3 h-3" />, label: 'jagroupservices.co.uk' },
-            { icon: <Mail className="w-3 h-3" />, label: 'hello@jagroupservices.co.uk' },
+            { icon: <Mail className="w-3 h-3" />, label: 'contact@jagroupservices.co.uk' },
             { icon: <Phone className="w-3 h-3" />, label: '+44 7700 900000' },
           ].map(item => (
             <div key={item.label} className="flex items-center gap-2 text-[10px] text-muted-foreground">
@@ -288,7 +288,7 @@ export default function HomePage() {
     navigate(`/login?trial=1&plan=${encodeURIComponent(planSlug)}`);
   };
 
-  const site = 'https://japrofilestudio.jagroupservices.co.uk';
+  const site = 'https://profilecentre.jagroupservices.co.uk';
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -795,7 +795,7 @@ export default function HomePage() {
                         {/* CTA */}
                         <div className="mt-auto pt-1">
                           {isEnterprise ? (
-                            <a href="mailto:japrofilestudio@jagroupservices.co.uk?subject=Ultimate%20Organisation%2B%20Enquiry" className="block w-full">
+                            <a href="mailto:profilecentre@jagroupservices.co.uk?subject=Ultimate%20Organisation%2B%20Enquiry" className="block w-full">
                               <Button className="w-full text-sm font-semibold rounded-xl py-2 bg-amber-500 hover:bg-amber-400 text-white shadow-sm shadow-amber-500/20">
                                 Get in touch
                               </Button>
