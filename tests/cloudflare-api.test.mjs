@@ -112,6 +112,14 @@ describe("Cloudflare API router", () => {
     expect(await response.json()).toMatchObject({ success: false, code: "not_found" });
   });
 
+  it("normalizes root catch-all params before API dispatch", async () => {
+    const rootContext = context(d1, "/plans");
+    rootContext.params.path = ["api", "plans"];
+    const response = await handleApiRequest(rootContext);
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toContain("application/json");
+  });
+
   it("returns JSON 401 for a protected route without a session", async () => {
     const response = await handleApiRequest(context(d1, "/profiles/me"));
     expect(response.status).toBe(401);

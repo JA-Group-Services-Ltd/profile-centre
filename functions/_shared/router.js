@@ -50,8 +50,14 @@ function integer(value, name = "id") {
 
 function routeParts(context) {
   const path = context.params?.path;
-  if (Array.isArray(path)) return path.filter(Boolean);
-  if (typeof path === "string") return path.split("/").filter(Boolean);
+  if (Array.isArray(path)) {
+    const parts = path.filter(Boolean);
+    return parts[0] === "api" ? parts.slice(1) : parts;
+  }
+  if (typeof path === "string") {
+    const parts = path.split("/").filter(Boolean);
+    return parts[0] === "api" ? parts.slice(1) : parts;
+  }
   const pathname = new URL(context.request.url).pathname;
   return pathname.replace(/^\/api\/?/, "").split("/").filter(Boolean);
 }
