@@ -2,6 +2,8 @@ import { HttpError } from "./http.js";
 
 const PLATFORM_CODE = "PROFILE_CENTRE";
 const DEGRADED_ALLOW_WINDOW_MS = 5 * 60 * 1000;
+const HEARTBEAT_INTERVAL_MS = 5 * 60 * 1000;
+const HEARTBEAT_SETTING_KEY = "head_office_last_heartbeat_at";
 const ALLOWED_DECISIONS = new Set(["allow", "deny", "review", "step_up"]);
 
 function configured(env) {
@@ -41,6 +43,65 @@ function safeJson(value, fallback) {
     return JSON.stringify(value ?? fallback);
   } catch {
     return JSON.stringify(fallback);
+  }
+}
+
+export async function reportPlatformHeartbeat(env, options = {}) {
+  if (!configured(env) || !env.DB) return { skipped: true, reason: "not_configured" };
+  const force = options.force === true;
+  const lastHeartbeat = await env.DB.prepare(
+    "SELECT value FROM app_settings WHERE key=?1 LIMIT 1",
+  ).bind(HEARTBEAT_SETTING_KEY).first();
+  const lastSentAt = Date.parse(lastHeartbeat?.value || "");
+  if (!force && Number.isFinite(lastSentAt) && Date.now() - lastSentAt < HEARTBEAT_INTERVAL_MS) {
+    return { skipped: true, reason: "fresh" };
+  }
+
+  const now = new Date().toISOString();
+  const [customerRow, sessionRow, errorRow] = await Promise.all([
+    env.DB.prepare("SELECT COUNT(*) count FROM users WHERE role='user'").first(),
+    env.DB.prepare("SELECT COUNT(*) count FROM sessions WHERE expires_at>?1")
+      .bind(Date.now()).first(),
+    env.DB.prepare(`
+      SELECT COUNT(*) count FROM users
+      WHERE head_office_connector_error IS NOT NULL AND TRIM(head_office_connector_error)<>''
+    `).first(),
+  ]);
+  const branch = String(env.CF_PAGES_BRANCH || "");
+  const environment = !branch || branch === "main" ? "production" : "preview";
+  const result = await requestHeadOffice(env, "/api/platform/heartbeat", {
+    method: "POST",
+    body: JSON.stringify({
+      healthStatus: "operational",
+      healthMessage: "Profile Centre connector is responding normally.",
+      publicUrl: environment === "production"
+        ? "https://profilecentre.jagroupservices.co.uk/"
+        : env.CF_PAGES_URL || null,
+      environment,
+      hostingProvider: "Cloudflare Pages",
+      releaseVersion: env.CF_PAGES_COMMIT_SHA || null,
+      releaseCommit: env.CF_PAGES_COMMIT_SHA || null,
+      customerCount: Number(customerRow?.count || 0),
+      activeSessionCount: Number(sessionRow?.count || 0),
+      openErrorCount: Number(errorRow?.count || 0),
+      capabilities: ["customer-sync", "ucn", "access-decisions", "security-commands", "events"],
+      integrations: { headOfficeCustomerAuthority: true, microsoftEntraExternalId: true },
+      occurredAt: now,
+      metadata: { platformCode: PLATFORM_CODE },
+    }),
+  });
+  await env.DB.prepare(`
+    INSERT INTO app_settings (key,value,is_secret,updated_at) VALUES (?1,?2,0,CURRENT_TIMESTAMP)
+    ON CONFLICT(key) DO UPDATE SET value=excluded.value,is_secret=0,updated_at=CURRENT_TIMESTAMP
+  `).bind(HEARTBEAT_SETTING_KEY, now).run();
+  return result;
+}
+
+async function reportHeartbeatWithoutBlocking(env, options = {}) {
+  try {
+    return await reportPlatformHeartbeat(env, options);
+  } catch {
+    return { queued: true };
   }
 }
 
@@ -120,6 +181,7 @@ export async function synchroniseCustomer(env, user, claims, tenantId) {
     "customer.sign_in",
     { outcome: "success" },
   );
+  await reportHeartbeatWithoutBlocking(env, { force: true });
   return payload;
 }
 
@@ -142,6 +204,7 @@ export async function enforceCustomerAccess(env, user) {
       await env.DB.prepare("DELETE FROM sessions WHERE json_extract(data, '$.userId') = ?1").bind(user.id).run();
     }
     enforceDecision(decision);
+    await reportHeartbeatWithoutBlocking(env);
     return access;
   } catch (error) {
     if (error instanceof HttpError && [
