@@ -39,6 +39,14 @@ import {
   createBusinessCardOrder,
   myBusinessCardOrders,
 } from "./business-cards.js";
+import {
+  adminPinHeartbeat,
+  adminPinStatus,
+  clearAdminPin,
+  resetAdminPinLockout,
+  setAdminPin,
+  verifyAdminPin,
+} from "./admin-pin.js";
 
 function integer(value, name = "id") {
   const result = Number(value);
@@ -281,6 +289,36 @@ async function dispatch(context, requestId) {
   if (path === "/auth/logout") {
     if (!["GET", "POST"].includes(method)) return methodNotAllowed(["GET", "POST"], requestId);
     return json({ success: true }, 200, { "set-cookie": await destroySession(request, database) });
+  }
+
+  if (path.startsWith("/admin/pin/")) {
+    const { session, user: admin } = await requireAdmin(request, database);
+    if (path === "/admin/pin/status") {
+      if (method !== "GET") return methodNotAllowed(["GET"], requestId);
+      return json(await adminPinStatus(database, session, admin));
+    }
+    if (path === "/admin/pin/set") {
+      if (method !== "POST") return methodNotAllowed(["POST"], requestId);
+      return json(await setAdminPin(request, database, session, admin, await readJson(request)));
+    }
+    if (path === "/admin/pin/verify") {
+      if (method !== "POST") return methodNotAllowed(["POST"], requestId);
+      const result = await verifyAdminPin(request, database, session, admin, await readJson(request));
+      return json(result.body, result.status);
+    }
+    if (path === "/admin/pin/heartbeat") {
+      if (method !== "POST") return methodNotAllowed(["POST"], requestId);
+      const result = await adminPinHeartbeat(database, session);
+      return json(result.body, result.status);
+    }
+    if (path === "/admin/pin/clear") {
+      if (method !== "POST") return methodNotAllowed(["POST"], requestId);
+      return json(await clearAdminPin(database, session));
+    }
+    if (path === "/admin/pin/reset-lockout") {
+      if (method !== "POST") return methodNotAllowed(["POST"], requestId);
+      return json(await resetAdminPinLockout(request, database, admin));
+    }
   }
 
   if (path === "/profiles/me") {

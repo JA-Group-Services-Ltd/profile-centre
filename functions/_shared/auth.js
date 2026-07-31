@@ -74,6 +74,12 @@ export async function createSession(database, data) {
   return { sid, cookie: sessionCookie(sid) };
 }
 
+export async function saveSession(database, session) {
+  await database.prepare("UPDATE sessions SET data = ?1 WHERE sid = ?2")
+    .bind(JSON.stringify(session.data), session.sid)
+    .run();
+}
+
 export async function destroySession(request, database) {
   const sid = parseCookies(request)[SESSION_COOKIE];
   if (sid) {
@@ -341,4 +347,3 @@ export function authErrorResponse(error, requestId, loginPath) {
   }
   return redirect(`${loginPath}?error=${encodeURIComponent(error.code ?? "authentication_failed")}`);
 }
-
