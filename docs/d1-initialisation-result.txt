@@ -1,15 +1,14 @@
-result=failure
-timestamp=2026-07-31T00:36:02Z
-message=The D1 schema creation request failed.
+result=success
+timestamp=2026-07-31T00:37:26Z
+message=Profile Centre D1 schema version 1 was created and verified.
 readiness_http=200
-setup_http=500
-health_http=not-run
+setup_http=201
+health_http=200
 
 --- readiness response ---
-{"installerVersion":"2","status":"ready","schemaVersion":null,"tables":[],"message":"The database is empty and ready for the one-time setup request.","requestId":"0b884ef9-59b3-4a9c-94ac-d4465990722a"}
+{"installerVersion":"2","status":"ready","schemaVersion":null,"tables":[],"message":"The database is empty and ready for the one-time setup request.","requestId":"4cbe4eff-f910-4d8c-8db5-a18bf0a11bcd"}
 --- setup response ---
-{"status":"error","message":"D1_EXEC_ERROR: Error in line 1: PRAGMA foreign_keys = ON;: incomplete input: SQLITE_ERROR","requestId":"014b0221-5659-4869-8655-6da46ca735e1"}
+{"installerVersion":"2","status":"created","schemaVersion":"1","tables":["app_settings","audit_log","data_requests","plans","profile_links","profiles","sessions","subscriptions","support_ticket_messages","support_tickets","sync_log","users"],"execution":{"statementCount":34,"durationMs":3.4952000000000005},"requestId":"11448dae-fe4f-4f7a-a4b3-eff8eae67123"}
 --- health response ---
-{}
-
+{"status":"ok","service":"profile-centre","environment":"unknown","checks":{"database":{"status":"ok","schemaVersion":"1"}},"requestId":"5d226563-f998-46ef-b0ab-8d70c033ed6a","timestamp":"2026-07-31T00:37:26.595Z","durationMs":87}
 --- curl errors ---
