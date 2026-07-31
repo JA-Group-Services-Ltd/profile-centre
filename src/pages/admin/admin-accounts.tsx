@@ -247,7 +247,7 @@ function PinManagement() {
           <Shield className="w-3.5 h-3.5" /> How the admin PIN works
         </p>
         <p className="leading-relaxed">
-          Your Admin PIN is used to confirm sensitive admin actions. JA Profile Studio never stores or displays your actual PIN. Only a secure hashed version is stored.
+          Your Admin PIN is used to confirm sensitive admin actions. Profile Centre never stores or displays your actual PIN. Only a secure hashed version is stored.
         </p>
         <ul className="list-disc list-inside space-y-0.5 pl-1">
           <li>Required after every Microsoft OIDC login before entering the portal.</li>

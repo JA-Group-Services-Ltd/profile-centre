@@ -141,7 +141,7 @@ export default function AccountPage() {
   return (
     <div className="max-w-2xl mx-auto pb-20 lg:pb-0">
       <Helmet>
-        <title>My Account — JA Profile Studio</title>
+        <title>My Account — Profile Centre</title>
         <meta name="description" content="Manage your account details and membership." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/dashboard/account" />
         <meta name="robots" content="noindex, nofollow" />
@@ -408,7 +408,7 @@ export default function AccountPage() {
               <CardTitle className="text-base flex items-center gap-2">
                 <HelpCircle className="w-4 h-4 text-primary" /> Support
               </CardTitle>
-              <CardDescription className="mt-1">Get help from the {branding.platform_name ?? 'JA Profile Studio'} team</CardDescription>
+              <CardDescription className="mt-1">Get help from the {branding.platform_name ?? 'Profile Centre'} team</CardDescription>
             </div>
             <Button
               variant="outline"

@@ -453,7 +453,7 @@ function BuilderStep({ onSubmit, onBack }: { onSubmit: (data: BuilderData) => vo
                 <label className="flex items-center gap-2 cursor-pointer text-sm">
                   <input type="checkbox" checked={data.qr_required} onChange={e => set('qr_required', e.target.checked)} className="rounded" />
                   <QrCode className="w-4 h-4" />
-                  Include JA Profile Studio QR code
+                  Include Profile Centre QR code
                 </label>
               </div>
             </div>
@@ -548,7 +548,7 @@ function BuilderStep({ onSubmit, onBack }: { onSubmit: (data: BuilderData) => vo
                 { key: 'addon_foil',           label: 'Foil Finish',          hint: 'Gold, silver, or holographic foil accents' },
                 { key: 'addon_spot_uv',        label: 'Spot UV',              hint: 'Glossy UV coating on selected areas' },
                 { key: 'addon_embossing',      label: 'Embossing / Debossing', hint: 'Raised or recessed text/logo effect' },
-                { key: 'addon_qr_code',        label: 'QR Code on Card',      hint: 'Print your JA Profile Studio QR code on the card' },
+                { key: 'addon_qr_code',        label: 'QR Code on Card',      hint: 'Print your Profile Centre QR code on the card' },
                 { key: 'addon_rush_delivery',  label: 'Rush / Express Delivery', hint: 'Faster turnaround — subject to availability' },
                 { key: 'addon_eco_stock',      label: 'Eco / Recycled Stock', hint: 'Printed on recycled or FSC-certified card stock' },
                 { key: 'addon_thick_stock',    label: 'Extra Thick Stock',    hint: '600gsm or above — premium feel' },
@@ -650,10 +650,10 @@ function BuilderStep({ onSubmit, onBack }: { onSubmit: (data: BuilderData) => vo
 
           <div className="p-4 rounded-xl bg-blue-500/5 border border-blue-500/20 text-xs text-blue-400 space-y-2">
             <p className="font-semibold">Pricing</p>
-            <p>Business Cards are a paid add-on service. Your JA Profile Studio plan may allow access to the Business Cards area, but printed cards, provider costs, delivery, premium finishes, custom design, editing, setup and related services are charged separately unless expressly confirmed otherwise in writing.</p>
+            <p>Business Cards are a paid add-on service. Your Profile Centre plan may allow access to the Business Cards area, but printed cards, provider costs, delivery, premium finishes, custom design, editing, setup and related services are charged separately unless expressly confirmed otherwise in writing.</p>
             <p>Prices shown or quoted do not include VAT unless VAT is expressly shown. JA Group Services Ltd is not currently VAT registered. If VAT registration applies in the future, VAT settings may be enabled by admin and VAT may be added where required.</p>
             <p className="font-medium">Payment will be requested using a Stripe invoice or Stripe payment link after admin has reviewed your request and confirmed the final price.</p>
-            <p>Only pay using an official Stripe invoice or Stripe payment link issued by JA Profile Studio / JA Group Services Ltd.</p>
+            <p>Only pay using an official Stripe invoice or Stripe payment link issued by Profile Centre / JA Group Services Ltd.</p>
           </div>
 
           <div className="flex gap-3">
@@ -792,7 +792,7 @@ function UploadDesignForm({ onSubmit, onBack }: { onSubmit: (data: any) => void;
         <p className="font-semibold">Pricing</p>
         <p>Business Cards are a paid add-on service. Printed cards, provider costs, delivery, premium finishes, artwork preparation and related services are charged separately. Admin will confirm the final price before payment or printing.</p>
         <p>Prices shown or quoted do not include VAT unless VAT is expressly shown. JA Group Services Ltd is not currently VAT registered.</p>
-        <p className="font-medium">Only pay using an official Stripe invoice or Stripe payment link issued by JA Profile Studio / JA Group Services Ltd.</p>
+        <p className="font-medium">Only pay using an official Stripe invoice or Stripe payment link issued by Profile Centre / JA Group Services Ltd.</p>
       </div>
 
       <label className="flex items-start gap-3 cursor-pointer">
@@ -842,7 +842,7 @@ function CustomDesignForm({ onSubmit, onBack }: { onSubmit: (data: any) => void;
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold">Request Custom Design</h3>
-        <p className="text-sm text-muted-foreground mt-1">If you do not have a finished design, JA Profile Studio can create or prepare a business card design for you. Custom design requires a setup deposit from £15 upfront before work begins.</p>
+        <p className="text-sm text-muted-foreground mt-1">If you do not have a finished design, Profile Centre can create or prepare a business card design for you. Custom design requires a setup deposit from £15 upfront before work begins.</p>
       </div>
 
       <div className="p-4 rounded-xl border-2 border-primary/20 bg-primary/5 text-sm space-y-2">
@@ -851,7 +851,7 @@ function CustomDesignForm({ onSubmit, onBack }: { onSubmit: (data: any) => void;
           Design Setup Deposit from £15 Upfront
         </div>
         <p className="text-muted-foreground text-xs">The design setup deposit contributes towards initial admin review, design preparation, artwork setup and reserving design time. The final design fee, printing, provider costs, delivery and premium options may be quoted separately before you proceed.</p>
-        <p className="text-muted-foreground text-xs">The design setup deposit is normally non-refundable once custom design work, artwork preparation, admin review or setup work has started, because it contributes towards time and costs already incurred. If JA Profile Studio cancels the work or cannot provide the agreed design service, the customer will be refunded any amount they are legally entitled to receive. This does not affect the customer's statutory rights.</p>
+        <p className="text-muted-foreground text-xs">The design setup deposit is normally non-refundable once custom design work, artwork preparation, admin review or setup work has started, because it contributes towards time and costs already incurred. If Profile Centre cancels the work or cannot provide the agreed design service, the customer will be refunded any amount they are legally entitled to receive. This does not affect the customer's statutory rights.</p>
         <p className="text-xs font-medium">Paid custom design work will only begin once the deposit or agreed fee has been paid, unless JA Group Services Ltd agrees otherwise in writing.</p>
       </div>
 
@@ -961,7 +961,7 @@ function CustomDesignForm({ onSubmit, onBack }: { onSubmit: (data: any) => void;
           <label className="flex items-center gap-2 cursor-pointer text-sm">
             <input type="checkbox" checked={form.qr_required} onChange={e => set('qr_required', e.target.checked)} className="rounded" />
             <QrCode className="w-4 h-4" />
-            Include JA Profile Studio QR code
+            Include Profile Centre QR code
           </label>
         </div>
         <div className="col-span-2 space-y-1.5">
@@ -973,7 +973,7 @@ function CustomDesignForm({ onSubmit, onBack }: { onSubmit: (data: any) => void;
 
       <div className="p-4 rounded-xl bg-blue-500/5 border border-blue-500/20 text-xs text-blue-400 space-y-1">
         <p className="font-semibold">Payment</p>
-        <p>Only pay using an official Stripe invoice or Stripe payment link issued by JA Profile Studio / JA Group Services Ltd. Payment links may be sent by Stripe email or placed inside your JA Profile Studio portal.</p>
+        <p>Only pay using an official Stripe invoice or Stripe payment link issued by Profile Centre / JA Group Services Ltd. Payment links may be sent by Stripe email or placed inside your Profile Centre portal.</p>
         <p>No printing, provider order, final file release or paid custom design work will begin until payment has been received, unless JA Group Services Ltd agrees otherwise in writing.</p>
         <p>Prices shown or quoted do not include VAT unless VAT is expressly shown. JA Group Services Ltd is not currently VAT registered.</p>
       </div>
@@ -1079,7 +1079,7 @@ function OrderDetail({ order, onBack, onApprove }: { order: Order; onBack: () =>
       {(order.stripe_payment_link || order.stripe_invoice_url) && order.stripe_payment_status !== 'paid' && (
         <div className="p-4 rounded-xl bg-green-50 border border-green-200 space-y-2">
           <div className="font-semibold text-green-800 text-sm flex items-center gap-2"><Send className="w-4 h-4" />Payment Link Available</div>
-          <p className="text-xs text-green-700">Only pay using an official Stripe invoice or Stripe payment link issued by JA Profile Studio / JA Group Services Ltd.</p>
+          <p className="text-xs text-green-700">Only pay using an official Stripe invoice or Stripe payment link issued by Profile Centre / JA Group Services Ltd.</p>
           {order.stripe_invoice_url && (
             <a href={order.stripe_invoice_url} target="_blank" rel="noopener noreferrer">
               <Button size="sm" className="gap-2"><FileText className="w-4 h-4" />View Stripe Invoice</Button>
@@ -1166,7 +1166,7 @@ function OrderDetail({ order, onBack, onApprove }: { order: Order; onBack: () =>
             </Button>
           </div>
         </div>
-        <p className="text-xs text-muted-foreground">Design communication, proof review, payment links and order updates will happen through your JA Profile Studio portal.</p>
+        <p className="text-xs text-muted-foreground">Design communication, proof review, payment links and order updates will happen through your Profile Centre portal.</p>
       </div>
     </div>
   );
@@ -1231,8 +1231,8 @@ export default function BusinessCardsPage() {
   return (
     <div className="p-4 md:p-6 max-w-5xl mx-auto space-y-6">
       <Helmet>
-        <title>Business Cards — JA Profile Studio</title>
-        <meta name="description" content="Create, upload or request business cards for your JA Profile Studio." />
+        <title>Business Cards — Profile Centre</title>
+        <meta name="description" content="Create, upload or request business cards for your Profile Centre." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/dashboard/business-cards" />
         <meta name="robots" content="noindex" />
       </Helmet>
@@ -1243,7 +1243,7 @@ export default function BusinessCardsPage() {
             <CreditCard className="w-6 h-6 text-primary" />
             Business Cards
           </h1>
-          <p className="text-muted-foreground text-sm mt-1">Create, upload or request business cards for your JA Profile Studio</p>
+          <p className="text-muted-foreground text-sm mt-1">Create, upload or request business cards for your Profile Centre</p>
         </div>
         {orders.length > 0 && view === 'landing' && (
           <Button variant="outline" size="sm" onClick={() => setView('orders')}>
@@ -1281,7 +1281,7 @@ export default function BusinessCardsPage() {
         {view === 'landing' && (
           <motion.div key="landing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
             <p className="text-sm text-muted-foreground">
-              Choose how you want to create your business cards. Upload your own print-ready artwork, or ask the JA Profile Studio team to create a custom design for you. We review every request, confirm the price, and send an official Stripe invoice or payment link before any printing, design work, or file release begins.
+              Choose how you want to create your business cards. Upload your own print-ready artwork, or ask the Profile Centre team to create a custom design for you. We review every request, confirm the price, and send an official Stripe invoice or payment link before any printing, design work, or file release begins.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl">
@@ -1333,7 +1333,7 @@ export default function BusinessCardsPage() {
             {/* Legal notices */}
             <div className="p-4 rounded-xl bg-muted/40 border border-border text-xs text-muted-foreground space-y-2 max-w-2xl">
               <p><strong>Pricing:</strong> Business Cards are a paid add-on service. Printed cards, provider costs, delivery, premium finishes, custom design, and related services are charged separately.</p>
-              <p><strong>Payment:</strong> Only pay using an official Stripe invoice or Stripe payment link issued by JA Profile Studio / JA Group Services Ltd. No printing, provider order, final file release, or paid design work begins until payment is received.</p>
+              <p><strong>Payment:</strong> Only pay using an official Stripe invoice or Stripe payment link issued by Profile Centre / JA Group Services Ltd. No printing, provider order, final file release, or paid design work begins until payment is received.</p>
             </div>
 
             {/* My requests */}

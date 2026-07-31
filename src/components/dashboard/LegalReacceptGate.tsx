@@ -72,7 +72,7 @@ export default function LegalReacceptGate({ onAccepted }: Props) {
             <div>
               <h2 className="text-lg font-semibold text-foreground">Updated Terms &amp; Privacy Policy</h2>
               <p className="text-sm text-muted-foreground mt-0.5">
-                We've updated our legal documents. Please review and accept to continue using JA Profile Studio.
+                We've updated our legal documents. Please review and accept to continue using Profile Centre.
               </p>
             </div>
           </div>

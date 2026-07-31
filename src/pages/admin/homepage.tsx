@@ -45,7 +45,7 @@ const DEFAULTS: HomepageContent = {
   hero_badge:              'Personal & Business Digital Profiles',
   hero_title_line1:        'Your professional profile,',
   hero_title_highlight:    'ready to share anywhere',
-  hero_subtitle:           'JA Profile Studio gives you a personal or business digital profile page with your contact details, links, QR code and everything people need to find and connect with you — all in one place.',
+  hero_subtitle:           'Profile Centre gives you a personal or business digital profile page with your contact details, links, QR code and everything people need to find and connect with you — all in one place.',
   hero_cta_primary:        'Create Your Profile',
   hero_cta_secondary:      'See how it works',
   stats_users:             '10,000+',
@@ -325,7 +325,7 @@ export default function AdminHomepage() {
                       maxLength={1000}
                       rows={4}
                       className="bg-background border-border resize-none text-sm"
-                      placeholder="JA Profile Studio gives you a personal or business digital profile page…"
+                      placeholder="Profile Centre gives you a personal or business digital profile page…"
                     />
                     <p className="text-[10px] text-muted-foreground text-right">{content.hero_subtitle.length}/1000</p>
                   </Field>

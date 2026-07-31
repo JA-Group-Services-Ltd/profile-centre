@@ -1,5 +1,5 @@
 /**
- * JA Profile Studio User Number System
+ * Profile Centre User Number System
  * ─────────────────────────────────────
  * Format:  12 digits, numbers only, no leading zero
  * Storage: "742918305614"
@@ -157,7 +157,7 @@ export function generateUserNumber(
     details: `User number generation failed after ${MAX_RETRIES} attempts`,
     ipAddress, result: 'failure',
   });
-  throw new Error(`Failed to generate a unique JA Profile Studio User Number after ${MAX_RETRIES} attempts`);
+  throw new Error(`Failed to generate a unique Profile Centre User Number after ${MAX_RETRIES} attempts`);
 }
 
 // ── Assign to a new user ──────────────────────────────────────────────────────
@@ -181,7 +181,7 @@ export function assignUserNumber(
     actorType: adminId ? 'admin' : 'system', tenant: 'system', authProvider: 'system',
     action: 'user_number_generated',
     resourceType: 'user', resourceId: String(userId),
-    details: `JA Profile Studio User Number ${formatUserNumber(userNumber)} assigned to user ${userId}`,
+    details: `Profile Centre User Number ${formatUserNumber(userNumber)} assigned to user ${userId}`,
     ipAddress, result: 'success',
   });
 
@@ -219,7 +219,7 @@ export function backfillUserNumbers(
         actorType: 'system', tenant: 'system', authProvider: 'system',
         action: 'user_number_backfilled',
         resourceType: 'user', resourceId: String(user.id),
-        details: `JA Profile Studio User Number ${formatUserNumber(userNumber)} backfilled for user ${user.id}`,
+        details: `Profile Centre User Number ${formatUserNumber(userNumber)} backfilled for user ${user.id}`,
         ipAddress, result: 'success',
       });
 

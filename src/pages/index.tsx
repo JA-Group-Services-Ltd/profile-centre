@@ -211,7 +211,7 @@ const HOMEPAGE_DEFAULTS: HomepageContent = {
   hero_badge:              'Personal & Business Digital Profiles',
   hero_title_line1:        'Your professional profile,',
   hero_title_highlight:    'ready to share anywhere',
-  hero_subtitle:           'JA Profile Studio gives you a personal or business digital profile page with your contact details, links, QR code and everything people need to find and connect with you — all in one place.',
+  hero_subtitle:           'Profile Centre gives you a personal or business digital profile page with your contact details, links, QR code and everything people need to find and connect with you — all in one place.',
   hero_cta_primary:        'Create Your Profile',
   hero_cta_secondary:      'See how it works',
   stats_users:             '',
@@ -295,8 +295,8 @@ export default function HomePage() {
       {
         '@type': 'WebSite',
         '@id': `${site}/#website`,
-        name: 'JA Profile Studio',
-        alternateName: 'JA Profile Studio by JA Group Services',
+        name: 'Profile Centre',
+        alternateName: 'Profile Centre by JA Group Services',
         url: `${site}/`,
         potentialAction: {
           '@type': 'SearchAction',
@@ -307,7 +307,7 @@ export default function HomePage() {
       {
         '@type': 'Organization',
         '@id': `${site}/#organization`,
-        name: 'JA Profile Studio',
+        name: 'Profile Centre',
         legalName: 'JA Group Services Ltd',
         url: `${site}/`,
         logo: `${site}/airo-assets/images/logo/main`,
@@ -315,7 +315,7 @@ export default function HomePage() {
       },
       {
         '@type': 'WebPage', '@id': `${site}/#webpage`, url: `${site}/`,
-        name: 'JA Profile Studio | Your Digital Profile, Ready to Share',
+        name: 'Profile Centre | Your Digital Profile, Ready to Share',
         isPartOf: { '@id': `${site}/#website` },
         about: { '@id': `${site}/#organization` },
         datePublished: '2025-01-01', dateModified: '2026-07-12',
@@ -327,16 +327,16 @@ export default function HomePage() {
     <>
     <div className="relative">
       <Helmet>
-        <title>JA Profile Studio | Your Digital Profile, Ready to Share</title>
+        <title>Profile Centre | Your Digital Profile, Ready to Share</title>
         <meta name="description" content="Create a professional personal or business digital profile with contact details, links and a QR code. Share it anywhere — online, in person or via your unique profile link." />
-        <meta property="og:title" content="JA Profile Studio | Your Digital Profile, Ready to Share" />
+        <meta property="og:title" content="Profile Centre | Your Digital Profile, Ready to Share" />
         <meta property="og:description" content="Create a professional personal or business digital profile with contact details, links and a QR code." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`${site}/`} />
         <meta property="og:image" content={`${site}/og-image.png`} />
-        <meta property="og:site_name" content="JA Profile Studio" />
+        <meta property="og:site_name" content="Profile Centre" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="JA Profile Studio | Your Digital Profile, Ready to Share" />
+        <meta name="twitter:title" content="Profile Centre | Your Digital Profile, Ready to Share" />
         <meta name="twitter:description" content="Create a professional personal or business digital profile with contact details, links and a QR code." />
         <meta name="twitter:image" content={`${site}/og-image.png`} />
         <link rel="canonical" href={`${site}/`} />
@@ -455,7 +455,7 @@ export default function HomePage() {
               Personal profile or organisation profile — you choose
             </h2>
             <p className="text-muted-foreground text-base max-w-2xl mx-auto">
-              Whether you are an individual sharing your contact details or an organisation presenting your brand, JA Profile Studio has a profile type for you.
+              Whether you are an individual sharing your contact details or an organisation presenting your brand, Profile Centre has a profile type for you.
             </p>
           </motion.div>
 
@@ -544,7 +544,7 @@ export default function HomePage() {
               Everything managed from one place
             </h2>
             <p className="text-muted-foreground text-base max-w-2xl mx-auto">
-              Your JA Profile Studio dashboard gives you full control over your profile, links, analytics, messages and settings — all in one clean interface.
+              Your Profile Centre dashboard gives you full control over your profile, links, analytics, messages and settings — all in one clean interface.
             </p>
           </motion.div>
 
@@ -854,14 +854,14 @@ export default function HomePage() {
 
           <div className="space-y-3">
             {[
-              { q: 'What is JA Profile Studio?', a: 'JA Profile Studio is a digital profile service that gives you a personal or organisation profile page with your contact details, links, QR code and business information in one place. You can share it online, in person or via your unique profile link.' },
+              { q: 'What is Profile Centre?', a: 'Profile Centre is a digital profile service that gives you a personal or organisation profile page with your contact details, links, QR code and business information in one place. You can share it online, in person or via your unique profile link.' },
               { q: 'What is the difference between a personal profile and an organisation profile?', a: 'A personal profile is your individual digital contact card — your name, job title, phone, email and links. An organisation profile is a dedicated page for your business or organisation with your brand, services, team and contact details. Both are managed from the same dashboard.' },
               { q: 'What does the dashboard include?', a: 'Your dashboard lets you edit your profile, manage links, download your QR code, view analytics, receive contact enquiries, manage organisation seats (on Organisation plan), choose themes, generate a Profile Poster PDF and control your account settings.' },
               { q: 'Is there a free plan?', a: 'Yes. The Free plan is always free with no expiry. It includes a digital profile page, QR code sharing and basic links. Paid plans include a 30-day free trial — no credit card required to start.' },
               { q: 'Can I use my QR code on physical materials?', a: 'Yes. Download your QR code from the dashboard and use it on any physical material — posters, flyers, name badges, or anywhere you share your contact details.' },
-              { q: 'Who can use JA Profile Studio?', a: 'JA Profile Studio is available to UK-based individuals and businesses aged 18 and over. Public profiles can be viewed worldwide.' },
+              { q: 'Who can use Profile Centre?', a: 'Profile Centre is available to UK-based individuals and businesses aged 18 and over. Public profiles can be viewed worldwide.' },
               { q: 'How do I get started?', a: 'Sign in through JA Group Services ID to create your account. Your profile is created automatically on first sign-in — no separate registration needed.' },
-              { q: 'Who operates JA Profile Studio?', a: 'JA Profile Studio is a service brand operated by JA Group Services Ltd, a company registered in England and Wales.' },
+              { q: 'Who operates Profile Centre?', a: 'Profile Centre is a service brand operated by JA Group Services Ltd, a company registered in England and Wales.' },
             ].map((item, i) => (
               <motion.div
                 key={i}

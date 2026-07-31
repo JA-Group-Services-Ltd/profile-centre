@@ -23,7 +23,7 @@ export interface Branding {
 }
 
 const DEFAULTS: Branding = {
-  platform_name: 'JA Profile Studio',
+  platform_name: 'Profile Centre',
   platform_tagline: 'Your digital business card, reimagined.',
   platform_description: 'Create a stunning digital profile that showcases who you are and what you do — share it with a single link.',
   platform_url: 'https://japrofilestudio.jagroupservices.co.uk',

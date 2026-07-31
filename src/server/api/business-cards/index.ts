@@ -463,7 +463,7 @@ export async function adminGenerateCheckout(req: Request, res: Response) {
     params.append('line_items[0][price_data][currency]', 'gbp');
     params.append('line_items[0][price_data][unit_amount]', String(amountPence));
     params.append('line_items[0][price_data][product_data][name]', description.slice(0, 127));
-    params.append('line_items[0][price_data][product_data][description]', `JA Profile Studio — Business Card Order #${orderId}`);
+    params.append('line_items[0][price_data][product_data][description]', `Profile Centre — Business Card Order #${orderId}`);
     params.append('line_items[0][quantity]', '1');
     params.append('payment_method_types[0]', 'card');
     params.append('metadata[order_id]', String(orderId));

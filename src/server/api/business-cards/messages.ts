@@ -73,7 +73,7 @@ export async function adminSendOrderMessage(req: Request, res: Response) {
 
   const result = db.prepare(`
     INSERT INTO business_card_messages (order_id, sender_type, sender_name, message)
-    VALUES (?, 'admin', 'JA Profile Studio Team', ?)
+    VALUES (?, 'admin', 'Profile Centre Team', ?)
   `).run(orderId, message.trim());
 
   const msg = db.prepare(`SELECT * FROM business_card_messages WHERE id = ?`).get(result.lastInsertRowid);

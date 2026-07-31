@@ -11,7 +11,7 @@ import { useBranding } from '@/lib/branding';
 
 export default function AdminLoggedOutPage() {
   const branding = useBranding();
-  const platformName = branding.platform_name ?? 'JA Profile Studio';
+  const platformName = branding.platform_name ?? 'Profile Centre';
 
   return (
     <>

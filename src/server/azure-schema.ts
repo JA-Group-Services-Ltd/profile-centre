@@ -741,7 +741,7 @@ async function seedAdminSettings(): Promise<void> {
   if ((rows[0]?.c ?? 0) > 0) return;
   console.log('[azure-schema] Seeding admin settings...');
   const settings = [
-    ['platform_name',    'JA Profile Studio'],
+    ['platform_name',    'Profile Centre'],
     ['platform_url',     'https://japrofilestudio.jagroupservices.co.uk'],
     ['allow_registration','true'],
     ['plans_paused',     'false'],

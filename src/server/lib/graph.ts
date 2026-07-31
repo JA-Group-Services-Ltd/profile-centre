@@ -1,5 +1,5 @@
 /**
- * Microsoft Graph API helper — JA Profile Studio
+ * Microsoft Graph API helper — Profile Centre
  *
  * Uses application (client credentials) flow to call Graph on behalf of the
  * platform. This is the correct pattern for server-side profile updates in a

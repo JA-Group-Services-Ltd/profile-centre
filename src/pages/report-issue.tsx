@@ -69,8 +69,8 @@ export default function ReportIssuePage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Helmet>
-        <title>Report an Issue — JA Profile Studio</title>
-        <meta name="description" content="Report a bug, display problem, or platform issue to the JA Profile Studio team." />
+        <title>Report an Issue — Profile Centre</title>
+        <meta name="description" content="Report a bug, display problem, or platform issue to the Profile Centre team." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/report-issue" />
         <meta name="robots" content="noindex" />
       </Helmet>
@@ -78,7 +78,7 @@ export default function ReportIssuePage() {
       <header className="border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center">
-            <span className="font-bold text-xl tracking-tight text-foreground">JA Profile Studio</span>
+            <span className="font-bold text-xl tracking-tight text-foreground">Profile Centre</span>
           </Link>
           <Link to="/">
             <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground">
@@ -230,7 +230,7 @@ export default function ReportIssuePage() {
 
       <footer className="border-t border-border py-6 text-center">
         <p className="text-xs text-muted-foreground">
-          © {new Date().getFullYear()} JA Profile Studio · JA Group Services Ltd ·{' '}
+          © {new Date().getFullYear()} Profile Centre · JA Group Services Ltd ·{' '}
           <a href="mailto:japrofilestudio@jagroupservices.co.uk" className="hover:text-foreground transition-colors">
             japrofilestudio@jagroupservices.co.uk
           </a>

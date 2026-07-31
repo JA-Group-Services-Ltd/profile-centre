@@ -1,5 +1,5 @@
 /**
- * JA Profile Studio — Microsoft Entra OIDC authentication
+ * Profile Centre — Microsoft Entra OIDC authentication
  *
  * Two completely separate flows:
  *   Customer → JA Group Services ID / Entra External ID (CIAM)

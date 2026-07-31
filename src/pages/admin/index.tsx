@@ -661,8 +661,8 @@ export default function AdminDashboard() {
   return (
     <div className="max-w-6xl mx-auto pb-20 lg:pb-0">
       <Helmet>
-        <title>Admin Dashboard — JA Profile Studio</title>
-        <meta name="description" content="Admin overview dashboard for JA Profile Studio platform management." />
+        <title>Admin Dashboard — Profile Centre</title>
+        <meta name="description" content="Admin overview dashboard for Profile Centre platform management." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/admin" />
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>

@@ -1,5 +1,5 @@
 /**
- * JA Profile Studio — Service Worker v4
+ * Profile Centre — Service Worker v4
  *
  * ┌─────────────────────────────────────────────────────────────────────────┐
  * │  CACHING STRATEGY                                                       │

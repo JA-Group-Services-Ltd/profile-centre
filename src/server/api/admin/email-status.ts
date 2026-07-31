@@ -344,7 +344,7 @@ export async function sendTestEmail(req: Request, res: Response) {
     const sentAt = new Date().toLocaleString('en-GB', { timeZone: 'Europe/London', dateStyle: 'full', timeStyle: 'medium' });
     const { subject, html, text } = testEmail({ recipientEmail, sentAt });
 
-    const result = await sendEmail({ fromName: 'JA Profile Studio', to: recipientEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
+    const result = await sendEmail({ fromName: 'Profile Centre', to: recipientEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
 
     return res.json({
       success: true,

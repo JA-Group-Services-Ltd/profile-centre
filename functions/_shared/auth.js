@@ -234,7 +234,7 @@ async function verifyIdToken(idToken, metadata, config, expectedNonce) {
 export async function resolveUser(database, claims, admin, requiredRole) {
   const oid = String(claims.oid ?? claims.sub ?? "");
   const email = String(claims.email ?? claims.preferred_username ?? "").trim().toLowerCase();
-  const name = String(claims.name ?? email.split("@")[0] ?? "JA Profile Studio user").trim();
+  const name = String(claims.name ?? email.split("@")[0] ?? "Profile Centre user").trim();
   if (!oid) throw new HttpError(401, "Microsoft identity did not include an object ID.", "missing_identity");
   if (admin && !(Array.isArray(claims.roles) && claims.roles.includes(requiredRole))) {
     throw new HttpError(403, "Microsoft account does not have the required administrator role.", "admin_role_required");

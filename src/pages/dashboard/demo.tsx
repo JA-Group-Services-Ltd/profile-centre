@@ -89,8 +89,8 @@ export default function DemoPage() {
   return (
     <div className="max-w-3xl mx-auto pb-16">
       <Helmet>
-        <title>Demo Mode — JA Profile Studio</title>
-        <meta name="description" content="Explore JA Profile Studio features in a safe sandbox without affecting your live data." />
+        <title>Demo Mode — Profile Centre</title>
+        <meta name="description" content="Explore Profile Centre features in a safe sandbox without affecting your live data." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/dashboard/demo" />
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>

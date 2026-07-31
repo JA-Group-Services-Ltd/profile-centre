@@ -131,7 +131,7 @@ export default function ConversationPage() {
     }) + ` at ${timeStr}`;
   };
 
-  const platformName = branding.platform_name ?? 'JA Profile Studio';
+  const platformName = branding.platform_name ?? 'Profile Centre';
 
   return (
     <>

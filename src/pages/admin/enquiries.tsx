@@ -133,7 +133,7 @@ export default function AdminEnquiries() {
     <div className="max-w-4xl mx-auto">
       <Helmet>
         <title>Enquiries — Admin</title>
-        <meta name="description" content="View and manage all contact form enquiries submitted through JA Profile Studio profiles." />
+        <meta name="description" content="View and manage all contact form enquiries submitted through Profile Centre profiles." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/admin/enquiries" />
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>

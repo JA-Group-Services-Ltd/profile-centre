@@ -4,7 +4,7 @@ export default function Removed() {
   return (
     <>
       <Helmet>
-        <title>Referral — JA Profile Studio</title>
+        <title>Referral — Profile Centre</title>
         <meta name="description" content="Referral programme." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/dashboard/referral" />
         <meta name="robots" content="noindex" />

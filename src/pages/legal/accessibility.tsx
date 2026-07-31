@@ -8,7 +8,7 @@ export default function AccessibilityPage() {
     <>
       <Helmet>
         <title>{`Accessibility Statement — ${branding.platform_name}`}</title>
-        <meta name="description" content="Accessibility Statement for JA Profile Studio. Our commitment to making this platform accessible to all users." />
+        <meta name="description" content="Accessibility Statement for Profile Centre. Our commitment to making this platform accessible to all users." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/legal/accessibility" />
         <meta name="robots" content="index, follow" />
       </Helmet>
@@ -16,7 +16,7 @@ export default function AccessibilityPage() {
       <DynamicLegalPage
         policyKey="accessibility"
         canonicalPath="/legal/accessibility"
-        metaDescription="Accessibility Statement for JA Profile Studio. Our commitment to making this platform accessible to all users."
+        metaDescription="Accessibility Statement for Profile Centre. Our commitment to making this platform accessible to all users."
       />
     </>
   );

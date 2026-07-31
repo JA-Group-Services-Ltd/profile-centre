@@ -465,7 +465,7 @@ export default function DashboardSupportTickets() {
     return (
       <>
         <Helmet>
-          <title>Support Ticket — JA Profile Studio</title>
+          <title>Support Ticket — Profile Centre</title>
           <meta name="robots" content="noindex, nofollow" />
         </Helmet>
         <div className="h-[calc(100vh-3.5rem)] -m-4 sm:-m-6 lg:-m-8 flex flex-col">
@@ -480,7 +480,7 @@ export default function DashboardSupportTickets() {
     return (
       <>
         <Helmet>
-          <title>New Support Request — JA Profile Studio</title>
+          <title>New Support Request — Profile Centre</title>
           <meta name="robots" content="noindex, nofollow" />
         </Helmet>
         <div className="max-w-2xl mx-auto pb-20 lg:pb-0">
@@ -517,7 +517,7 @@ export default function DashboardSupportTickets() {
   return (
     <>
       <Helmet>
-        <title>My Support Tickets — JA Profile Studio</title>
+        <title>My Support Tickets — Profile Centre</title>
         <meta name="description" content="View and reply to your support tickets." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/dashboard/support-tickets" />
         <meta name="robots" content="noindex, nofollow" />

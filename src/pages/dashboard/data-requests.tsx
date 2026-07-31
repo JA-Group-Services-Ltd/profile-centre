@@ -349,7 +349,7 @@ export default function DataRequestsPage() {
   return (
     <div className="max-w-2xl mx-auto pb-20 lg:pb-0">
       <Helmet>
-        <title>My Data & Privacy — JA Profile Studio</title>
+        <title>My Data & Privacy — Profile Centre</title>
         <meta name="description" content="Manage your data rights, consent preferences and GDPR requests." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/dashboard/data-requests" />
         <meta name="robots" content="noindex, nofollow" />

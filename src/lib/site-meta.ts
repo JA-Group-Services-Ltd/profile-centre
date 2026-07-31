@@ -15,6 +15,6 @@ export interface SiteMeta {
 }
 
 export const siteMeta: SiteMeta = {
-	name: "JA Profile Studio",
+	name: "Profile Centre",
 	summary: "A digital business card platform by JA Group Services Ltd — create a shareable profile page with your contact details, links, and QR code.",
 };
