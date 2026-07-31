@@ -258,8 +258,7 @@ export default function PublicHelpCentrePage() {
           <p className="font-semibold text-foreground mb-1">Still need help?</p>
           <p className="text-sm text-muted-foreground mb-4">
             Contact us at{' '}
-            <a href={`mailto:${branding.support_email}`} className="text-primary hover:underline">{branding.support_email}</a>
-            {' '}or use the chat widget below.
+            <a href={`mailto:${branding.support_email}`} className="text-primary hover:underline">{branding.support_email}</a>.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
             <Link to="/login">
