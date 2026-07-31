@@ -3,6 +3,8 @@ const JSON_HEADERS = {
   "cache-control": "no-store, max-age=0",
 };
 
+const INSTALLER_VERSION = "2";
+
 const MIGRATION_URL =
   "https://raw.githubusercontent.com/alfiemurray03/profile-centre/ab916ed77ca8171338d65fc4d7c3ec69a0445096/migrations/0001_cloudflare_foundation.sql";
 
@@ -17,13 +19,88 @@ const APPLICATION_TABLES_SQL = `
 `;
 
 function json(payload, status = 200, extraHeaders = {}) {
-  return new Response(JSON.stringify(payload), {
+  return new Response(JSON.stringify({ installerVersion: INSTALLER_VERSION, ...payload }), {
     status,
     headers: {
       ...JSON_HEADERS,
       ...extraHeaders,
     },
   });
+}
+
+function splitSqlStatements(sql) {
+  const statements = [];
+  let current = "";
+  let quote = null;
+  let inLineComment = false;
+  let inBlockComment = false;
+
+  for (let index = 0; index < sql.length; index += 1) {
+    const character = sql[index];
+    const next = sql[index + 1];
+
+    if (inLineComment) {
+      if (character === "\n") {
+        inLineComment = false;
+        current += "\n";
+      }
+      continue;
+    }
+
+    if (inBlockComment) {
+      if (character === "*" && next === "/") {
+        inBlockComment = false;
+        index += 1;
+      }
+      continue;
+    }
+
+    if (quote) {
+      current += character;
+
+      if (character === quote) {
+        if (quote === "'" && next === "'") {
+          current += next;
+          index += 1;
+        } else {
+          quote = null;
+        }
+      }
+      continue;
+    }
+
+    if (character === "-" && next === "-") {
+      inLineComment = true;
+      index += 1;
+      continue;
+    }
+
+    if (character === "/" && next === "*") {
+      inBlockComment = true;
+      index += 1;
+      continue;
+    }
+
+    if (character === "'" || character === '"' || character === "`") {
+      quote = character;
+      current += character;
+      continue;
+    }
+
+    if (character === ";") {
+      const statement = current.trim();
+      if (statement) statements.push(statement);
+      current = "";
+      continue;
+    }
+
+    current += character;
+  }
+
+  const finalStatement = current.trim();
+  if (finalStatement) statements.push(finalStatement);
+
+  return statements;
 }
 
 async function listApplicationTables(database) {
@@ -156,7 +233,18 @@ export async function onRequestPost(context) {
       throw new Error("The pinned migration failed its integrity checks.");
     }
 
-    const execution = await context.env.DB.exec(migrationSql);
+    const statements = splitSqlStatements(migrationSql).filter(
+      (statement) => !/^PRAGMA\s+foreign_keys\s*=/i.test(statement),
+    );
+
+    if (statements.length < 10) {
+      throw new Error("The migration parser returned an unexpectedly small statement set.");
+    }
+
+    const batchResults = await context.env.DB.batch(
+      statements.map((statement) => context.env.DB.prepare(statement)),
+    );
+
     const schemaVersion = await getSchemaVersion(context.env.DB);
     const tables = await listApplicationTables(context.env.DB);
 
@@ -164,13 +252,19 @@ export async function onRequestPost(context) {
       throw new Error("The migration executed but schema version 1 could not be verified.");
     }
 
+    const durationMs = batchResults.reduce(
+      (total, result) => total + Number(result?.meta?.duration ?? 0),
+      0,
+    );
+
     console.log(JSON.stringify({
       event: "profile_centre_d1_schema_installed",
       requestId,
+      installerVersion: INSTALLER_VERSION,
       schemaVersion,
       tableCount: tables.length,
-      statementCount: execution.count,
-      durationMs: execution.duration,
+      statementCount: statements.length,
+      durationMs,
     }));
 
     return json(
@@ -179,8 +273,8 @@ export async function onRequestPost(context) {
         schemaVersion,
         tables,
         execution: {
-          statementCount: execution.count,
-          durationMs: execution.duration,
+          statementCount: statements.length,
+          durationMs,
         },
         requestId,
       },
@@ -191,6 +285,7 @@ export async function onRequestPost(context) {
     console.error(JSON.stringify({
       event: "profile_centre_d1_schema_install_failed",
       requestId,
+      installerVersion: INSTALLER_VERSION,
       error: error instanceof Error ? error.message : "Unknown error",
     }));
 
