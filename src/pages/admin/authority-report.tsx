@@ -114,10 +114,10 @@ export default function AuthorityReportPage() {
   const [deadline, setDeadline]             = useState('');
   const [legalBasis, setLegalBasis]         = useState('');
   const [requestType, setRequestType]       = useState('');
-  const [subjectUserRef, setSubjectUserRef]     = useState(''); // email or user_number
+  const [subjectUserRef, setSubjectUserRef]     = useState(''); // email or Head Office UCN
   const [subjectProfileRef, setSubjectProfileRef] = useState(''); // username
   // Lookup state
-  const [lookupUser, setLookupUser]   = useState<{ id: number; name: string; email: string; user_number: string | null } | null>(null);
+  const [lookupUser, setLookupUser]   = useState<{ id: number; name: string; email: string; customer_number: string | null } | null>(null);
   const [lookupProfile, setLookupProfile] = useState<{ id: number; username: string; display_name: string | null } | null>(null);
   const [lookupUserErr, setLookupUserErr]   = useState('');
   const [lookupProfileErr, setLookupProfileErr] = useState('');
@@ -160,7 +160,7 @@ export default function AuthorityReportPage() {
       if (d.success && d.user) {
         setLookupUser(d.user);
       } else {
-        setLookupUserErr(d.error || 'No user found with that email or user number.');
+        setLookupUserErr(d.error || 'No user found with that email or UCN.');
       }
     } catch { setLookupUserErr('Lookup failed — check connection.'); }
     finally { setLookingUpUser(false); }
@@ -495,13 +495,13 @@ export default function AuthorityReportPage() {
 
           {/* User lookup */}
           <div className="space-y-2">
-            <FieldLabel>Email or JA Profile Studio User Number</FieldLabel>
+            <FieldLabel>Email or Universal Customer Number (UCN)</FieldLabel>
             <div className="flex gap-2">
               <Input
                 value={subjectUserRef}
                 onChange={e => { setSubjectUserRef(e.target.value); setLookupUser(null); setLookupUserErr(''); }}
                 onKeyDown={e => e.key === 'Enter' && lookupUserByRef()}
-                placeholder="e.g. user@email.com or JA-00042"
+                placeholder="e.g. user@email.com or 1000000001"
                 className="bg-background border-border text-sm"
               />
               <Button
@@ -526,7 +526,7 @@ export default function AuthorityReportPage() {
                 <div className="text-xs space-y-0.5">
                   <p className="font-semibold text-foreground">{lookupUser.name}</p>
                   <p className="text-muted-foreground">{lookupUser.email}</p>
-                  {lookupUser.user_number && <p className="text-muted-foreground">User number: {lookupUser.user_number}</p>}
+                  {lookupUser.customer_number && <p className="text-muted-foreground">UCN: {lookupUser.customer_number}</p>}
                   <p className="text-muted-foreground">Internal ID: {lookupUser.id}</p>
                 </div>
                 <button

@@ -75,7 +75,7 @@ async function currentUserResponse(database, user) {
   const row = await database.prepare(`
     SELECT u.id, u.email, u.name, u.role, u.plan_id, u.lifetime_access, u.created_at,
            COALESCE(u.is_paused, 0) AS is_paused, u.pause_reason,
-           u.account_status, u.appearance_preference,
+           u.account_status, u.appearance_preference, u.customer_number,
            p.name AS plan_name, p.slug AS plan_slug, p.has_messaging, p.max_seats,
            COALESCE(p.max_org_profiles, 0) AS max_org_profiles,
            s.status AS subscription_status, s.billing_interval, s.current_period_end
@@ -157,7 +157,7 @@ async function adminUsers(database, url) {
   const clauses = [];
   const values = [];
   if (search) {
-    clauses.push(`(lower(u.name) LIKE ?${values.length + 1} OR lower(u.email) LIKE ?${values.length + 1} OR u.user_number LIKE ?${values.length + 1})`);
+    clauses.push(`(lower(u.name) LIKE ?${values.length + 1} OR lower(u.email) LIKE ?${values.length + 1} OR u.customer_number LIKE ?${values.length + 1})`);
     values.push(`%${search.toLowerCase()}%`);
   }
   if (role) {
@@ -167,7 +167,7 @@ async function adminUsers(database, url) {
   values.push(limit);
   const result = await database.prepare(`
     SELECT u.id, u.email, u.name, u.role, u.plan_id, u.account_status, u.is_paused,
-           u.is_blocked, u.created_at, u.last_login_at, u.user_number,
+           u.is_blocked, u.created_at, u.last_login_at, u.customer_number,
            p.name AS plan_name, p.slug AS plan_slug
     FROM users u LEFT JOIN plans p ON p.id = u.plan_id
     ${clauses.length ? `WHERE ${clauses.join(" AND ")}` : ""}
@@ -195,6 +195,99 @@ async function adminAudit(database, url) {
     FROM audit_log ORDER BY created_at DESC, id DESC LIMIT ?1
   `).bind(limit).all();
   return { success: true, data: result.results, audit_log: result.results };
+}
+
+async function optionalRows(database, sql, ...values) {
+  try {
+    const result = await database.prepare(sql).bind(...values).all();
+    return result.results ?? [];
+  } catch {
+    return [];
+  }
+}
+
+async function adminCrmUser(database, userId) {
+  const user = await database.prepare(`
+    SELECT u.id,u.email,u.name,u.role,u.phone,u.plan_id,u.lifetime_access,u.created_at,
+           u.last_login_at,u.is_paused,u.pause_reason,u.account_status,u.customer_number,
+           u.marketing_consent,u.marketing_consent_at,u.terms_consent,u.terms_consent_at,
+           u.privacy_consent,u.privacy_consent_at,u.updates_consent,u.updates_consent_at,
+           u.data_improve_consent,u.data_improve_consent_at,u.crm_consent,u.crm_consent_at,
+           u.consent_ip,u.consent_version,
+           p.name AS plan_name,p.slug AS plan_slug,p.max_seats,p.has_messaging,
+           p.price_monthly,p.max_profiles,p.max_links,
+           s.status AS subscription_status,s.billing_interval,s.current_period_start,
+           s.current_period_end
+    FROM users u
+    LEFT JOIN plans p ON p.id=u.plan_id
+    LEFT JOIN subscriptions s ON s.user_id=u.id
+      AND s.status NOT IN ('incomplete_expired','cancelled')
+    WHERE u.id=?1
+    ORDER BY s.started_at DESC LIMIT 1
+  `).bind(userId).first();
+  if (!user) throw new HttpError(404, "User not found.", "user_not_found");
+
+  const [profiles, subscriptions, supportRequests, dataRequests, adminNotes, auditEntries,
+    enquiries, issueReports, complaints, visitorReports] = await Promise.all([
+    optionalRows(database, `
+      SELECT p.id,p.username,p.display_name,p.profile_type,p.is_published,p.biz_slug,
+             p.person_slug,p.created_at,p.updated_at,b.business_name
+      FROM profiles p LEFT JOIN profile_business_details b ON b.id=p.id
+      WHERE p.user_id=?1 ORDER BY p.updated_at DESC,p.id DESC
+    `, userId),
+    optionalRows(database, `
+      SELECT s.*,p.name AS plan_name,p.slug AS plan_slug FROM subscriptions s
+      LEFT JOIN plans p ON p.id=s.plan_id WHERE s.user_id=?1
+      ORDER BY s.started_at DESC,s.id DESC
+    `, userId),
+    optionalRows(database, "SELECT * FROM support_requests WHERE user_id=?1 ORDER BY created_at DESC", userId),
+    optionalRows(database, "SELECT * FROM data_requests WHERE user_id=?1 ORDER BY created_at DESC", userId),
+    optionalRows(database, "SELECT * FROM admin_user_notes WHERE user_id=?1 ORDER BY created_at DESC", userId),
+    optionalRows(database, `
+      SELECT id,actor_id,actor_name,actor_email,actor_type,action,resource_type,
+             resource_id,details,result,created_at FROM audit_log
+      WHERE actor_id=?1 OR (resource_type='user' AND resource_id=CAST(?1 AS TEXT))
+      ORDER BY created_at DESC,id DESC LIMIT 250
+    `, userId),
+    optionalRows(database, "SELECT * FROM contact_enquiries WHERE user_id=?1 ORDER BY created_at DESC", userId),
+    optionalRows(database, "SELECT * FROM issue_reports WHERE user_id=?1 ORDER BY created_at DESC", userId),
+    optionalRows(database, "SELECT * FROM complaints WHERE user_id=?1 ORDER BY created_at DESC", userId),
+    optionalRows(database, "SELECT * FROM visitor_reports WHERE user_id=?1 ORDER BY created_at DESC", userId),
+  ]);
+  const linkCountRow = await database.prepare(`
+    SELECT COUNT(*) count FROM profile_links l JOIN profiles p ON p.id=l.profile_id
+    WHERE p.user_id=?1
+  `).bind(userId).first();
+  const consent = {
+    terms_consent: user.terms_consent, terms_consent_at: user.terms_consent_at,
+    privacy_consent: user.privacy_consent, privacy_consent_at: user.privacy_consent_at,
+    marketing_consent: user.marketing_consent, marketing_consent_at: user.marketing_consent_at,
+    updates_consent: user.updates_consent, updates_consent_at: user.updates_consent_at,
+    data_improve_consent: user.data_improve_consent, data_improve_consent_at: user.data_improve_consent_at,
+    crm_consent: user.crm_consent, crm_consent_at: user.crm_consent_at,
+    consent_ip: user.consent_ip, consent_version: user.consent_version,
+  };
+  return {
+    user,
+    profiles,
+    linkCount: Number(linkCountRow?.count ?? 0),
+    subscriptions,
+    subscriptionHistory: subscriptions,
+    supportRequests,
+    dataRequests,
+    adminNotes,
+    auditEntries,
+    enquiryCount: enquiries.length,
+    enquiries,
+    supportPin: null,
+    featureOverrides: [],
+    allFeatures: [],
+    issueReports,
+    complaints,
+    consent,
+    visitorReports,
+    directMessages: [],
+  };
 }
 
 async function adminSettings(request, database, admin, method) {
@@ -405,6 +498,14 @@ async function dispatch(context, requestId) {
     if (path === "/admin/head-office/commands/sync") {
       if (method !== "POST") return methodNotAllowed(["POST"], requestId);
       return json({ success: true, data: await processHeadOfficeCommands(context.env) });
+    }
+    const crmUserMatch = path.match(/^\/admin\/crm\/users\/(\d+)$/);
+    if (crmUserMatch) {
+      if (method !== "GET") return methodNotAllowed(["GET"], requestId);
+      return json({ success: true, data: await adminCrmUser(
+        database,
+        integer(crmUserMatch[1], "user ID"),
+      ) });
     }
     const securityMatch = path.match(/^\/admin\/users\/(\d+)\/head-office-security$/);
     if (securityMatch) {

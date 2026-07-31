@@ -189,6 +189,7 @@ function AdminTrialControls({ userId, onRefresh }: { userId: number; onRefresh: 
 /* ─── Types ──────────────────────────────────────────────────────────────── */
 interface CrmUser {
   id: number; email: string; name: string; role: string; phone?: string;
+  customer_number?: string | null;
   plan_id: number | null; plan_name: string | null; plan_slug: string | null;
   max_seats: number | null; has_messaging: number | null;
   price_monthly: number | null; max_profiles: number | null; max_links: number | null;
@@ -767,10 +768,10 @@ export default function AdminUserDetail() {
                 <Row label="Full name" value={user.name || '—'} />
                 <Row label="Email" value={user.email} />
                 <Row label="Phone" value={user.phone || 'Not provided'} />
-                {user.user_number && (
+                {user.customer_number && (
                   <Row
-                    label="JA Profile Studio User Number"
-                    value={String(user.user_number).replace(/(\d{3})(\d{3})(\d{3})(\d{3})/, '$1 $2 $3 $4')}
+                    label="Universal Customer Number (UCN)"
+                    value={user.customer_number}
                     mono
                   />
                 )}

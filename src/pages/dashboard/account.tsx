@@ -233,6 +233,7 @@ export default function AccountPage() {
               {[
                 { icon: User,     label: 'Full Name',     value: user.name },
                 { icon: Mail,     label: 'Email Address', value: user.email },
+                { icon: Shield,   label: 'Universal Customer Number (UCN)', value: user.customer_number ?? 'Pending Head Office link' },
                 { icon: Shield,   label: 'Account Type',  value: 'JA Group Services ID' },
                 { icon: Calendar, label: 'Member Since',  value: memberSince ?? '—' },
               ].map(({ icon: Icon, label, value }) => (

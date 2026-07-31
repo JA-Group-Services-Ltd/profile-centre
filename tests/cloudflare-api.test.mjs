@@ -109,6 +109,7 @@ describe("Cloudflare API router", () => {
       INSERT INTO profile_configuration (id, pin_hash, public_pin_hash, show_email)
       VALUES (10, 'private-pin', 'private-public-pin', 1);
       INSERT INTO admin_settings (key, value) VALUES ('business_cards_enabled', '1');
+      UPDATE users SET customer_number='1000000001' WHERE id=1;
     `);
     d1 = new D1Database(sqlite);
     vi.stubGlobal("fetch", vi.fn(async requestValue => {
@@ -249,6 +250,22 @@ describe("Cloudflare API router", () => {
           role: "admin",
         },
       },
+    });
+  });
+
+  it("loads an admin CRM record with the Head Office UCN and no retired user number", async () => {
+    const response = await handleApiRequest(context(d1, "/admin/crm/users/1", {
+      method: "GET",
+      headers: { cookie: "ja_profile_studio_session=admin-session" },
+    }));
+    expect(response.status).toBe(200);
+    const payload = await response.json();
+    expect(payload.data.user.customer_number).toBe("1000000001");
+    expect(payload.data.user).not.toHaveProperty("user_number");
+    expect(payload.data).toMatchObject({
+      profiles: [{ id: 10, username: "test-profile" }],
+      linkCount: 0,
+      supportPin: null,
     });
   });
 

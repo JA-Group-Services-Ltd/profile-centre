@@ -25,6 +25,12 @@ It displays only the UCN, account/security status, access decision,
 restriction summaries, and age-assurance state. It cannot create, clear, or
 downgrade Head Office controls and never receives confidential case reasoning.
 
+The Head Office UCN is the only customer number shown by Profile Centre.
+The retired local `user_number` column is retained only for schema compatibility;
+production values are cleared and application APIs must neither search by nor
+return it. Customer, CRM, assisted-access, verification, and authority-report
+surfaces use `customer_number` from the Head Office link.
+
 Age assurance follows contract `ja-head-office-age-assurance-v1`, applies only
 to customer identities, has a minimum age of 18, excludes staff identities, and
 must remain disabled until Head Office explicitly enables enforcement.

@@ -42,6 +42,7 @@ interface User {
   is_paused: number; pause_reason: string | null;
   subscription_status: string | null; account_status: string | null;
   last_login_at: string | null;
+  customer_number: string | null;
 }
 interface Plan { id: number; name: string; slug: string; }
 
@@ -393,9 +394,9 @@ export default function AdminUsers() {
                     </div>
                     <div className="flex items-center gap-3 mt-0.5 flex-wrap">
                       <span className="text-xs text-muted-foreground truncate">{user.email}</span>
-                      {user.user_number && (
+                      {user.customer_number && (
                         <span className="text-xs text-muted-foreground font-mono hidden sm:inline">
-                          {String(user.user_number).replace(/(\d{3})(\d{3})(\d{3})(\d{3})/, '$1 $2 $3 $4')}
+                          UCN {user.customer_number}
                         </span>
                       )}
                       <span className="text-xs text-muted-foreground hidden sm:inline">

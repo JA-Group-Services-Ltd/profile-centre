@@ -23,7 +23,7 @@ import {
   Phone, ShieldCheck, ShieldX, User,
   AlertTriangle, CheckCircle2, Clock,
   Eye, EyeOff, Loader2, X, Info, KeyRound,
-  ArrowRight, Mail, Hash,
+  ArrowRight, Mail,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -33,13 +33,13 @@ import { Badge } from '@/components/ui/badge';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type VerifyMethod = 'pin' | 'email' | 'user_number';
+type VerifyMethod = 'pin' | 'email';
 
 interface VerifiedUser {
   id: number;
   name: string;
   email: string;
-  user_number?: string | null;
+  customer_number?: string | null;
   plan_name: string | null;
   plan_slug: string | null;
   expiresAt: string;
@@ -82,9 +82,6 @@ export default function AdminVerifyCustomerPage() {
   // Email method
   const [emailInput, setEmailInput] = useState('');
 
-  // User number method
-  const [userNumberInput, setUserNumberInput] = useState('');
-  const [userNumberDisplay, setUserNumberDisplay] = useState(''); // formatted with spaces
   // Shared state
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -177,7 +174,7 @@ export default function AdminVerifyCustomerPage() {
           id: data.user.id,
           name: data.user.name,
           email: data.user.email,
-          user_number: data.user.user_number ?? null,
+          customer_number: data.user.customer_number ?? null,
           plan_name: null,
           plan_slug: null,
           expiresAt: '',
@@ -197,70 +194,16 @@ export default function AdminVerifyCustomerPage() {
     }
   };
 
-  const handleVerifyUserNumber = async () => {
-    const digits = userNumberInput.replace(/\s+/g, '');
-    if (!/^\d{12}$/.test(digits)) {
-      setError('Please enter the full 12-digit JA Profile Studio User Number.');
-      return;
-    }
-    setLoading(true);
-    setError('');
-    setVerified(null);
-    try {
-      const res = await fetch(`/api/admin/support-pin-lookup-by-number?user_number=${encodeURIComponent(digits)}`, {
-        credentials: 'include',
-      });
-      const data = await res.json();
-      if (data.success && data.user) {
-        setVerified({
-          id: data.user.id,
-          name: data.user.name,
-          email: data.user.email,
-          user_number: data.user.user_number ?? null,
-          plan_name: null,
-          plan_slug: null,
-          expiresAt: '',
-          secondsRemaining: 300,
-          method: 'user_number',
-        });
-        setUserNumberInput('');
-        setUserNumberDisplay('');
-        addAttempt({
-          ts: new Date().toISOString(),
-          method: 'user_number',
-          input: `${digits.slice(0, 3)} *** *** ***`,
-          success: true,
-          userName: data.user.name,
-        });
-      } else {
-        setError(data.error || 'No account found with that user number.');
-        addAttempt({
-          ts: new Date().toISOString(),
-          method: 'user_number',
-          input: `${digits.slice(0, 3)} *** *** ***`,
-          success: false,
-        });
-      }
-    } catch {
-      setError('Network error — please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (method === 'pin') handleVerifyPin();
-    else if (method === 'email') handleVerifyEmail();
-    else handleVerifyUserNumber();
+    else handleVerifyEmail();
   };
 
   const reset = () => {
     setVerified(null);
     setPin('');
     setEmailInput('');
-    setUserNumberInput('');
-    setUserNumberDisplay('');
     setError('');
     setCountdown(0);
     if (countdownRef.current) clearInterval(countdownRef.current);
@@ -314,10 +257,9 @@ export default function AdminVerifyCustomerPage() {
             <CardContent>
 
               {/* Method tabs */}
-              <div className="grid grid-cols-3 gap-2 mb-5">
+              <div className="grid grid-cols-2 gap-2 mb-5">
                 {([
                   { id: 'pin' as VerifyMethod,         label: 'Support PIN',   icon: KeyRound, desc: '6-digit rotating PIN' },
-                  { id: 'user_number' as VerifyMethod, label: 'User Number',   icon: Hash,     desc: '12-digit account number' },
                   { id: 'email' as VerifyMethod,       label: 'Email address', icon: Mail,     desc: 'Fallback — lower confidence' },
                 ]).map(m => (
                   <button
@@ -375,33 +317,6 @@ export default function AdminVerifyCustomerPage() {
                       PINs rotate every 30 minutes. Ask the caller to refresh if theirs has expired.
                     </p>
                   </div>
-                ) : method === 'user_number' ? (
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-medium text-muted-foreground">
-                      JA Profile Studio User Number <span className="text-red-400">*</span>
-                    </Label>
-                    <Input
-                      type="text"
-                      value={userNumberDisplay}
-                      onChange={e => {
-                        // Strip everything except digits
-                        const digits = e.target.value.replace(/\D/g, '').slice(0, 12);
-                        setUserNumberInput(digits);
-                        // Format as "742 918 305 614" for display
-                        const parts = digits.match(/.{1,3}/g) ?? [];
-                        setUserNumberDisplay(parts.join(' '));
-                        setError('');
-                      }}
-                      placeholder="742 918 305 614"
-                      className="bg-background border-border font-mono text-lg tracking-widest text-center"
-                      inputMode="numeric"
-                      autoComplete="off"
-                      autoFocus
-                    />
-                    <p className="text-[11px] text-muted-foreground/70">
-                      Ask the caller to read their 12-digit number from Dashboard → Overview or their profile card.
-                    </p>
-                  </div>
                 ) : (
                   <div className="space-y-1.5">
                     <Label className="text-xs font-medium text-muted-foreground">
@@ -437,9 +352,7 @@ export default function AdminVerifyCustomerPage() {
                   type="submit"
                   disabled={
                     loading ||
-                    (method === 'pin' ? pin.length !== 6 :
-                     method === 'user_number' ? userNumberInput.replace(/\s+/g, '').length !== 12 :
-                     !emailInput.trim())
+                    (method === 'pin' ? pin.length !== 6 : !emailInput.trim())
                   }
                   className="w-full bg-primary gap-2"
                 >
@@ -463,7 +376,7 @@ export default function AdminVerifyCustomerPage() {
                     <div>
                       <p className="text-sm font-bold text-green-300">Identity Confirmed</p>
                       <p className="text-xs text-green-400/70">
-                        via {verified.method === 'pin' ? 'Support PIN' : verified.method === 'user_number' ? 'User Number' : 'Email address'}
+                        via {verified.method === 'pin' ? 'Support PIN' : 'Email address'}
                       </p>
                     </div>
                   </div>
@@ -488,11 +401,11 @@ export default function AdminVerifyCustomerPage() {
                     <span className="text-xs text-muted-foreground">Account ID</span>
                     <span className="text-sm font-mono text-muted-foreground">#{verified.id}</span>
                   </div>
-                  {verified.user_number && (
+                  {verified.customer_number && (
                     <div className="flex items-center justify-between py-2 border-b border-green-500/15">
-                      <span className="text-xs text-muted-foreground">JA Profile Studio User Number</span>
+                      <span className="text-xs text-muted-foreground">Universal Customer Number (UCN)</span>
                       <span className="text-sm font-mono text-foreground font-semibold">
-                        {String(verified.user_number).replace(/(\d{3})(\d{3})(\d{3})(\d{3})/, '$1 $2 $3 $4')}
+                        {verified.customer_number}
                       </span>
                     </div>
                   )}
@@ -538,11 +451,11 @@ export default function AdminVerifyCustomerPage() {
             <CardContent className="space-y-3 text-xs text-muted-foreground">
               <div className="flex gap-2.5">
                 <div className="w-5 h-5 rounded-full bg-primary/15 text-primary flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5">1</div>
-                <p>Ask the caller to open their JA Profile Studio dashboard and go to <strong className="text-foreground">Security Settings</strong> for their Support PIN, or <strong className="text-foreground">Overview</strong> for their User Number.</p>
+                <p>Ask the caller to open their JA Profile Studio dashboard and go to <strong className="text-foreground">Security Settings</strong> for their Support PIN.</p>
               </div>
               <div className="flex gap-2.5">
                 <div className="w-5 h-5 rounded-full bg-primary/15 text-primary flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5">2</div>
-                <p>Choose a verification method above: <strong className="text-foreground">Support PIN</strong> (strongest), <strong className="text-foreground">User Number</strong> (good), or <strong className="text-foreground">Email</strong> (fallback only).</p>
+                <p>Choose a verification method above: <strong className="text-foreground">Support PIN</strong> (strongest) or <strong className="text-foreground">Email</strong> (fallback only).</p>
               </div>
               <div className="flex gap-2.5">
                 <div className="w-5 h-5 rounded-full bg-primary/15 text-primary flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5">3</div>
@@ -589,7 +502,7 @@ export default function AdminVerifyCustomerPage() {
                         {a.success ? (a.userName || 'Verified') : 'Failed'}
                       </p>
                       <p className="text-muted-foreground/60 truncate">
-                        {a.method === 'pin' ? 'PIN' : a.method === 'user_number' ? 'User No.' : 'Email'}: {a.input}
+                        {a.method === 'pin' ? 'PIN' : 'Email'}: {a.input}
                       </p>
                     </div>
                     <span className="text-muted-foreground/50 flex-shrink-0 text-[10px]">
@@ -609,7 +522,7 @@ export default function AdminVerifyCustomerPage() {
             <CardContent className="space-y-2 text-xs">
               <div>
                 <p className="font-semibold text-green-400 mb-1.5 flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> PIN or User Number verified — you may discuss
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Support PIN verified — you may discuss
                 </p>
                 <ul className="space-y-1 text-muted-foreground pl-5 list-disc">
                   <li>Account status and plan details</li>
