@@ -1,0 +1,85 @@
+name: Verify Production Importer V2
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/verify-production-importer-v2.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: verify-production-importer-v2
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Wait for corrected Cloudflare importer
+        shell: bash
+        run: |
+          set +e
+
+          endpoint="https://profilecentre.jagroupservices.co.uk/api/import-production-data"
+          expected_import_id="profile-centre-airo-20260731T011911Z"
+          expected_hash="bac25a94725e041e391204f19eb988ddddecad624abee743d935443526bb1d73"
+          result="failure"
+          message="The corrected importer did not become ready."
+          http="000"
+
+          echo '{}' > /tmp/importer-v2.json
+          echo '' > /tmp/importer-v2-curl-error.txt
+
+          for attempt in $(seq 1 60); do
+            http=$(curl --silent --show-error --location \
+              --output /tmp/importer-v2.json \
+              --write-out "%{http_code}" \
+              "${endpoint}?deployment_check=${attempt}" 2>/tmp/importer-v2-curl-error.txt)
+            curl_exit=$?
+
+            echo "Attempt ${attempt}: curl=${curl_exit}, HTTP ${http}"
+            cat /tmp/importer-v2.json 2>/dev/null
+            echo
+
+            if [[ "${curl_exit}" == "0" ]] && \
+               [[ "${http}" == "200" ]] && \
+               grep -q "\"importId\":\"${expected_import_id}\"" /tmp/importer-v2.json && \
+               grep -q "\"payloadSha256\":\"${expected_hash}\"" /tmp/importer-v2.json && \
+               grep -q '"importerVersion":"2"' /tmp/importer-v2.json; then
+              result="success"
+              message="The corrected hash-locked production importer is deployed and ready."
+              break
+            fi
+
+            sleep 15
+          done
+
+          mkdir -p docs
+          {
+            echo "result=${result}"
+            echo "timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "message=${message}"
+            echo "http=${http}"
+            echo
+            echo "--- importer response ---"
+            cat /tmp/importer-v2.json 2>/dev/null
+            echo
+            echo "--- curl errors ---"
+            cat /tmp/importer-v2-curl-error.txt 2>/dev/null
+          } > docs/production-importer-v2-status.txt
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/production-importer-v2-status.txt
+          git commit -m "Record corrected importer deployment status" || true
+          git push
+
+          test "${result}" = "success"
