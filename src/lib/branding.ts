@@ -27,7 +27,7 @@ const DEFAULTS: Branding = {
   platform_tagline: 'Your digital business card, reimagined.',
   platform_description: 'Create a stunning digital profile that showcases who you are and what you do — share it with a single link.',
   platform_url: 'https://japrofilestudio.jagroupservices.co.uk',
-  platform_logo_url: '',
+  platform_logo_url: '/assets/brand/profile-centre-logo.svg',
   platform_favicon_url: '',
   master_brand_name: 'JA Group Services Ltd',
   master_brand_url: 'https://jagroupservices.co.uk',
@@ -53,7 +53,12 @@ function fetchBranding(): Promise<void> {
   fetchPromise = fetch('/api/branding')
     .then(r => r.json())
     .then(data => {
-      if (data.success) cached = { ...DEFAULTS, ...data.data };
+      if (data.success) {
+        cached = { ...DEFAULTS, ...data.data };
+        if (!cached.platform_logo_url?.trim()) {
+          cached.platform_logo_url = DEFAULTS.platform_logo_url;
+        }
+      }
     })
     .catch(() => {
       // silently fall back to defaults
