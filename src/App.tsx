@@ -13,7 +13,6 @@ import Spinner from './components/Spinner';
 import { routes } from './routes';
 import { SiteThemeProvider } from './lib/site-theme';
 import AccessibilityWidget from '@/components/AccessibilityWidget';
-import InboxChatWidget from './components/InboxChatWidget';
 import { Toaster } from '@/components/ui/sonner';
 
 const CookieBanner = lazy(() =>
@@ -81,7 +80,6 @@ export default function App() {
       */}
       <Toaster />
       <RouterProvider router={router} />
-      <InboxChatWidget />
     </SiteThemeProvider>
   );
 }
