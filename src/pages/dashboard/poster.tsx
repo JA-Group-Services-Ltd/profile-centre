@@ -62,7 +62,7 @@ const TEMPLATES = [
   {
     id: '4',
     name: 'JA Branded',
-    description: 'JA Profile Studio brand colours — blue header, white body.',
+    description: 'Profile Centre brand colours — blue header, white body.',
     tag: 'Branded',
     portraitPreview: { bg: '#ffffff', header: '#2563eb', accent: '#60a5fa', text: '#1e293b' },
     landscapePreview: { bg: '#ffffff', panel: '#2563eb', accent: '#60a5fa', text: '#1e293b' },
@@ -174,7 +174,7 @@ export default function PosterPage() {
     return (
       <div className="p-4 md:p-6 max-w-2xl mx-auto">
         <Helmet>
-          <title>Profile Poster — JA Profile Studio</title>
+          <title>Profile Poster — Profile Centre</title>
           <meta name="robots" content="noindex" />
         </Helmet>
         <div className="mb-6">
@@ -206,7 +206,7 @@ export default function PosterPage() {
   return (
     <div className="p-4 md:p-6 max-w-5xl mx-auto space-y-6 pb-20 lg:pb-6">
       <Helmet>
-        <title>Profile Poster — JA Profile Studio</title>
+        <title>Profile Poster — Profile Centre</title>
         <meta name="description" content="Generate an A4 profile poster PDF to share or display." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/dashboard/poster" />
         <meta name="robots" content="noindex" />
@@ -246,7 +246,7 @@ export default function PosterPage() {
         <div className="p-3 rounded-xl bg-muted/40 border border-border flex items-start gap-3 text-xs text-muted-foreground">
           <Info className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
           <span>
-            <span className="font-medium text-foreground">Wordmark included</span> — your poster will include a small "Created with JA Profile Studio" footer.
+            <span className="font-medium text-foreground">Wordmark included</span> — your poster will include a small "Created with Profile Centre" footer.
             Upgrade to Professional, Business, or Lifetime to remove it.
           </span>
         </div>
@@ -254,7 +254,7 @@ export default function PosterPage() {
       {removeBranding && (
         <div className="p-3 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center gap-3 text-xs text-green-700 dark:text-green-400">
           <CheckCircle className="w-3.5 h-3.5 flex-shrink-0" />
-          <span><span className="font-medium">Wordmark removed</span> — your poster will not include any JA Profile Studio branding.</span>
+          <span><span className="font-medium">Wordmark removed</span> — your poster will not include any Profile Centre branding.</span>
         </div>
       )}
 

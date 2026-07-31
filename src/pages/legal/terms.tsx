@@ -5,7 +5,7 @@ export default function TermsPage() {
     <DynamicLegalPage
       policyKey="terms"
       canonicalPath="/legal/terms"
-      metaDescription="Terms of Service for JA Profile Studio. Read the terms and conditions governing your use of the platform."
+      metaDescription="Terms of Service for Profile Centre. Read the terms and conditions governing your use of the platform."
     />
   );
 }

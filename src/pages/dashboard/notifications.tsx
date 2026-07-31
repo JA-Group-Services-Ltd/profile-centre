@@ -212,7 +212,7 @@ export default function NotificationsPage() {
         <Shield className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
         <p className="text-xs text-muted-foreground leading-relaxed">
           <span className="font-medium text-blue-300">Official communications only appear here.</span>{' '}
-          JA Profile Studio will never ask for your password or payment details through this notification centre.
+          Profile Centre will never ask for your password or payment details through this notification centre.
           If you receive a suspicious message or call, contact support to verify.
         </p>
       </div>

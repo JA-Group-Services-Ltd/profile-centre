@@ -51,8 +51,8 @@ export async function notifyMarketingConsent(payload: ConsentPayload): Promise<v
     microsoftGroupAdded: 'No',
     consentWithdrawnDateTime: isOptIn ? '' : now,
     notes: isOptIn
-      ? 'Marketing consent captured via JA Profile Studio website'
-      : 'Marketing consent withdrawn via JA Profile Studio website',
+      ? 'Marketing consent captured via Profile Centre website'
+      : 'Marketing consent withdrawn via Profile Centre website',
     unsubscribeMethod: isOptIn ? '' : 'Account settings',
   };
 

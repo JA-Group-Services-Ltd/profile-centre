@@ -8,7 +8,7 @@ export default function ComplaintsPage() {
     <>
       <Helmet>
         <title>{`Complaints Policy — ${branding.platform_name}`}</title>
-        <meta name="description" content="Complaints Policy for JA Profile Studio. How to raise a complaint and what to expect from JA Group Services Ltd." />
+        <meta name="description" content="Complaints Policy for Profile Centre. How to raise a complaint and what to expect from JA Group Services Ltd." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/legal/complaints" />
         <meta name="robots" content="index, follow" />
       </Helmet>
@@ -16,7 +16,7 @@ export default function ComplaintsPage() {
       <DynamicLegalPage
         policyKey="complaints"
         canonicalPath="/legal/complaints"
-        metaDescription="Complaints Policy for JA Profile Studio. How to raise a complaint and what to expect from JA Group Services Ltd."
+        metaDescription="Complaints Policy for Profile Centre. How to raise a complaint and what to expect from JA Group Services Ltd."
       />
     </>
   );

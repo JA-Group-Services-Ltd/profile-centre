@@ -417,8 +417,8 @@ export default function OverviewPage() {
   return (
     <div className="max-w-6xl mx-auto pb-24 lg:pb-8 space-y-5">
       <Helmet>
-        <title>Dashboard — JA Profile Studio</title>
-        <meta name="description" content="Your JA Profile Studio dashboard." />
+        <title>Dashboard — Profile Centre</title>
+        <meta name="description" content="Your Profile Centre dashboard." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/dashboard/overview" />
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
@@ -911,7 +911,7 @@ export default function OverviewPage() {
                 </div>
                 <h3 className="font-semibold text-foreground text-sm">Share your profile</h3>
               </div>
-              <p className="text-xs text-muted-foreground">Share your profile studio link with clients, colleagues and contacts.</p>
+              <p className="text-xs text-muted-foreground">Share your Profile Centre link with clients, colleagues and contacts.</p>
               <div className="flex gap-2">
                 <Link to="/dashboard/qr-code" className="flex-1">
                   <Button size="sm" variant="outline" className="w-full text-xs h-8 gap-1.5">

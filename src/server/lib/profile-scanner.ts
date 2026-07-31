@@ -1,7 +1,7 @@
 /**
  * Profile Safety Scanner
  * ─────────────────────────────────────────────────────────────────────────────
- * Analyses a JA Profile Studio for safety/policy violations and produces a
+ * Analyses a Profile Centre for safety/policy violations and produces a
  * structured risk report for admin review.
  *
  * Scan categories:

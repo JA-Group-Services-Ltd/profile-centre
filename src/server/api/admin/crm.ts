@@ -558,7 +558,7 @@ export async function customerUpdateConsent(req: Request, res: Response) {
           name: userRow.name ?? '',
           marketingConsent: !!req.body.marketing_consent,
           source,
-          platform: 'JA Profile Studio',
+          platform: 'Profile Centre',
           ipAddress: ip ?? undefined,
         });
       }

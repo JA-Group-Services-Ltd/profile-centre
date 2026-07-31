@@ -69,7 +69,7 @@ export default function PwaSplashScreen() {
       }}>
         <img
           src="/icon-192.png"
-          alt="JA Profile Studio"
+          alt="Profile Centre"
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
       </div>
@@ -83,7 +83,7 @@ export default function PwaSplashScreen() {
         letterSpacing: '-0.01em',
         marginBottom: 6,
       }}>
-        JA Profile Studio
+        Profile Centre
       </p>
 
       {/* Tagline */}

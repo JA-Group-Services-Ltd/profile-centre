@@ -167,7 +167,7 @@ export default async function getStatus(_req: Request, res: Response) {
 
   const services: ServiceStatus[] = [
     // Core
-    { id: 'platform',         name: 'JA Profile Studio Platform',     description: 'Core application and web server',                category: 'core',         status: platformStatus },
+    { id: 'platform',         name: 'Profile Centre Platform',     description: 'Core application and web server',                category: 'core',         status: platformStatus },
     { id: 'database',         name: 'Data Storage',                   description: 'Account and profile data storage',               category: 'core',         status: dbStatus },
     { id: 'public_profiles',  name: 'Public Profile Pages',           description: 'Publicly accessible profile URLs',               category: 'core',         status: publicProfilesStatus },
     { id: 'dashboard',        name: 'Account Dashboard',              description: 'Your account dashboard and settings',            category: 'core',         status: dashboardStatus },

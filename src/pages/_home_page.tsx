@@ -66,7 +66,7 @@ function DemoProfileCard() {
             </div>
           ))}
         </div>
-        <p className="text-center text-white/30 text-xs mt-4">Powered by JA Profile Studio</p>
+        <p className="text-center text-white/30 text-xs mt-4">Powered by Profile Centre</p>
       </div>
     </div>
   );

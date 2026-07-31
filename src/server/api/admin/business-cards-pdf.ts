@@ -82,7 +82,7 @@ export async function adminBusinessCardPdf(req: Request, res: Response) {
 
   // ── Header ─────────────────────────────────────────────────────────────────
   page.drawRectangle({ x: 0, y: 800, width: 595, height: 42, color: C_BLUE });
-  page.drawText('JA Profile Studio — Business Card Order', { x: L, y: 815, size: 14, font: fontB, color: C_WHITE });
+  page.drawText('Profile Centre — Business Card Order', { x: L, y: 815, size: 14, font: fontB, color: C_WHITE });
   page.drawText(`Order #${order.id}`, { x: R - 80, y: 815, size: 11, font: fontR, color: C_WHITE });
   y = 790;
 
@@ -105,7 +105,7 @@ export async function adminBusinessCardPdf(req: Request, res: Response) {
   row('Corners', order.corner_type ?? '—');
   row('Sides', order.sides ?? '—');
   row('Quantity', String(order.quantity ?? '—'));
-  row('Design option', order.has_own_design ? 'Customer uploading own design' : 'JA Profile Studio to create design');
+  row('Design option', order.has_own_design ? 'Customer uploading own design' : 'Profile Centre to create design');
 
   // ── Card content ───────────────────────────────────────────────────────────
   sectionHeader('Card Content');
@@ -236,7 +236,7 @@ export async function adminBusinessCardPdf(req: Request, res: Response) {
   const pageCount = pdfDoc.getPageCount();
   for (let i = 0; i < pageCount; i++) {
     const pg = pdfDoc.getPage(i);
-    pg.drawText(`JA Profile Studio — Business Card Order #${order.id} — CONFIDENTIAL`, { x: L, y: 30, size: 7, font: fontR, color: C_MID });
+    pg.drawText(`Profile Centre — Business Card Order #${order.id} — CONFIDENTIAL`, { x: L, y: 30, size: 7, font: fontR, color: C_MID });
     pg.drawText(`Page ${i + 1} of ${pageCount}`, { x: R - 50, y: 30, size: 7, font: fontR, color: C_MID });
   }
 

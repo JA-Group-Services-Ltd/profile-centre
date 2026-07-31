@@ -87,12 +87,12 @@ export default function SupportPage() {
   return (
     <>
       <Helmet>
-        <title>{`Support — ${branding.platform_name || 'JA Profile Studio'}`}</title>
-        <meta name="description" content="Get help with your JA Profile Studio account. Contact our support team by phone or email, or submit a support request." />
+        <title>{`Support — ${branding.platform_name || 'Profile Centre'}`}</title>
+        <meta name="description" content="Get help with your Profile Centre account. Contact our support team by phone or email, or submit a support request." />
         <link rel="canonical" href={`${APP_URL}/support`} />
         <meta name="robots" content="index, follow" />
-        <meta property="og:title" content={`Support — ${branding.platform_name || 'JA Profile Studio'}`} />
-        <meta property="og:description" content="Get help with your JA Profile Studio account." />
+        <meta property="og:title" content={`Support — ${branding.platform_name || 'Profile Centre'}`} />
+        <meta property="og:description" content="Get help with your Profile Centre account." />
         <meta property="og:url" content={`${APP_URL}/support`} />
         <meta property="og:type" content="website" />
       </Helmet>

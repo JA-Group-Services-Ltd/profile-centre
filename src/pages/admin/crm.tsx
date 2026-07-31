@@ -1030,7 +1030,7 @@ function UserDetail({ userId, onBack }: { userId: number; onBack: () => void }) 
         {/* ── Direct Messages — removed feature, kept for legacy data display only ── */}
         <TabsContent value="messages" className="space-y-3">
           <div className="p-4 rounded-xl bg-muted/40 border border-border text-sm text-muted-foreground">
-            Direct messaging has been removed from JA Profile Studio. Any records below are legacy data only.
+            Direct messaging has been removed from Profile Centre. Any records below are legacy data only.
           </div>
           {data.directMessages.length === 0 ? (
             <EmptyState icon={Inbox} label="No direct message records." />

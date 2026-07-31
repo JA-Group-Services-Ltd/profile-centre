@@ -88,7 +88,7 @@ export async function notifyWelcome(opts: {
     userEmail: opts.userEmail,
   });
   safe(async () => {
-    await sendEmail({ fromName: 'JA Profile Studio', to: opts.userEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
+    await sendEmail({ fromName: 'Profile Centre', to: opts.userEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
   });
 }
 
@@ -109,7 +109,7 @@ export async function notifyNewMessage(opts: {
     preview: opts.preview,
   });
   safe(async () => {
-    await sendEmail({ fromName: 'JA Profile Studio', to, subject, html, text, replyTo: EMAIL_REPLY_TO });
+    await sendEmail({ fromName: 'Profile Centre', to, subject, html, text, replyTo: EMAIL_REPLY_TO });
   });
 }
 
@@ -125,7 +125,7 @@ export async function notifyNewSignup(opts: {
   if (!to) return;
   const { subject, html, text } = adminNewSignupEmail(opts);
   safe(async () => {
-    await sendEmail({ fromName: 'JA Profile Studio', to, subject, html, text, replyTo: EMAIL_REPLY_TO });
+    await sendEmail({ fromName: 'Profile Centre', to, subject, html, text, replyTo: EMAIL_REPLY_TO });
   });
 }
 
@@ -142,7 +142,7 @@ export async function notifyPlanChange(opts: {
   if (!to) return;
   const { subject, html, text } = adminPlanChangeEmail(opts);
   safe(async () => {
-    await sendEmail({ fromName: 'JA Profile Studio', to, subject, html, text, replyTo: EMAIL_REPLY_TO });
+    await sendEmail({ fromName: 'Profile Centre', to, subject, html, text, replyTo: EMAIL_REPLY_TO });
   });
 }
 
@@ -157,7 +157,7 @@ export async function notifySupportRequest(opts: {
   if (!to) return;
   const { subject, html, text } = adminSupportRequestEmail(opts);
   safe(async () => {
-    await sendEmail({ fromName: 'JA Profile Studio', to, subject, html, text, replyTo: opts.userEmail });
+    await sendEmail({ fromName: 'Profile Centre', to, subject, html, text, replyTo: opts.userEmail });
   });
 }
 
@@ -173,7 +173,7 @@ export async function notifyUserPaused(opts: {
   if (!to) return;
   const { subject, html, text } = adminAccountPausedEmail(opts);
   safe(async () => {
-    await sendEmail({ fromName: 'JA Profile Studio', to, subject, html, text, replyTo: EMAIL_REPLY_TO });
+    await sendEmail({ fromName: 'Profile Centre', to, subject, html, text, replyTo: EMAIL_REPLY_TO });
   });
 }
 
@@ -191,7 +191,7 @@ export async function notifyIssueReport(opts: {
   if (!to) return;
   const { subject, html, text } = adminIssueReportEmail(opts);
   safe(async () => {
-    await sendEmail({ fromName: 'JA Profile Studio', to, subject, html, text, replyTo: EMAIL_REPLY_TO });
+    await sendEmail({ fromName: 'Profile Centre', to, subject, html, text, replyTo: EMAIL_REPLY_TO });
   });
 }
 
@@ -207,7 +207,7 @@ export async function notifyFeatureRequest(opts: {
   if (!to) return;
   const { subject, html, text } = adminFeatureRequestEmail(opts);
   safe(async () => {
-    await sendEmail({ fromName: 'JA Profile Studio', to, subject, html, text, replyTo: EMAIL_REPLY_TO });
+    await sendEmail({ fromName: 'Profile Centre', to, subject, html, text, replyTo: EMAIL_REPLY_TO });
   });
 }
 
@@ -224,7 +224,7 @@ export async function notifyFeatureActivated(opts: {
     accessType: opts.accessType,
   });
   safe(async () => {
-    await sendEmail({ fromName: 'JA Profile Studio', to: opts.userEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
+    await sendEmail({ fromName: 'Profile Centre', to: opts.userEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
   });
 }
 
@@ -248,7 +248,7 @@ export async function notifyEnquiryReceived(opts: {
   });
   safe(async () => {
     await sendEmail({
-      fromName: 'JA Profile Studio',
+      fromName: 'Profile Centre',
       to: opts.ownerEmail,
       subject,
       html,
@@ -272,7 +272,7 @@ export async function notifySecurityAlert(opts: {
   // Security alerts are essential — always sent, no preference check
   const { subject, html, text } = securityAlertEmail(opts);
   safe(async () => {
-    await sendEmail({ fromName: 'JA Profile Studio', to: opts.userEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
+    await sendEmail({ fromName: 'Profile Centre', to: opts.userEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
   });
 }
 
@@ -290,7 +290,7 @@ export async function notifySarStatusUpdate(opts: {
   // SAR updates are essential — always sent
   const { subject, html, text } = sarStatusEmail(opts);
   safe(async () => {
-    await sendEmail({ fromName: 'JA Profile Studio', to: opts.userEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
+    await sendEmail({ fromName: 'Profile Centre', to: opts.userEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
   });
 }
 
@@ -306,7 +306,7 @@ export async function notifySupportReply(opts: {
   if (opts.userId !== undefined && !shouldSendEmail(opts.userId, 'support_replies')) return;
   const { subject, html, text } = supportReplyEmail(opts);
   safe(async () => {
-    await sendEmail({ fromName: 'JA Profile Studio', to: opts.userEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
+    await sendEmail({ fromName: 'Profile Centre', to: opts.userEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
   });
 }
 
@@ -322,7 +322,7 @@ export async function notifyProfileStatus(opts: {
   if (opts.userId !== undefined && !shouldSendEmail(opts.userId, 'profile_status')) return;
   const { subject, html, text } = profileStatusEmail(opts);
   safe(async () => {
-    await sendEmail({ fromName: 'JA Profile Studio', to: opts.userEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
+    await sendEmail({ fromName: 'Profile Centre', to: opts.userEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
   });
 }
 
@@ -339,7 +339,7 @@ export async function notifyUserPlanChange(opts: {
   // Billing/plan changes are essential — always sent
   const { subject, html, text } = planChangeEmail(opts);
   safe(async () => {
-    await sendEmail({ fromName: 'JA Profile Studio', to: opts.userEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
+    await sendEmail({ fromName: 'Profile Centre', to: opts.userEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
   });
 }
 
@@ -357,7 +357,7 @@ export async function notifyPasswordReset(opts: {
     expiresInMinutes: opts.expiresInMinutes,
   });
   safe(async () => {
-    await sendEmail({ fromName: 'JA Profile Studio', to: opts.userEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
+    await sendEmail({ fromName: 'Profile Centre', to: opts.userEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
   });
 }
 
@@ -373,7 +373,7 @@ export async function notifyAccountStatus(opts: {
   // Account status changes are essential — always sent
   const { subject, html, text } = accountStatusEmail(opts);
   safe(async () => {
-    await sendEmail({ fromName: 'JA Profile Studio', to: opts.userEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
+    await sendEmail({ fromName: 'Profile Centre', to: opts.userEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
   });
 }
 
@@ -390,7 +390,7 @@ export async function notifyEnquiryConfirmation(opts: {
     messagePreview: opts.messagePreview,
   });
   safe(async () => {
-    await sendEmail({ fromName: 'JA Profile Studio', to: opts.senderEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
+    await sendEmail({ fromName: 'Profile Centre', to: opts.senderEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
   });
 }
 
@@ -406,7 +406,7 @@ export async function notifyVerificationStatus(opts: {
   if (opts.userId !== undefined && !shouldSendEmail(opts.userId, 'profile_status')) return;
   const { subject, html, text } = verificationStatusEmail(opts);
   safe(async () => {
-    await sendEmail({ fromName: 'JA Profile Studio', to: opts.userEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
+    await sendEmail({ fromName: 'Profile Centre', to: opts.userEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
   });
 }
 
@@ -425,7 +425,7 @@ export async function notifyAccountClosure(opts: {
     scheduledDeletionDate: opts.scheduledDeletionDate,
   });
   safe(async () => {
-    await sendEmail({ fromName: 'JA Profile Studio', to: opts.userEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
+    await sendEmail({ fromName: 'Profile Centre', to: opts.userEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
   });
 }
 
@@ -441,6 +441,6 @@ export async function notifyAdminVerificationRequest(opts: {
   if (!to) return;
   const { subject, html, text } = adminVerificationRequestEmail(opts);
   safe(async () => {
-    await sendEmail({ fromName: 'JA Profile Studio', to, subject, html, text, replyTo: EMAIL_REPLY_TO });
+    await sendEmail({ fromName: 'Profile Centre', to, subject, html, text, replyTo: EMAIL_REPLY_TO });
   });
 }

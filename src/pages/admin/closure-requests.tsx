@@ -88,7 +88,7 @@ export default function AdminClosureRequests() {
     <div className="max-w-3xl mx-auto pb-20 lg:pb-0">
       <Helmet>
         <title>Closure Requests — Admin</title>
-        <meta name="description" content="Review and action customer account closure requests on JA Profile Studio." />
+        <meta name="description" content="Review and action customer account closure requests on Profile Centre." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/admin/closure-requests" />
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>

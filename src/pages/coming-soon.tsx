@@ -49,7 +49,7 @@ function CountdownUnit({ value, label }: {value: number;label: string;}) {
 
 export default function ComingSoonPage() {
   const branding = useBranding();
-  const name = branding.platform_name || 'JA Profile Studio';
+  const name = branding.platform_name || 'Profile Centre';
 
   const [launchDate, setLaunchDate] = useState<string>('');
   const [headline, setHeadline] = useState('Coming Soon');

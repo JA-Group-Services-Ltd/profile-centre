@@ -10,7 +10,7 @@
  *   template  = 1–4  (design style)
  *   orient    = portrait | landscape  (default: portrait)
  *
- * Wordmark ("Created with JA Profile Studio") appears on free/starter plans.
+ * Wordmark ("Created with Profile Centre") appears on free/starter plans.
  * Removed automatically when the user's plan has remove_branding = 1.
  *
  * Templates:
@@ -244,7 +244,7 @@ async function t1Portrait(pdfDoc: PDFDocument, page: PDFPage, d: PosterData, fb:
 
   // Wordmark footer
   if (d.showWordmark) {
-    const wm = 'Created with JA Profile Studio · japrofilestudio.jagroupservices.co.uk';
+    const wm = 'Created with Profile Centre · japrofilestudio.jagroupservices.co.uk';
     const wmW = fr.widthOfTextAtSize(wm, 7.5);
     page.drawText(wm, { x: (w - wmW) / 2, y: 20, size: 7.5, font: fr, color: hex('#94a3b8') });
   }
@@ -332,7 +332,7 @@ async function t1Landscape(pdfDoc: PDFDocument, page: PDFPage, d: PosterData, fb
 
   // Wordmark
   if (d.showWordmark) {
-    const wm = 'Created with JA Profile Studio';
+    const wm = 'Created with Profile Centre';
     page.drawText(wm, { x: w - fr.widthOfTextAtSize(wm, 7) - 16, y: 14, size: 7, font: fr, color: hex('#94a3b8') });
   }
 }
@@ -422,7 +422,7 @@ async function t2Portrait(pdfDoc: PDFDocument, page: PDFPage, d: PosterData, fb:
 
   // Wordmark
   if (d.showWordmark) {
-    const wm = 'Created with JA Profile Studio · japrofilestudio.jagroupservices.co.uk';
+    const wm = 'Created with Profile Centre · japrofilestudio.jagroupservices.co.uk';
     const wmW = fr.widthOfTextAtSize(wm, 7.5);
     page.drawText(wm, { x: (w - wmW) / 2, y: 14, size: 7.5, font: fr, color: hex('#475569') });
   }
@@ -489,7 +489,7 @@ async function t2Landscape(pdfDoc: PDFDocument, page: PDFPage, d: PosterData, fb
   }
 
   if (d.showWordmark) {
-    const wm = 'Created with JA Profile Studio';
+    const wm = 'Created with Profile Centre';
     page.drawText(wm, { x: w - fr.widthOfTextAtSize(wm, 7) - 16, y: 14, size: 7, font: fr, color: hex('#475569') });
   }
 }
@@ -575,7 +575,7 @@ async function t3Portrait(pdfDoc: PDFDocument, page: PDFPage, d: PosterData, fb:
   page.drawLine({ start: { x: PAD, y: PAD + (d.showWordmark ? 22 : 10) }, end: { x: w - PAD, y: PAD + (d.showWordmark ? 22 : 10) }, thickness: 1.5, color: black });
 
   if (d.showWordmark) {
-    const wm = 'Created with JA Profile Studio · japrofilestudio.jagroupservices.co.uk';
+    const wm = 'Created with Profile Centre · japrofilestudio.jagroupservices.co.uk';
     const wmW = fr.widthOfTextAtSize(wm, 7.5);
     page.drawText(wm, { x: (w - wmW) / 2, y: PAD, size: 7.5, font: fr, color: hex('#9ca3af') });
   }
@@ -641,7 +641,7 @@ async function t3Landscape(pdfDoc: PDFDocument, page: PDFPage, d: PosterData, fb
   }
 
   if (d.showWordmark) {
-    const wm = 'Created with JA Profile Studio · japrofilestudio.jagroupservices.co.uk';
+    const wm = 'Created with Profile Centre · japrofilestudio.jagroupservices.co.uk';
     const wmW = fr.widthOfTextAtSize(wm, 7);
     page.drawText(wm, { x: (w - wmW) / 2, y: PAD + 2, size: 7, font: fr, color: hex('#9ca3af') });
   }
@@ -664,8 +664,8 @@ async function t4Portrait(pdfDoc: PDFDocument, page: PDFPage, d: PosterData, fb:
   const headerH = 220;
   page.drawRectangle({ x: 0, y: h - headerH, width: w, height: headerH, color: brand });
 
-  // JA Profile Studio wordmark in header (always shown — this is the platform header, not the footer wordmark)
-  txt(page, 'JA Profile Studio', PAD, h - 30, 11, fb, hex('#bfdbfe'));
+  // Profile Centre wordmark in header (always shown — this is the platform header, not the footer wordmark)
+  txt(page, 'Profile Centre', PAD, h - 30, 11, fb, hex('#bfdbfe'));
   txt(page, 'japrofilestudio.jagroupservices.co.uk', PAD, h - 46, 8, fr, hex('#93c5fd'));
 
   // Name
@@ -734,7 +734,7 @@ async function t4Portrait(pdfDoc: PDFDocument, page: PDFPage, d: PosterData, fb:
   // Footer wordmark (only for free/starter — this is the "Powered by" footer, not the header branding)
   if (d.showWordmark) {
     page.drawRectangle({ x: 0, y: 0, width: w, height: 28, color: hex('#eff6ff') });
-    const wm = 'Created with JA Profile Studio · japrofilestudio.jagroupservices.co.uk';
+    const wm = 'Created with Profile Centre · japrofilestudio.jagroupservices.co.uk';
     const wmW = fr.widthOfTextAtSize(wm, 7.5);
     page.drawText(wm, { x: (w - wmW) / 2, y: 9, size: 7.5, font: fr, color: brand });
   }
@@ -758,7 +758,7 @@ async function t4Landscape(pdfDoc: PDFDocument, page: PDFPage, d: PosterData, fb
   page.drawRectangle({ x: 0, y: 0, width: panelW, height: h, color: brand });
 
   // Platform header in panel
-  txt(page, 'JA Profile Studio', 16, h - 28, 10, fb, hex('#bfdbfe'), panelW - 32);
+  txt(page, 'Profile Centre', 16, h - 28, 10, fb, hex('#bfdbfe'), panelW - 32);
 
   // Name in panel
   const nameLines = wrapText(d.name || 'Your Name', fb, 20, panelW - 32);
@@ -817,7 +817,7 @@ async function t4Landscape(pdfDoc: PDFDocument, page: PDFPage, d: PosterData, fb
   txt(page, d.profileUrl, rx, ry - 4, 9, fr, brand, rw);
 
   if (d.showWordmark) {
-    const wm = 'Created with JA Profile Studio';
+    const wm = 'Created with Profile Centre';
     page.drawText(wm, { x: w - fr.widthOfTextAtSize(wm, 7) - 16, y: 12, size: 7, font: fr, color: brand });
   }
 }
@@ -954,9 +954,9 @@ export async function profilePosterPdf(req: Request, res: Response) {
 
   const pdfDoc = await PDFDocument.create();
   pdfDoc.setTitle(`${posterData.name} - Profile Poster (${tmpl.name})`);
-  pdfDoc.setAuthor('JA Profile Studio');
+  pdfDoc.setAuthor('Profile Centre');
   pdfDoc.setSubject('A4 profile poster');
-  pdfDoc.setCreator('JA Profile Studio - japrofilestudio.jagroupservices.co.uk');
+  pdfDoc.setCreator('Profile Centre - japrofilestudio.jagroupservices.co.uk');
 
   const fontB = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
   const fontR = await pdfDoc.embedFont(StandardFonts.Helvetica);

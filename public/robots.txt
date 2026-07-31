@@ -1,4 +1,4 @@
-# JA Profile Studio — robots.txt
+# Profile Centre — robots.txt
 # Public profile pages and marketing pages are indexable.
 # All admin, dashboard, auth, and internal pages are blocked.
 

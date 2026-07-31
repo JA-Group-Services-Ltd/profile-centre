@@ -8,7 +8,7 @@ const APP_URL = 'https://japrofilestudio.jagroupservices.co.uk';
 
 export default function MaintenancePage() {
   const branding = useBranding();
-  const name = branding.platform_name || 'JA Profile Studio';
+  const name = branding.platform_name || 'Profile Centre';
 
   return (
     <>

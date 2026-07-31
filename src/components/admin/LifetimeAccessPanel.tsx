@@ -1,7 +1,7 @@
 /**
  * LifetimeAccessPanel
  * Full controlled-discretionary lifetime access management panel.
- * Implements the JA Profile Studio Lifetime Access Instruction.
+ * Implements the Profile Centre Lifetime Access Instruction.
  */
 import { useState, useEffect } from 'react';
 import {
@@ -67,7 +67,7 @@ const REASON_CATEGORIES: { value: string; label: string }[] = [
 ];
 
 const WITHDRAWAL_REASONS: { value: string; label: string }[] = [
-  { value: 'misuse',                  label: 'Misuse of JA Profile Studio' },
+  { value: 'misuse',                  label: 'Misuse of Profile Centre' },
   { value: 'breach_of_terms',         label: 'Breach of Terms' },
   { value: 'account_abuse',           label: 'Account Abuse' },
   { value: 'mistaken_grant',          label: 'Mistaken Grant' },

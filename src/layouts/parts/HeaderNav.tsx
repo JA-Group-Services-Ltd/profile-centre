@@ -43,16 +43,16 @@ export default function SiteNavHeader() {
         <div className="flex h-16 md:h-[72px] items-center justify-between gap-4">
 
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5 flex-shrink-0 group" aria-label="JA Profile Studio — home">
+          <Link to="/" className="flex items-center gap-2.5 flex-shrink-0 group" aria-label="Profile Centre — home">
             {branding.platform_logo_url ? (
               <img
                 src={branding.platform_logo_url}
-                alt={branding.platform_name || 'JA Profile Studio'}
+                alt={branding.platform_name || 'Profile Centre'}
                 className="h-9 w-auto object-contain shrink-0 md:h-11"
               />
             ) : (
               <span className="font-extrabold text-lg tracking-tight text-foreground">
-                JA <span className="text-primary">Profile Studio</span>
+                <span className="text-primary">Profile Centre</span>
               </span>
             )}
           </Link>

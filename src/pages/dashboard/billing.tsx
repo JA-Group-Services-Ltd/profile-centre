@@ -317,7 +317,7 @@ export default function BillingPage() {
             <div className="mt-4 p-3 rounded-xl bg-green-500/8 border border-green-500/15 flex items-start gap-2">
               <Check className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
               <p className="text-xs text-green-300">
-                Lifetime access is a discretionary access status granted by JA Group Services Ltd in selected cases. It may be reviewed, changed, or withdrawn where appropriate under the JA Profile Studio terms. If you have any questions about your access status, please contact support.
+                Lifetime access is a discretionary access status granted by JA Group Services Ltd in selected cases. It may be reviewed, changed, or withdrawn where appropriate under the Profile Centre terms. If you have any questions about your access status, please contact support.
               </p>
             </div>
           </CardContent>
@@ -797,10 +797,10 @@ export default function BillingPage() {
             <div>
               <p className="text-sm font-semibold text-foreground mb-1">Payment security</p>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                All subscription payments are processed securely by <strong className="text-foreground">Stripe</strong>. JA Profile Studio never stores your card details. Plan subscription payments are handled through Stripe Checkout only — you will always be redirected to a secure Stripe-hosted page.
+                All subscription payments are processed securely by <strong className="text-foreground">Stripe</strong>. Profile Centre never stores your card details. Plan subscription payments are handled through Stripe Checkout only — you will always be redirected to a secure Stripe-hosted page.
               </p>
               <p className="text-xs text-muted-foreground leading-relaxed mt-2">
-                <strong className="text-foreground">Business Cards are separate.</strong> Business Card payments are handled through official Stripe invoices or Stripe payment links issued by admin — not through this subscription checkout. Never pay for Business Cards through any link that has not been officially issued by JA Profile Studio.
+                <strong className="text-foreground">Business Cards are separate.</strong> Business Card payments are handled through official Stripe invoices or Stripe payment links issued by admin — not through this subscription checkout. Never pay for Business Cards through any link that has not been officially issued by Profile Centre.
               </p>
             </div>
           </div>

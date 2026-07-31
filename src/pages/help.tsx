@@ -1,7 +1,7 @@
 /**
  * Public Help Centre — /help
  * Accessible to all visitors without login.
- * Covers common questions about JA Profile Studio.
+ * Covers common questions about Profile Centre.
  */
 import { useState, useMemo } from 'react';
 import { Helmet } from '@dr.pogodin/react-helmet';
@@ -25,9 +25,9 @@ const CATEGORIES: Category[] = [
     color: 'text-blue-600 bg-blue-50 border-blue-200',
     articles: [
       { id: 'gs-1', title: 'How do I create an account?', tags: ['account', 'signup', 'login'],
-        body: 'Your JA Profile Studio account is created when you sign in for the first time using your Microsoft account. Click "Log In" on the homepage and authenticate with Microsoft. Your account is created automatically — no separate registration is needed.\n\nIf you have trouble signing in, make sure you are using the correct Microsoft account.' },
-      { id: 'gs-2', title: 'What is JA Profile Studio?', tags: ['overview', 'about'],
-        body: 'JA Profile Studio is a digital profile service that lets you keep your contact details, business information, links and QR code in one place. You can share your profile using a link, QR code, email signature, or printed materials.\n\nYour profile has a unique public URL that you can share with anyone.' },
+        body: 'Your Profile Centre account is created when you sign in for the first time using your Microsoft account. Click "Log In" on the homepage and authenticate with Microsoft. Your account is created automatically — no separate registration is needed.\n\nIf you have trouble signing in, make sure you are using the correct Microsoft account.' },
+      { id: 'gs-2', title: 'What is Profile Centre?', tags: ['overview', 'about'],
+        body: 'Profile Centre is a digital profile service that lets you keep your contact details, business information, links and QR code in one place. You can share your profile using a link, QR code, email signature, or printed materials.\n\nYour profile has a unique public URL that you can share with anyone.' },
       { id: 'gs-3', title: 'What is included in the free plan?', tags: ['free', 'plan', 'pricing'],
         body: 'The free plan includes:\n\n• 1 digital profile\n• 1 custom link\n• QR code for your profile\n• Public profile URL\n• Basic contact information\n\nThe free plan does not require a credit card. You can upgrade to a paid plan at any time to unlock more features.' },
     ],
@@ -76,7 +76,7 @@ const CATEGORIES: Category[] = [
       { id: 'b-3', title: 'How does the free trial work?', tags: ['trial', 'free', 'plan'],
         body: 'Paid plans include a 30-day free trial. You do not need a credit card to start a trial. At the end of the trial period, you can choose to subscribe or your account will move to the free plan.\n\nYou will receive a notification before your trial ends.' },
       { id: 'b-4', title: 'How do I pay for Business Cards?', tags: ['business cards', 'payment', 'invoice'],
-        body: 'Printed Business Cards are available to order through your dashboard. When you request business cards, an admin will confirm the price and create a Stripe invoice or Stripe payment link. Only pay using an official Stripe invoice or payment link from JA Profile Studio / JA Group Services Ltd.\n\nDo not pay via any other method unless confirmed in writing by JA Group Services Ltd.' },
+        body: 'Printed Business Cards are available to order through your dashboard. When you request business cards, an admin will confirm the price and create a Stripe invoice or Stripe payment link. Only pay using an official Stripe invoice or payment link from Profile Centre / JA Group Services Ltd.\n\nDo not pay via any other method unless confirmed in writing by JA Group Services Ltd.' },
     ],
   },
   {
@@ -126,30 +126,30 @@ const CATEGORIES: Category[] = [
     color: 'text-red-600 bg-red-50 border-red-200',
     articles: [
       { id: 'rp-1', title: 'How do I report a profile?', tags: ['report', 'flag', 'abuse', 'profile'],
-        body: 'If you see a JA Profile Studio that violates our policies, you can report it directly from the profile page.\n\nTo report a profile:\n1. Visit the public profile page\n2. Scroll to the bottom of the page — or use the "Report" button fixed to the bottom-right corner of the page\n3. Click "Report this profile" or "Report this business"\n4. Enter your name and email address\n5. Select a reason for your report\n6. Provide details about the issue\n7. Submit\n\nReport reasons include: spam or scam, impersonation, harassment or abuse, illegal content, adult or unsafe content, misleading information, privacy issue, intellectual property issue, and other.\n\nYour report is reviewed by the JA Profile Studio moderation team. We will take appropriate action in line with our Reporting and Moderation Policy.\n\nUK GDPR notice: Your name and email are used only to process the report and contact you if needed. We will not share your details with the profile owner.' },
+        body: 'If you see a Profile Centre that violates our policies, you can report it directly from the profile page.\n\nTo report a profile:\n1. Visit the public profile page\n2. Scroll to the bottom of the page — or use the "Report" button fixed to the bottom-right corner of the page\n3. Click "Report this profile" or "Report this business"\n4. Enter your name and email address\n5. Select a reason for your report\n6. Provide details about the issue\n7. Submit\n\nReport reasons include: spam or scam, impersonation, harassment or abuse, illegal content, adult or unsafe content, misleading information, privacy issue, intellectual property issue, and other.\n\nYour report is reviewed by the Profile Centre moderation team. We will take appropriate action in line with our Reporting and Moderation Policy.\n\nUK GDPR notice: Your name and email are used only to process the report and contact you if needed. We will not share your details with the profile owner.' },
       { id: 'rp-2', title: 'What happens after I report a profile?', tags: ['report', 'moderation', 'review'],
-        body: 'After you submit a report, the JA Profile Studio moderation team reviews it.\n\nPossible outcomes include:\n• No action (if the report does not identify a policy violation)\n• Warning issued to the profile owner\n• Profile temporarily hidden pending investigation\n• Profile suspended (unpublished and locked)\n• Profile permanently removed\n• Account suspended or terminated\n• Report to authorities (for illegal content or threats)\n\nWe aim to review all reports within 5 working days. For urgent matters (threats, illegal content), contact support directly.\n\nFalse reports: Submitting false or malicious reports may result in action against your own account.' },
+        body: 'After you submit a report, the Profile Centre moderation team reviews it.\n\nPossible outcomes include:\n• No action (if the report does not identify a policy violation)\n• Warning issued to the profile owner\n• Profile temporarily hidden pending investigation\n• Profile suspended (unpublished and locked)\n• Profile permanently removed\n• Account suspended or terminated\n• Report to authorities (for illegal content or threats)\n\nWe aim to review all reports within 5 working days. For urgent matters (threats, illegal content), contact support directly.\n\nFalse reports: Submitting false or malicious reports may result in action against your own account.' },
     ],
   },
   {
     id: 'install-app',
     icon: <Smartphone className="w-5 h-5" />,
     title: 'Install as an App',
-    description: 'Add JA Profile Studio to your home screen or desktop — no app store needed',
+    description: 'Add Profile Centre to your home screen or desktop — no app store needed',
     color: 'text-cyan-600 bg-cyan-50 border-cyan-200',
     articles: [
       { id: 'ia-1', title: 'What is a web app and why install it?', tags: ['install', 'pwa', 'web app', 'home screen'],
-        body: 'JA Profile Studio is a Progressive Web App (PWA). You can install it directly from your browser — no App Store or Google Play required.\n\nBenefits:\n• Appears on your home screen or desktop like a native app\n• Opens in its own window without the browser address bar\n• Loads faster after the first visit\n• Works offline for basic navigation\n• Updates automatically — always the latest version\n\nSupported on: iOS Safari, Android Chrome, Android Samsung Internet, desktop Chrome, desktop Edge, and desktop Safari (macOS Sonoma+).' },
+        body: 'Profile Centre is a Progressive Web App (PWA). You can install it directly from your browser — no App Store or Google Play required.\n\nBenefits:\n• Appears on your home screen or desktop like a native app\n• Opens in its own window without the browser address bar\n• Loads faster after the first visit\n• Works offline for basic navigation\n• Updates automatically — always the latest version\n\nSupported on: iOS Safari, Android Chrome, Android Samsung Internet, desktop Chrome, desktop Edge, and desktop Safari (macOS Sonoma+).' },
       { id: 'ia-2', title: 'Install on iPhone or iPad (iOS Safari)', tags: ['ios', 'iphone', 'ipad', 'safari', 'install', 'apple'],
-        body: 'iOS only supports PWA installation through Safari. Chrome and Firefox on iOS do not support this.\n\nSteps:\n1. Open JA Profile Studio in Safari on your iPhone or iPad\n2. Tap the Share button (box with arrow pointing up) at the bottom of the screen\n3. Scroll down and tap "Add to Home Screen"\n4. Edit the name if you like, then tap "Add"\n\nThe icon will appear on your home screen. Tap it to open in full-screen mode.\n\nTip: If you don\'t see "Add to Home Screen", make sure you are using Safari and not another browser.' },
+        body: 'iOS only supports PWA installation through Safari. Chrome and Firefox on iOS do not support this.\n\nSteps:\n1. Open Profile Centre in Safari on your iPhone or iPad\n2. Tap the Share button (box with arrow pointing up) at the bottom of the screen\n3. Scroll down and tap "Add to Home Screen"\n4. Edit the name if you like, then tap "Add"\n\nThe icon will appear on your home screen. Tap it to open in full-screen mode.\n\nTip: If you don\'t see "Add to Home Screen", make sure you are using Safari and not another browser.' },
       { id: 'ia-3', title: 'Install on Android (Chrome or Samsung Internet)', tags: ['android', 'chrome', 'samsung', 'install', 'home screen'],
-        body: 'Using Chrome:\n1. Open JA Profile Studio in Chrome on your Android device\n2. A banner may appear at the bottom — tap "Add"\n3. If not, tap the three-dot menu (⋮) → "Add to Home screen" or "Install app"\n4. Tap "Add" or "Install" to confirm\n\nUsing Samsung Internet:\n1. Open JA Profile Studio in Samsung Internet\n2. Tap the menu icon (three lines) at the bottom\n3. Tap "Add page to" → "Home screen" → "Add"\n\nThe icon will appear on your home screen and open in full-screen mode.' },
+        body: 'Using Chrome:\n1. Open Profile Centre in Chrome on your Android device\n2. A banner may appear at the bottom — tap "Add"\n3. If not, tap the three-dot menu (⋮) → "Add to Home screen" or "Install app"\n4. Tap "Add" or "Install" to confirm\n\nUsing Samsung Internet:\n1. Open Profile Centre in Samsung Internet\n2. Tap the menu icon (three lines) at the bottom\n3. Tap "Add page to" → "Home screen" → "Add"\n\nThe icon will appear on your home screen and open in full-screen mode.' },
       { id: 'ia-4', title: 'Install on desktop (Chrome or Edge)', tags: ['desktop', 'chrome', 'edge', 'windows', 'mac', 'install'],
-        body: 'Using Chrome:\n1. Open JA Profile Studio in Google Chrome\n2. Look for the install icon (computer with down arrow) in the address bar\n3. Click it and then click "Install"\n4. Or: three-dot menu → "Cast, save, and share" → "Install page as app"\n\nUsing Microsoft Edge:\n1. Open JA Profile Studio in Edge\n2. Three-dot menu (…) → "Apps" → "Install this site as an app"\n3. Click "Install"\n\nOnce installed, JA Profile Studio opens in its own window. Find it in your Start Menu (Windows) or Applications folder (Mac).' },
+        body: 'Using Chrome:\n1. Open Profile Centre in Google Chrome\n2. Look for the install icon (computer with down arrow) in the address bar\n3. Click it and then click "Install"\n4. Or: three-dot menu → "Cast, save, and share" → "Install page as app"\n\nUsing Microsoft Edge:\n1. Open Profile Centre in Edge\n2. Three-dot menu (…) → "Apps" → "Install this site as an app"\n3. Click "Install"\n\nOnce installed, Profile Centre opens in its own window. Find it in your Start Menu (Windows) or Applications folder (Mac).' },
       { id: 'ia-5', title: 'Install on Mac (Safari)', tags: ['mac', 'safari', 'macos', 'desktop', 'install'],
-        body: 'Safari on macOS Sonoma (14) and later supports adding web apps to your Dock.\n\nSteps:\n1. Open JA Profile Studio in Safari on your Mac\n2. Click "File" in the menu bar\n3. Click "Add to Dock…"\n4. Edit the name if you like, then click "Add"\n\nJA Profile Studio will appear in your Dock and launch like any other app.\n\nRequires macOS Sonoma (14) or later. For earlier macOS, use Chrome or Edge instead.' },
+        body: 'Safari on macOS Sonoma (14) and later supports adding web apps to your Dock.\n\nSteps:\n1. Open Profile Centre in Safari on your Mac\n2. Click "File" in the menu bar\n3. Click "Add to Dock…"\n4. Edit the name if you like, then click "Add"\n\nProfile Centre will appear in your Dock and launch like any other app.\n\nRequires macOS Sonoma (14) or later. For earlier macOS, use Chrome or Edge instead.' },
       { id: 'ia-6', title: 'How do I remove the app from my device?', tags: ['uninstall', 'remove', 'delete', 'home screen'],
-        body: 'Removing the app does not affect your account or data.\n\niPhone/iPad: Press and hold the icon → "Remove App" → "Delete from Home Screen"\n\nAndroid: Press and hold the icon → drag to "Remove" or "Uninstall"\n\nDesktop Chrome: Open the app → three-dot menu → "Uninstall JA Profile Studio"\n\nDesktop Edge: Open the app → three-dot menu → "App settings" → "Uninstall"\n\nMac Dock: Right-click the icon → "Remove from Dock"\n\nYou can reinstall at any time by visiting the site and following the install steps again.' },
+        body: 'Removing the app does not affect your account or data.\n\niPhone/iPad: Press and hold the icon → "Remove App" → "Delete from Home Screen"\n\nAndroid: Press and hold the icon → drag to "Remove" or "Uninstall"\n\nDesktop Chrome: Open the app → three-dot menu → "Uninstall Profile Centre"\n\nDesktop Edge: Open the app → three-dot menu → "App settings" → "Uninstall"\n\nMac Dock: Right-click the icon → "Remove from Dock"\n\nYou can reinstall at any time by visiting the site and following the install steps again.' },
     ],
   },
 ];
@@ -176,11 +176,11 @@ export default function PublicHelpCentrePage() {
     <>
       <Helmet>
         <title>{`Help Centre — ${branding.platform_name}`}</title>
-        <meta name="description" content="Help Centre for JA Profile Studio. Find answers to common questions about your account, profiles, billing, privacy and more." />
+        <meta name="description" content="Help Centre for Profile Centre. Find answers to common questions about your account, profiles, billing, privacy and more." />
         <link rel="canonical" href={`${APP_URL}/help`} />
         <meta name="robots" content="index, follow" />
         <meta property="og:title" content={`Help Centre — ${branding.platform_name}`} />
-        <meta property="og:description" content="Find answers to common questions about JA Profile Studio." />
+        <meta property="og:description" content="Find answers to common questions about Profile Centre." />
         <meta property="og:url" content={`${APP_URL}/help`} />
         <meta property="og:type" content="website" />
       </Helmet>
@@ -193,7 +193,7 @@ export default function PublicHelpCentrePage() {
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-3">Help Centre</h1>
           <p className="text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            Find answers to common questions about JA Profile Studio. No login required.
+            Find answers to common questions about Profile Centre. No login required.
           </p>
         </div>
 

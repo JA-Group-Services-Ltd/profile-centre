@@ -1,9 +1,9 @@
 /**
- * sendEmail wrapper for JA Profile Studio.
+ * sendEmail wrapper for Profile Centre.
  *
  * Extends the base Airo gateway helper with `fromName` support.
  * The gateway accepts a `fromName` field in the JSON payload to set
- * the display name in the From header (e.g. "JA Profile Studio <noreply@...>").
+ * the display name in the From header (e.g. "Profile Centre <noreply@...>").
  * Since the base email.ts type doesn't expose this field, we cast through
  * the gateway payload directly.
  *
@@ -17,15 +17,15 @@ export type { EmailAttachment, SendEmailResult } from '../email.js';
 export interface SendEmailOptions extends SendEmailInput {
   /**
    * Display name shown in the From header.
-   * e.g. "JA Profile Studio" → From: JA Profile Studio <noreply@japrofilestudio...>
-   * Always set this to 'JA Profile Studio' for all outbound mail.
+   * e.g. "Profile Centre" → From: Profile Centre <noreply@japrofilestudio...>
+   * Always set this to 'Profile Centre' for all outbound mail.
    */
   fromName?: string;
 }
 
 /**
  * Send an email via the Airo gateway with optional display-name support.
- * Always pass `fromName: 'JA Profile Studio'` on every call.
+ * Always pass `fromName: 'Profile Centre'` on every call.
  */
 export async function sendEmail(input: SendEmailOptions): Promise<SendEmailResult> {
   // The Airo gateway accepts `fromName` as a top-level JSON field even though

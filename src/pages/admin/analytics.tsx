@@ -108,7 +108,7 @@ export default function AdminAnalytics() {
     <div className="max-w-6xl mx-auto pb-20 lg:pb-0">
       <Helmet>
         <title>Analytics — Admin Portal</title>
-        <meta name="description" content="Platform-wide analytics and usage statistics for JA Profile Studio." />
+        <meta name="description" content="Platform-wide analytics and usage statistics for Profile Centre." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/admin/analytics" />
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>

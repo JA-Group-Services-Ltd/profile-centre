@@ -71,7 +71,7 @@ export default function AssistedAccessBanner() {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-orange-400">Admin Assisted Access Active</p>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  <strong>{r.admin_name || r.admin_email || 'A JA Profile Studio admin'}</strong> is currently viewing your account.
+                  <strong>{r.admin_name || r.admin_email || 'A Profile Centre admin'}</strong> is currently viewing your account.
                 </p>
                 <div className="flex flex-wrap gap-1 mt-1.5">
                   {areas.map(a => (
@@ -109,7 +109,7 @@ export default function AssistedAccessBanner() {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-foreground">Assisted Access Request</p>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  <strong>{r.admin_name || r.admin_email || 'A JA Profile Studio admin'}</strong> has requested temporary access to your account.
+                  <strong>{r.admin_name || r.admin_email || 'A Profile Centre admin'}</strong> has requested temporary access to your account.
                 </p>
                 <div className="mt-2 p-2.5 rounded-xl bg-muted/30 border border-border/50">
                   <p className="text-xs font-medium text-muted-foreground mb-0.5">Reason</p>

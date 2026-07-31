@@ -1,6 +1,6 @@
 {
-  "name": "JA Profile Studio",
-  "short_name": "JA Profile Studio",
+  "name": "Profile Centre",
+  "short_name": "Profile Centre",
   "description": "Your digital profile hub — personal and business cards, links, QR codes and more.",
   "start_url": "/dashboard",
   "scope": "/",
