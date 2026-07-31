@@ -33,7 +33,7 @@ jobs:
           setup_http="not-run"
           health_http="not-run"
           result="failure"
-          message="Cloudflare setup endpoint did not become ready."
+          message="Cloudflare setup endpoint version 2 did not become ready."
 
           echo '{}' > /tmp/setup-readiness.json
           echo '{}' > /tmp/setup-result.json
@@ -50,12 +50,14 @@ jobs:
             cat /tmp/setup-readiness.json 2>/dev/null
             echo
 
-            if [[ "${readiness_http}" == "200" ]] && grep -Eq '"status":"(ready|already_configured)"' /tmp/setup-readiness.json; then
-              message="Cloudflare setup endpoint is ready."
+            if [[ "${readiness_http}" == "200" ]] && \
+               grep -q '"installerVersion":"2"' /tmp/setup-readiness.json && \
+               grep -Eq '"status":"(ready|already_configured)"' /tmp/setup-readiness.json; then
+              message="Cloudflare setup endpoint version 2 is ready."
               break
             fi
 
-            if [[ "${readiness_http}" == "409" ]]; then
+            if [[ "${readiness_http}" == "409" ]] && grep -q '"installerVersion":"2"' /tmp/setup-readiness.json; then
               message="Database setup was blocked because unexpected tables already exist."
               break
             fi
@@ -63,7 +65,9 @@ jobs:
             sleep 20
           done
 
-          if [[ "${readiness_http}" == "200" ]] && grep -Eq '"status":"(ready|already_configured)"' /tmp/setup-readiness.json; then
+          if [[ "${readiness_http}" == "200" ]] && \
+             grep -q '"installerVersion":"2"' /tmp/setup-readiness.json && \
+             grep -Eq '"status":"(ready|already_configured)"' /tmp/setup-readiness.json; then
             setup_http=$(curl --silent --show-error --location \
               --request POST \
               --header "content-type: application/json" \
@@ -75,6 +79,7 @@ jobs:
 
             if [[ "${setup_exit}" == "0" ]] && \
                [[ "${setup_http}" == "200" || "${setup_http}" == "201" ]] && \
+               grep -q '"installerVersion":"2"' /tmp/setup-result.json && \
                grep -Eq '"status":"(created|already_configured)"' /tmp/setup-result.json && \
                grep -q '"schemaVersion":"1"' /tmp/setup-result.json; then
 
