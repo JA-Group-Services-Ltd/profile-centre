@@ -3,6 +3,7 @@ import Database from "better-sqlite3";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { handleApiRequest } from "../functions/_shared/router.js";
 import { resolveUser } from "../functions/_shared/auth.js";
+import { reportPlatformHeartbeat } from "../functions/_shared/head-office.js";
 
 class D1Statement {
   constructor(database, sql, values = []) {
@@ -157,6 +158,28 @@ describe("Cloudflare API router", () => {
     const response = await handleApiRequest(context(d1, "/profiles/me"));
     expect(response.status).toBe(401);
     expect(response.headers.get("content-type")).toContain("application/json");
+  });
+
+  it("reports a genuine operational heartbeat and throttles subsequent activity", async () => {
+    fetch.mockImplementation(async (requestValue, init) => {
+      expect(String(requestValue)).toContain("/api/platform/heartbeat");
+      const body = JSON.parse(init?.body || "{}");
+      expect(body).toMatchObject({
+        healthStatus: "operational",
+        publicUrl: "https://profilecentre.jagroupservices.co.uk/",
+        hostingProvider: "Cloudflare Pages",
+        customerCount: 1,
+        activeSessionCount: 3,
+        openErrorCount: 0,
+      });
+      return Response.json({ receivedAt: "2026-07-31T06:00:00.000Z" }, { status: 202 });
+    });
+    const env = context(d1, "/plans").env;
+    const first = await reportPlatformHeartbeat(env, { force: true });
+    const second = await reportPlatformHeartbeat(env);
+    expect(first.receivedAt).toBe("2026-07-31T06:00:00.000Z");
+    expect(second).toEqual({ skipped: true, reason: "fresh" });
+    expect(fetch).toHaveBeenCalledTimes(1);
   });
 
   it("fails closed and revokes a customer session when Head Office denies access", async () => {

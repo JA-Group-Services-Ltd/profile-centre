@@ -16,6 +16,14 @@ revocation instructions fail closed. A previous allow may be used for no more
 than five minutes during a transient Head Office outage; first login and expired
 decisions do not fail open.
 
+After a successful customer sign-in, Profile Centre sends an authenticated
+`POST /api/platform/heartbeat` to Head Office. Authenticated customer activity
+refreshes it at most once every five minutes. The heartbeat reports the
+canonical production URL, Cloudflare Pages hosting and commit metadata,
+customer and active-session counts, and the number of connector errors. A
+heartbeat failure never bypasses an access decision or prevents an otherwise
+authorised customer session; subsequent activity retries it.
+
 Staff authentication is excluded. It continues to use
 `ADMIN_OIDC_*`, `admin_entra_oid`, the Administrator app role, and the existing
 admin PIN/RBAC controls.
