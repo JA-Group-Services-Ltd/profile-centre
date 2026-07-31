@@ -115,7 +115,7 @@ export default function Footer() {
                 <img
                   src={branding.platform_logo_url}
                   alt={branding.platform_name || 'Profile Centre'}
-                  className="h-9 w-auto object-contain"
+                  className="h-14 w-auto max-w-[200px] object-contain"
                 />
               ) : (
                 <span className="font-extrabold text-lg text-foreground">

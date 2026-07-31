@@ -48,7 +48,7 @@ export default function SiteNavHeader() {
               <img
                 src={branding.platform_logo_url}
                 alt={branding.platform_name || 'Profile Centre'}
-                className="h-9 w-auto object-contain shrink-0 md:h-11"
+                className="h-12 w-auto max-w-[170px] object-contain shrink-0 md:h-14 md:max-w-[200px]"
               />
             ) : (
               <span className="font-extrabold text-lg tracking-tight text-foreground">
