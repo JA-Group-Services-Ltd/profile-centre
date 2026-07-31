@@ -1,0 +1,8 @@
+result=success
+timestamp=2026-07-31T01:22:08Z
+message=The corrected hash-locked production importer is deployed and ready.
+http=200
+
+--- importer response ---
+{"status":"ready","importId":"profile-centre-airo-20260731T011911Z","schemaVersion":"1","payloadSha256":"bac25a94725e041e391204f19eb988ddddecad624abee743d935443526bb1d73","importerVersion":"2","normalizedTables":["profiles","business_card_orders"],"requestId":"f82c10e2-c1ee-40cf-8c93-55b5d06d65b6"}
+--- curl errors ---
