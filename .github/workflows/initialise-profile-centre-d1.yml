@@ -1,0 +1,97 @@
+name: Initialise Profile Centre D1
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/initialise-profile-centre-d1.yml
+
+permissions:
+  contents: read
+
+jobs:
+  initialise:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Wait for Cloudflare deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          base_url="https://profilecentre.jagroupservices.co.uk"
+          ready="false"
+
+          for attempt in $(seq 1 45); do
+            status_code=$(curl --silent --show-error --location \
+              --output /tmp/setup-readiness.json \
+              --write-out "%{http_code}" \
+              "${base_url}/api/setup-database" || true)
+
+            echo "Attempt ${attempt}: HTTP ${status_code}"
+            cat /tmp/setup-readiness.json 2>/dev/null || true
+            echo
+
+            if [[ "${status_code}" == "200" ]] && grep -Eq '"status":"(ready|already_configured)"' /tmp/setup-readiness.json; then
+              ready="true"
+              break
+            fi
+
+            if [[ "${status_code}" == "409" ]]; then
+              echo "Database setup was blocked because unexpected tables already exist."
+              exit 1
+            fi
+
+            sleep 20
+          done
+
+          if [[ "${ready}" != "true" ]]; then
+            echo "Cloudflare did not expose a ready setup endpoint within the allotted time."
+            echo "Check that the Pages project deployed main and that the D1 database is bound as DB."
+            exit 1
+          fi
+
+      - name: Create D1 schema
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          base_url="https://profilecentre.jagroupservices.co.uk"
+          status_code=$(curl --silent --show-error --location \
+            --request POST \
+            --header "content-type: application/json" \
+            --data '{}' \
+            --output /tmp/setup-result.json \
+            --write-out "%{http_code}" \
+            "${base_url}/api/setup-database")
+
+          cat /tmp/setup-result.json
+          echo
+
+          if [[ "${status_code}" != "200" && "${status_code}" != "201" ]]; then
+            echo "D1 setup returned HTTP ${status_code}."
+            exit 1
+          fi
+
+          grep -Eq '"status":"(created|already_configured)"' /tmp/setup-result.json
+          grep -q '"schemaVersion":"1"' /tmp/setup-result.json
+
+      - name: Verify health endpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          base_url="https://profilecentre.jagroupservices.co.uk"
+          status_code=$(curl --silent --show-error --location \
+            --output /tmp/health.json \
+            --write-out "%{http_code}" \
+            "${base_url}/api/health")
+
+          cat /tmp/health.json
+          echo
+
+          test "${status_code}" = "200"
+          grep -q '"status":"ok"' /tmp/health.json
+          grep -q '"schemaVersion":"1"' /tmp/health.json
