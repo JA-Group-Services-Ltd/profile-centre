@@ -97,7 +97,8 @@ export async function requireUser(request, database, env = null) {
   }
   const user = await database.prepare(`
     SELECT id, email, name, role, plan_id, account_status, is_paused, is_blocked,
-           customer_number, head_office_access_decision, head_office_access_decided_at
+           customer_number, head_office_customer_id, created_at,
+           head_office_access_decision, head_office_access_decided_at
     FROM users WHERE id = ?1 LIMIT 1
   `).bind(userId).first();
   if (!user) throw new HttpError(401, "User not found", "authentication_required");
@@ -242,12 +243,14 @@ export async function resolveUser(database, claims, admin, requiredRole) {
 
   const oidColumn = admin ? "admin_entra_oid" : "entra_oid";
   let user = await database.prepare(`
-    SELECT id, email, name, role, plan_id, created_at FROM users
+    SELECT id, email, name, role, plan_id, created_at, account_status,
+           customer_number, head_office_customer_id FROM users
     WHERE ${oidColumn} = ?1 ${admin ? "AND role = 'admin'" : ""} LIMIT 1
   `).bind(oid).first();
   if (!user && email) {
     user = await database.prepare(`
-      SELECT id, email, name, role, plan_id, created_at FROM users
+      SELECT id, email, name, role, plan_id, created_at, account_status,
+             customer_number, head_office_customer_id FROM users
       WHERE lower(email) = ?1 ${admin ? "AND role = 'admin'" : ""} LIMIT 1
     `).bind(email).first();
   }

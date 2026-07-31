@@ -47,7 +47,7 @@ import {
   setAdminPin,
   verifyAdminPin,
 } from "./admin-pin.js";
-import { getBranchSecurityState, processHeadOfficeCommands } from "./head-office.js";
+import { backfillHeadOfficeCustomers, getBranchSecurityState, processHeadOfficeCommands, retryOperationalEvents } from "./head-office.js";
 import {
   cancelStripeSubscription,
   createBillingPortal,
@@ -435,16 +435,16 @@ async function dispatch(context, requestId) {
   if (path === "/profiles") {
     if (method !== "POST") return methodNotAllowed(["POST"], requestId);
     const { user } = await requireUser(request, database, context.env);
-    return json(await createProfile(request, database, user), 201);
+    return json(await createProfile(request, database, user, context.env), 201);
   }
   const profileMatch = path.match(/^\/profiles\/(\d+)$/);
   if (profileMatch) {
     const { user } = await requireUser(request, database, context.env);
     const profileId = integer(profileMatch[1], "profile ID");
     if (["PUT", "PATCH"].includes(method)) {
-      return json(await updateProfile(request, database, user, profileId));
+      return json(await updateProfile(request, database, user, profileId, context.env));
     }
-    if (method === "DELETE") return json(await deleteProfile(request, database, user, profileId));
+    if (method === "DELETE") return json(await deleteProfile(request, database, user, profileId, context.env));
     return methodNotAllowed(["PUT", "PATCH", "DELETE"], requestId);
   }
   const publishMatch = path.match(/^\/profiles\/(\d+)\/(publish|unpublish)$/);
@@ -454,7 +454,7 @@ async function dispatch(context, requestId) {
     }
     const { user } = await requireUser(request, database, context.env);
     return json(await setPublished(
-      request, database, user, integer(publishMatch[1], "profile ID"), publishMatch[2] === "publish",
+      request, database, user, integer(publishMatch[1], "profile ID"), publishMatch[2] === "publish", context.env,
     ));
   }
   if (path === "/links") {
@@ -500,7 +500,7 @@ async function dispatch(context, requestId) {
       return methodNotAllowed(["GET", "POST", "DELETE"], requestId);
     }
     const { user } = await requireUser(request, database, context.env);
-    return json(await accountClosure(request, database, user, method));
+    return json(await accountClosure(request, database, user, method, context.env));
   }
   if (path === "/me/data-requests") {
     if (!["GET", "POST"].includes(method)) return methodNotAllowed(["GET", "POST"], requestId);
@@ -518,6 +518,15 @@ async function dispatch(context, requestId) {
     if (path === "/admin/head-office/commands/sync") {
       if (method !== "POST") return methodNotAllowed(["POST"], requestId);
       return json({ success: true, data: await processHeadOfficeCommands(context.env) });
+    }
+    if (path === "/admin/head-office/customers/backfill") {
+      if (method !== "POST") return methodNotAllowed(["POST"], requestId);
+      const body = await readJson(request).catch(()=>({}));
+      return json({success:true,data:await backfillHeadOfficeCustomers(context.env,{limit:body.limit})});
+    }
+    if (path === "/admin/head-office/events/retry") {
+      if (method !== "POST") return methodNotAllowed(["POST"], requestId);
+      return json({success:true,data:await retryOperationalEvents(context.env)});
     }
     const crmUserMatch = path.match(/^\/admin\/crm\/users\/(\d+)$/);
     if (crmUserMatch) {
