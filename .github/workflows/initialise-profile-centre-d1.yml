@@ -46,7 +46,7 @@ jobs:
               "${base_url}/api/setup-database" 2>/tmp/curl-error.txt)
             curl_exit=$?
 
-            echo "Attempt ${attempt}: curl=${curl_exit}, HTTP ${readiness_http}"
+            echo "Readiness attempt ${attempt}: curl=${curl_exit}, HTTP ${readiness_http}"
             cat /tmp/setup-readiness.json 2>/dev/null
             echo
 
@@ -68,14 +68,31 @@ jobs:
           if [[ "${readiness_http}" == "200" ]] && \
              grep -q '"installerVersion":"2"' /tmp/setup-readiness.json && \
              grep -Eq '"status":"(ready|already_configured)"' /tmp/setup-readiness.json; then
-            setup_http=$(curl --silent --show-error --location \
-              --request POST \
-              --header "content-type: application/json" \
-              --data '{}' \
-              --output /tmp/setup-result.json \
-              --write-out "%{http_code}" \
-              "${base_url}/api/setup-database" 2>/tmp/setup-curl-error.txt)
-            setup_exit=$?
+
+            for post_attempt in $(seq 1 20); do
+              setup_http=$(curl --silent --show-error --location \
+                --request POST \
+                --header "content-type: application/json" \
+                --data '{}' \
+                --output /tmp/setup-result.json \
+                --write-out "%{http_code}" \
+                "${base_url}/api/setup-database" 2>/tmp/setup-curl-error.txt)
+              setup_exit=$?
+
+              echo "Setup attempt ${post_attempt}: curl=${setup_exit}, HTTP ${setup_http}"
+              cat /tmp/setup-result.json 2>/dev/null
+              echo
+
+              if [[ "${setup_exit}" == "0" ]] && \
+                 [[ "${setup_http}" == "200" || "${setup_http}" == "201" ]] && \
+                 grep -q '"installerVersion":"2"' /tmp/setup-result.json && \
+                 grep -Eq '"status":"(created|already_configured)"' /tmp/setup-result.json && \
+                 grep -q '"schemaVersion":"1"' /tmp/setup-result.json; then
+                break
+              fi
+
+              sleep 15
+            done
 
             if [[ "${setup_exit}" == "0" ]] && \
                [[ "${setup_http}" == "200" || "${setup_http}" == "201" ]] && \
@@ -83,23 +100,34 @@ jobs:
                grep -Eq '"status":"(created|already_configured)"' /tmp/setup-result.json && \
                grep -q '"schemaVersion":"1"' /tmp/setup-result.json; then
 
-              health_http=$(curl --silent --show-error --location \
-                --output /tmp/health.json \
-                --write-out "%{http_code}" \
-                "${base_url}/api/health" 2>/tmp/health-curl-error.txt)
-              health_exit=$?
+              for health_attempt in $(seq 1 12); do
+                health_http=$(curl --silent --show-error --location \
+                  --output /tmp/health.json \
+                  --write-out "%{http_code}" \
+                  "${base_url}/api/health" 2>/tmp/health-curl-error.txt)
+                health_exit=$?
 
-              if [[ "${health_exit}" == "0" ]] && \
-                 [[ "${health_http}" == "200" ]] && \
-                 grep -q '"status":"ok"' /tmp/health.json && \
-                 grep -q '"schemaVersion":"1"' /tmp/health.json; then
-                result="success"
-                message="Profile Centre D1 schema version 1 was created and verified."
-              else
-                message="The schema setup responded, but the health verification failed."
+                echo "Health attempt ${health_attempt}: curl=${health_exit}, HTTP ${health_http}"
+                cat /tmp/health.json 2>/dev/null
+                echo
+
+                if [[ "${health_exit}" == "0" ]] && \
+                   [[ "${health_http}" == "200" ]] && \
+                   grep -q '"status":"ok"' /tmp/health.json && \
+                   grep -q '"schemaVersion":"1"' /tmp/health.json; then
+                  result="success"
+                  message="Profile Centre D1 schema version 1 was created and verified."
+                  break
+                fi
+
+                sleep 10
+              done
+
+              if [[ "${result}" != "success" ]]; then
+                message="The schema setup succeeded, but the health verification failed."
               fi
             else
-              message="The D1 schema creation request failed."
+              message="The D1 schema creation request did not reach installer version 2 successfully."
             fi
           fi
 
