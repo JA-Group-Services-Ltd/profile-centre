@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { handleApiRequest } from "../functions/_shared/router.js";
 import { resolveUser } from "../functions/_shared/auth.js";
 import { reportPlatformHeartbeat } from "../functions/_shared/head-office.js";
+import { handleStripeWebhook } from "../functions/_shared/stripe.js";
 
 class D1Statement {
   constructor(database, sql, values = []) {
@@ -65,6 +66,8 @@ function context(database, path, init = {}) {
       DB: database,
       HEAD_OFFICE_API_BASE_URL: "https://head-office.example.test",
       HEAD_OFFICE_PLATFORM_KEY: "test-platform-key",
+      STRIPE_SECRET_KEY: "sk_test_not_a_real_secret",
+      STRIPE_WEBHOOK_SECRET: "whsec_test_signing_secret",
     },
     params: { path: path.split("/").filter(Boolean) },
     request: request(path, init),
@@ -90,6 +93,7 @@ describe("Cloudflare API router", () => {
     sqlite = new Database(":memory:");
     sqlite.exec(fs.readFileSync("migrations/0002_full_d1_schema.sql", "utf8"));
     sqlite.exec(fs.readFileSync("migrations/0003_head_office_connector.sql", "utf8"));
+    sqlite.exec(fs.readFileSync("migrations/0004_cloudflare_stripe.sql", "utf8"));
     sqlite.exec(`
       INSERT INTO plans (id, name, slug, max_links, is_active, is_public)
       VALUES (1, 'Free', 'free', 5, 1, 1);
@@ -171,6 +175,7 @@ describe("Cloudflare API router", () => {
         customerCount: 1,
         activeSessionCount: 3,
         openErrorCount: 0,
+        integrations: { stripe: false },
       });
       return Response.json({ receivedAt: "2026-07-31T06:00:00.000Z" }, { status: 202 });
     });
@@ -180,6 +185,32 @@ describe("Cloudflare API router", () => {
     expect(first.receivedAt).toBe("2026-07-31T06:00:00.000Z");
     expect(second).toEqual({ skipped: true, reason: "fresh" });
     expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("verifies the raw Stripe body and processes duplicate events idempotently", async () => {
+    const event = JSON.stringify({
+      id: "evt_profile_centre_test",
+      object: "event",
+      type: "product.updated",
+      livemode: true,
+      data: { object: { id: "prod_profile_centre_test" } },
+    });
+    const timestamp = Math.floor(Date.now() / 1000);
+    const key = await crypto.subtle.importKey(
+      "raw", new TextEncoder().encode("whsec_test_signing_secret"),
+      { name: "HMAC", hash: "SHA-256" }, false, ["sign"],
+    );
+    const digest = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(`${timestamp}.${event}`));
+    const signature = [...new Uint8Array(digest)].map(value => value.toString(16).padStart(2, "0")).join("");
+    const stripeRequest = () => new Request("https://profilecentre.jagroupservices.co.uk/api/stripe/webhook", {
+      method: "POST",
+      headers: { "stripe-signature": `t=${timestamp},v1=${signature}`, "content-type": "application/json" },
+      body: event,
+    });
+    const env = context(d1, "/plans").env;
+    expect(await handleStripeWebhook(stripeRequest(), env)).toEqual({ received: true });
+    expect(await handleStripeWebhook(stripeRequest(), env)).toEqual({ received: true, duplicate: true });
+    expect(sqlite.prepare("SELECT COUNT(*) count FROM stripe_webhook_events WHERE event_id=?").get("evt_profile_centre_test").count).toBe(1);
   });
 
   it("fails closed and revokes a customer session when Head Office denies access", async () => {

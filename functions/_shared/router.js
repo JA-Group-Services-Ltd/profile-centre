@@ -48,6 +48,13 @@ import {
   verifyAdminPin,
 } from "./admin-pin.js";
 import { getBranchSecurityState, processHeadOfficeCommands } from "./head-office.js";
+import {
+  cancelStripeSubscription,
+  createBillingPortal,
+  createStripeCheckout,
+  handleStripeWebhook,
+  initialiseStripeCustomer,
+} from "./stripe.js";
 
 function integer(value, name = "id") {
   const result = Number(value);
@@ -364,6 +371,10 @@ async function dispatch(context, requestId) {
     if (method !== "GET") return methodNotAllowed(["GET"], requestId);
     return json({ enabled: await businessCardsEnabled(database) });
   }
+  if (path === "/stripe/webhook") {
+    if (method !== "POST") return methodNotAllowed(["POST"], requestId);
+    return json(await handleStripeWebhook(request, context.env));
+  }
   const publicProfileMatch = path.match(/^\/profiles\/([^/]+)\/public$/);
   if (publicProfileMatch) {
     if (method !== "GET") return methodNotAllowed(["GET"], requestId);
@@ -468,6 +479,14 @@ async function dispatch(context, requestId) {
     if (method !== "GET") return methodNotAllowed(["GET"], requestId);
     const { user } = await requireUser(request, database, context.env);
     return json(await subscriptions(database, user.id));
+  }
+  if (["/billing/init-customer", "/billing/checkout", "/billing/portal", "/billing/cancel"].includes(path)) {
+    if (method !== "POST") return methodNotAllowed(["POST"], requestId);
+    const { user } = await requireUser(request, database, context.env);
+    if (path === "/billing/init-customer") return json(await initialiseStripeCustomer(context.env, user.id));
+    if (path === "/billing/checkout") return json(await createStripeCheckout(context.env, user.id, await readJson(request), url.origin));
+    if (path === "/billing/portal") return json(await createBillingPortal(context.env, user.id, url.origin));
+    return json(await cancelStripeSubscription(context.env, user.id));
   }
   if (path === "/business-cards") {
     if (!["GET", "POST"].includes(method)) return methodNotAllowed(["GET", "POST"], requestId);

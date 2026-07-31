@@ -10,8 +10,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { useAuth } from '@/lib/auth';
 import { useBranding } from '@/lib/branding';
 
-const STRIPE_PORTAL_URL = 'https://billing.stripe.com/p/login/eVq6oH3k35B89IS9UJfEk00';
-
 function TrialClaimButton({ onClaimed }: { onClaimed: () => void }) {
   const [claiming, setClaiming] = useState(false);
   const [error, setError] = useState('');
@@ -85,6 +83,7 @@ export default function BillingPage() {
   const [cancelDone, setCancelDone] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState<number | null>(null);
   const [checkoutError, setCheckoutError] = useState('');
+  const [portalLoading, setPortalLoading] = useState(false);
 
   useEffect(() => {
     // Proactively link the user's sign-in email to a Stripe customer record
@@ -258,6 +257,21 @@ export default function BillingPage() {
       setCancelError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
       setCancelling(false);
+    }
+  };
+
+  const openBillingPortal = async () => {
+    setCheckoutError('');
+    setPortalLoading(true);
+    try {
+      const res = await fetch('/api/billing/portal', { method: 'POST', credentials: 'include' });
+      const data = await res.json();
+      if (!res.ok || !data.url) throw new Error(data.error || 'Billing portal unavailable');
+      window.location.href = data.url;
+    } catch (err) {
+      setCheckoutError(err instanceof Error ? err.message : 'Billing portal unavailable');
+    } finally {
+      setPortalLoading(false);
     }
   };
 
@@ -471,11 +485,9 @@ export default function BillingPage() {
             {/* Stripe customer portal — shown whenever user has/had a paid subscription */}
             {(hasActiveSub || user?.subscription_status === 'cancelled') && (
               <div className="mt-4 pt-4 border-t border-border/50">
-                <a href={STRIPE_PORTAL_URL} target="_blank" rel="noopener noreferrer">
-                  <Button variant="outline" size="sm" className="border-border gap-1.5">
-                    <ExternalLink className="w-3.5 h-3.5" /> Manage Subscription
-                  </Button>
-                </a>
+                <Button onClick={openBillingPortal} disabled={portalLoading} variant="outline" size="sm" className="border-border gap-1.5">
+                  {portalLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ExternalLink className="w-3.5 h-3.5" />} Manage Subscription
+                </Button>
                 <p className="text-xs text-muted-foreground mt-1.5">
                   Update payment method, download invoices, or manage your billing details.
                 </p>
@@ -686,11 +698,9 @@ export default function BillingPage() {
                     ) : isDowngrade ? (
                       /* Lower paid tier — downgrade via Stripe portal */
                       <div className="space-y-1.5">
-                        <a href={STRIPE_PORTAL_URL} target="_blank" rel="noopener noreferrer" className="block">
-                          <Button variant="outline" className="w-full border-orange-500/30 text-orange-400 hover:bg-orange-500/10 gap-1.5">
-                            <TrendingDown className="w-3.5 h-3.5" /> Downgrade via Stripe Portal
-                          </Button>
-                        </a>
+                        <Button onClick={openBillingPortal} disabled={portalLoading} variant="outline" className="w-full border-orange-500/30 text-orange-400 hover:bg-orange-500/10 gap-1.5">
+                          {portalLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <TrendingDown className="w-3.5 h-3.5" />} Downgrade via Stripe Portal
+                        </Button>
                         <p className="text-xs text-muted-foreground text-center">
                           Cancel your current plan in the portal — your account moves to this plan automatically.
                         </p>
@@ -698,11 +708,9 @@ export default function BillingPage() {
                     ) : isUpgradeBlocked ? (
                       /* Higher tier — on active paid plan, upgrade via Stripe portal */
                       <div className="space-y-1.5">
-                        <a href={STRIPE_PORTAL_URL} target="_blank" rel="noopener noreferrer" className="block">
-                          <Button className="w-full bg-primary hover:bg-primary/90 gap-1.5">
-                            <ExternalLink className="w-3.5 h-3.5" /> Upgrade via Stripe Portal
-                          </Button>
-                        </a>
+                        <Button onClick={openBillingPortal} disabled={portalLoading} className="w-full bg-primary hover:bg-primary/90 gap-1.5">
+                          {portalLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ExternalLink className="w-3.5 h-3.5" />} Upgrade via Stripe Portal
+                        </Button>
                         <p className="text-xs text-muted-foreground text-center">
                           Switch to this plan from your Stripe billing portal.
                         </p>
