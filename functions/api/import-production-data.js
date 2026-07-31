@@ -4,10 +4,10 @@ const JSON_HEADERS = {
   "access-control-allow-origin": "*",
 };
 
-const IMPORT_ID = "profile-centre-airo-20260731T005504Z";
-const EXPECTED_SHA256 = "3ea10e72a73aa20bfc0211af6f0e5a03a5a08db427fc3dac6bef3eb9bfd05d8a";
+const IMPORT_ID = "profile-centre-airo-20260731T011911Z";
+const EXPECTED_SHA256 = "bac25a94725e041e391204f19eb988ddddecad624abee743d935443526bb1d73";
 const MAX_BODY_BYTES = 1_000_000;
-const BATCH_SIZE = 40;
+const BATCH_SIZE = 25;
 
 function json(payload, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(payload), {
@@ -114,6 +114,8 @@ export async function onRequestGet(context) {
       importId: IMPORT_ID,
       schemaVersion,
       payloadSha256: EXPECTED_SHA256,
+      importerVersion: "2",
+      normalizedTables: ["profiles", "business_card_orders"],
       requestId,
     },
     200,
@@ -180,7 +182,7 @@ export async function onRequestPost(context) {
 
     const payload = JSON.parse(new TextDecoder().decode(body));
     if (
-      payload?.formatVersion !== 1 ||
+      payload?.formatVersion !== 2 ||
       payload?.importId !== IMPORT_ID ||
       payload?.sourceEnvironment !== "production" ||
       !Array.isArray(payload?.dropStatements) ||
@@ -218,7 +220,7 @@ export async function onRequestPost(context) {
 
     const schemaVersion = await getSetting(context.env.DB, "schema_version");
     const completedImportId = await getSetting(context.env.DB, "production_import_id");
-    if (schemaVersion !== "2" || completedImportId !== IMPORT_ID) {
+    if (schemaVersion !== "3" || completedImportId !== IMPORT_ID) {
       throw new Error("The import completed but its migration markers could not be verified.");
     }
 
