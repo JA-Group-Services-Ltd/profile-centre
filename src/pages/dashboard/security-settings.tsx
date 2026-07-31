@@ -24,7 +24,7 @@ import { recordPinSuccess, clearOfflinePin } from '@/hooks/useOfflinePin';
 // ── JA Group Services ID — security actions ───────────────────────────────────
 // Password and sign-in security changes are handled by contacting JA Group Services support.
 // No direct external portal URLs are exposed to customers.
-const JA_ID_SUPPORT_EMAIL = 'japrofilestudio@jagroupservices.co.uk';
+const JA_ID_SUPPORT_EMAIL = 'profilecentre@jagroupservices.co.uk';
 
 // ── Redirect confirmation modal ───────────────────────────────────────────────
 interface JaIdRedirectModalProps {

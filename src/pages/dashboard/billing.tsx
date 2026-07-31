@@ -645,7 +645,7 @@ export default function BillingPage() {
                           Your current plan
                         </Button>
                       ) : (
-                        <a href={`mailto:${branding.contact_email || 'japrofilestudio@jagroupservices.co.uk'}?subject=Ultimate%20Organisation%2B%20Enquiry`} className="block w-full">
+                        <a href={`mailto:${branding.contact_email || 'profilecentre@jagroupservices.co.uk'}?subject=Ultimate%20Organisation%2B%20Enquiry`} className="block w-full">
                           <Button className="w-full bg-amber-500 hover:bg-amber-400 text-white font-semibold gap-1.5">
                             <ExternalLink className="w-3.5 h-3.5" /> Contact us for pricing
                           </Button>
@@ -653,7 +653,7 @@ export default function BillingPage() {
                       )
                     ) : isLifetime && isPaidPlan ? (
                       /* Lifetime user — must contact us to change plan */
-                      <a href={`mailto:${branding.contact_email || 'japrofilestudio@jagroupservices.co.uk'}?subject=Plan%20Change%20Request`} className="block w-full">
+                      <a href={`mailto:${branding.contact_email || 'profilecentre@jagroupservices.co.uk'}?subject=Plan%20Change%20Request`} className="block w-full">
                         <Button variant="outline" className="w-full border-border gap-1.5">
                           <ExternalLink className="w-3.5 h-3.5" /> Contact us to switch
                         </Button>
@@ -777,7 +777,7 @@ export default function BillingPage() {
             <p className="text-muted-foreground text-sm mb-4">
               Contact JA Group Services to upgrade or change your plan manually.
             </p>
-            <a href={`mailto:${branding.contact_email || 'japrofilestudio@jagroupservices.co.uk'}`}>
+            <a href={`mailto:${branding.contact_email || 'profilecentre@jagroupservices.co.uk'}`}>
               <Button className="bg-primary">Contact JA Group Services</Button>
             </a>
           </CardContent>

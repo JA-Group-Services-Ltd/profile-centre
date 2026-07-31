@@ -295,7 +295,7 @@ export default function DashboardLayout() {
             If you believe this is an error, please get in touch with our team and we'll get you back up and running.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <a href={`mailto:${branding.contact_email || 'japrofilestudio@jagroupservices.co.uk'}`}>
+            <a href={`mailto:${branding.contact_email || 'profilecentre@jagroupservices.co.uk'}`}>
               <Button className="bg-primary gap-2 w-full sm:w-auto">
                 <Phone className="w-4 h-4" /> Contact Us
               </Button>

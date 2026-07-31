@@ -431,7 +431,7 @@ function buildAdminManual(ctx: Ctx) {
   drawBullet(ctx, 'Target: single user (by email), plan group, or all users');
   drawBullet(ctx, 'Template: uses the adminBroadcastEmail branded template (white card, navy header)');
   drawBullet(ctx, 'From: noreply@japrofilestudio.jagroupservices.co.uk (set by Airo gateway -- do not override)');
-  drawBullet(ctx, 'Reply-To: japrofilestudio@jagroupservices.co.uk');
+  drawBullet(ctx, 'Reply-To: profilecentre@jagroupservices.co.uk');
   drawBullet(ctx, 'Encryption: all email is sent over TLS via the Airo gateway (127.0.0.1:2525)');
   drawBullet(ctx, 'Authentication: SPF, DKIM (selector: airo), and DMARC records protect sender identity');
   drawBullet(ctx, 'Audit: every send is logged in the audit trail with timestamp, target, and admin identity');
@@ -603,7 +603,7 @@ function buildAdminManual(ctx: Ctx) {
   drawPara(ctx, 'Email is sent via the Airo gateway on 127.0.0.1:2525.');
   drawTableRow(ctx, ['Setting', 'Value'], [200, 280], true);
   drawTableRow(ctx, ['From address', 'noreply@japrofilestudio.jagroupservices.co.uk'], [200, 280], false);
-  drawTableRow(ctx, ['Reply-To address', 'japrofilestudio@jagroupservices.co.uk'], [200, 280], false);
+  drawTableRow(ctx, ['Reply-To address', 'profilecentre@jagroupservices.co.uk'], [200, 280], false);
   drawTableRow(ctx, ['Admin alerts', 'admin@jagroupservices.co.uk'], [200, 280], false);
   drawTableRow(ctx, ['Gateway host', '127.0.0.1:2525'], [200, 280], false);
   ctx.y -= 8;

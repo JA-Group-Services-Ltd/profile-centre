@@ -478,10 +478,10 @@ export default function AccountPage() {
             <p className="text-xs text-muted-foreground mb-3">
               For account queries, billing questions, or technical support — we typically respond within 1 business day.
             </p>
-            <a href={`mailto:${branding.support_email || 'japrofilestudio@jagroupservices.co.uk'}`}>
+            <a href={`mailto:${branding.support_email || 'profilecentre@jagroupservices.co.uk'}`}>
               <Button variant="outline" size="sm" className="border-border gap-1.5">
                 <Mail className="w-3.5 h-3.5" />
-                {branding.support_email || 'japrofilestudio@jagroupservices.co.uk'}
+                {branding.support_email || 'profilecentre@jagroupservices.co.uk'}
               </Button>
             </a>
           </CardContent>
