@@ -1,0 +1,84 @@
+name: Verify Profile Centre Production Importer
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/verify-production-importer.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: verify-profile-centre-production-importer
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Wait for verified importer
+        shell: bash
+        run: |
+          set +e
+
+          endpoint="https://profilecentre.jagroupservices.co.uk/api/import-production-data"
+          expected_hash="3ea10e72a73aa20bfc0211af6f0e5a03a5a08db427fc3dac6bef3eb9bfd05d8a"
+          result="failure"
+          message="The verified importer did not become ready."
+          status_code="000"
+          echo '{}' > /tmp/importer-status.json
+
+          for attempt in $(seq 1 45); do
+            status_code=$(curl --silent --show-error --location \
+              --output /tmp/importer-status.json \
+              --write-out "%{http_code}" \
+              "${endpoint}" 2>/tmp/importer-curl-error.txt)
+            curl_exit=$?
+
+            echo "Attempt ${attempt}: curl=${curl_exit}, HTTP ${status_code}"
+            cat /tmp/importer-status.json 2>/dev/null
+            echo
+
+            if [[ "${curl_exit}" == "0" ]] && \
+               [[ "${status_code}" == "200" ]] && \
+               grep -q '"importId":"profile-centre-airo-20260731T005504Z"' /tmp/importer-status.json && \
+               grep -q "\"payloadSha256\":\"${expected_hash}\"" /tmp/importer-status.json && \
+               grep -Eq '"status":"(ready|complete)"' /tmp/importer-status.json; then
+              result="success"
+              message="The hash-locked production importer is deployed and ready."
+              break
+            fi
+
+            sleep 20
+          done
+
+          mkdir -p docs
+          {
+            echo "result=${result}"
+            echo "timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "message=${message}"
+            echo "http=${status_code}"
+            echo
+            echo "--- importer response ---"
+            cat /tmp/importer-status.json 2>/dev/null
+            echo
+            echo "--- curl errors ---"
+            cat /tmp/importer-curl-error.txt 2>/dev/null
+          } > docs/production-importer-deployment-status.txt
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/production-importer-deployment-status.txt
+          git commit -m "Record production importer deployment status" || true
+          git push
+
+          if [[ "${result}" != "success" ]]; then
+            exit 1
+          fi
