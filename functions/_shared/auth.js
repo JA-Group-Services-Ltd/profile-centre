@@ -1,5 +1,5 @@
 import { HttpError, json, redirect } from "./http.js";
-import { enforceCustomerAccess, synchroniseCustomer } from "./head-office.js";
+import { enforceCustomerAccess, sendOperationalEvent, synchroniseCustomer } from "./head-office.js";
 
 export const SESSION_COOKIE = "ja_profile_studio_session";
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
@@ -319,13 +319,25 @@ export async function completeOidc(request, env, flow) {
   }
   const claims = await verifyIdToken(tokens.id_token, metadata, config, stateData.nonce);
   const user = await resolveUser(env.DB, claims, config.admin, config.requiredRole);
-  if (!config.admin) await synchroniseCustomer(env, user, claims, config.tenantId);
+  if (!config.admin) await synchroniseCustomer(env, user, claims, config.tenantId, { recordSignIn: false });
+  const sessionReference = config.admin ? null : crypto.randomUUID();
+  const sessionStartedAt = new Date().toISOString();
   const session = await createSession(
     env.DB,
     config.admin
       ? { adminUserId: user.id, flow: "admin" }
-      : { userId: user.id, flow: "customer" },
+      : { userId: user.id, flow: "customer", sessionReference },
   );
+  if (!config.admin) {
+    const linkedUser = await env.DB.prepare(`SELECT id,customer_number,head_office_customer_id
+      FROM users WHERE id=?1`).bind(user.id).first();
+    await sendOperationalEvent(env,linkedUser || user,"auth.sign_in_succeeded",{
+      outcome:"success",category:"security_event",targetType:"session",targetReference:sessionReference,
+      occurredAt:sessionStartedAt,description:"Customer signed in successfully",
+      session:{id:sessionReference,status:"active",startedAt:sessionStartedAt,lastSeenAt:sessionStartedAt,
+        metadata:{source:"profile_centre_oidc"}}
+    });
+  }
   await env.DB.prepare("DELETE FROM oidc_state WHERE state = ?1").bind(state).run();
   return redirect(safeReturnPath(stateData.returnTo, config.admin ? "/admin" : "/dashboard"), 302, {
     "set-cookie": session.cookie,
