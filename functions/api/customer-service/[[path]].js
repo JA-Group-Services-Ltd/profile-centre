@@ -42,7 +42,7 @@ function unavailableConfig() {
     maintenanceEnabled: true,
     assistantName: 'Profile Centre Customer Service',
     greeting: 'Profile Centre support is available through JA Group Services Head Office.',
-    maintenanceMessage: 'Live Head Office chat is temporarily unavailable on Profile Centre. Please email hello@jagroupservices.co.uk or call 020 3834 2790.',
+    maintenanceMessage: 'Live Head Office chat is temporarily unavailable on Profile Centre. Please email contact@jagroupservices.co.uk or call 020 3834 2790.',
   };
 }
 
@@ -106,7 +106,7 @@ export async function onRequest(context) {
     if (method === 'GET' && path === 'knowledge') {
       return json({ success: true, connected: false, articles: [] });
     }
-    return json({ success: false, error: 'Live Head Office chat is temporarily unavailable. Please email hello@jagroupservices.co.uk or call 020 3834 2790.' }, 503);
+    return json({ success: false, error: 'Live Head Office chat is temporarily unavailable. Please email contact@jagroupservices.co.uk or call 020 3834 2790.' }, 503);
   }
 
   const controller = new AbortController();
