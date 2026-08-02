@@ -11,6 +11,7 @@ import OfflineBanner from '@/components/OfflineBanner';
 import PwaSplashScreen from '@/components/PwaSplashScreen';
 import PwaNavBar from '@/components/PwaNavBar';
 import InstallAppModal from '@/components/InstallAppModal';
+import CentralCustomerServiceAssistant from '@/components/CentralCustomerServiceAssistant';
 
 interface RootLayoutProps {
   children: ReactNode;
@@ -41,6 +42,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <Footer />
       <PwaNavBar />
       <InstallAppModal />
+      <CentralCustomerServiceAssistant />
     </Website>
   );
 }
