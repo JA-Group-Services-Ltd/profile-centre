@@ -1,0 +1,123 @@
+const DEFAULT_HEAD_OFFICE_URL = 'https://customerops.jagroupservices.co.uk';
+const ALLOWED_GET = [
+  /^config$/,
+  /^knowledge$/,
+  /^conversations\/[^/]+\/messages$/,
+];
+const ALLOWED_WRITE = [
+  /^conversations$/,
+  /^conversations\/[^/]+\/messages$/,
+  /^conversations\/[^/]+\/events$/,
+  /^conversations\/[^/]+\/escalate$/,
+];
+
+function json(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'no-store',
+      'X-Content-Type-Options': 'nosniff',
+      'Referrer-Policy': 'same-origin',
+    },
+  });
+}
+
+function clean(value, max = 1000) {
+  return String(value ?? '').trim().slice(0, max);
+}
+
+function enabled(env) {
+  return String(env.HEAD_OFFICE_SUPPORT_CENTRE_ENABLED || '').toLowerCase() === 'true'
+    && clean(env.CUSTOMEROPS_API_KEY, 500).length > 20;
+}
+
+function headOfficeOrigin(env) {
+  const configured = clean(env.CUSTOMEROPS_BASE_URL || DEFAULT_HEAD_OFFICE_URL, 500).replace(/\/$/, '');
+  const url = new URL(configured);
+  if (url.protocol !== 'https:' && !['localhost', '127.0.0.1'].includes(url.hostname)) {
+    throw new Error('The Head Office Customer Service URL must use HTTPS.');
+  }
+  return url.origin;
+}
+
+function sameOrigin(request) {
+  const origin = request.headers.get('Origin');
+  return !origin || origin === new URL(request.url).origin;
+}
+
+function routePath(context) {
+  const value = context.params?.path;
+  return clean(Array.isArray(value) ? value.join('/') : value, 600).replace(/^\/+|\/+$/g, '');
+}
+
+function routeAllowed(method, path) {
+  const rules = ['GET', 'HEAD'].includes(method) ? ALLOWED_GET : ALLOWED_WRITE;
+  return rules.some(rule => rule.test(path));
+}
+
+async function requestBody(request) {
+  if (['GET', 'HEAD'].includes(request.method)) return undefined;
+  const text = await request.text();
+  if (text.length > 64_000) throw Object.assign(new Error('The support request is too large.'), { status: 413 });
+  if (!text) return '{}';
+  JSON.parse(text);
+  return text;
+}
+
+function centralPath(path, search) {
+  return `/api/v1/platform/support/${path}${search || ''}`;
+}
+
+export async function onRequest(context) {
+  const method = context.request.method.toUpperCase();
+  if (!['GET', 'HEAD', 'POST'].includes(method)) return json({ success: false, error: 'Method not allowed.' }, 405);
+  if (!['GET', 'HEAD'].includes(method) && !sameOrigin(context.request)) {
+    return json({ success: false, error: 'Request origin was rejected.' }, 403);
+  }
+
+  const path = routePath(context);
+  if (!routeAllowed(method, path)) return json({ success: false, error: 'Support route not found.' }, 404);
+
+  if (!enabled(context.env)) {
+    if (method === 'GET' && path === 'config') {
+      return json({
+        success: true,
+        config: {
+          assistantEnabled: false,
+          aiEnabled: false,
+          assistantName: 'Profile Centre Support Assistant',
+          greeting: 'Customer support is not yet available through this channel.',
+        },
+      });
+    }
+    return json({ success: false, error: 'The Head Office Customer Service Centre is not enabled for this website.' }, 503);
+  }
+
+  try {
+    const body = await requestBody(context.request);
+    const incomingUrl = new URL(context.request.url);
+    const response = await fetch(`${headOfficeOrigin(context.env)}${centralPath(path, incomingUrl.search)}`, {
+      method,
+      headers: {
+        Authorization: `Bearer ${clean(context.env.CUSTOMEROPS_API_KEY, 500)}`,
+        Accept: 'application/json',
+        ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
+        'User-Agent': 'Profile-Centre-Central-Support/1.0',
+      },
+      body,
+    });
+    const payload = await response.text();
+    return new Response(payload || '{}', {
+      status: response.status,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Cache-Control': 'no-store',
+        'X-Content-Type-Options': 'nosniff',
+      },
+    });
+  } catch (error) {
+    const status = Number(error?.status || 502);
+    return json({ success: false, error: error instanceof Error ? error.message : 'Head Office Customer Service is temporarily unavailable.' }, status);
+  }
+}
