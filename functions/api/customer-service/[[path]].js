@@ -43,6 +43,8 @@ function unavailableConfig() {
     assistantName: 'Profile Centre Customer Service',
     greeting: 'Profile Centre support is available through JA Group Services Head Office.',
     maintenanceMessage: 'Live Head Office chat is temporarily unavailable on Profile Centre. Please email contact@jagroupservices.co.uk or call 020 3834 2790.',
+    appearance: {},
+    contactOptions: { email: 'contact@jagroupservices.co.uk', phone: '020 3834 2790' },
   };
 }
 
@@ -85,6 +87,7 @@ async function requestBody(request, path) {
 }
 
 function centralPath(path, search) {
+  if (path === 'config') return `/api/v1/platform/support-control${search || ''}`;
   return `/api/v1/platform/support/${path}${search || ''}`;
 }
 
@@ -120,7 +123,7 @@ export async function onRequest(context) {
         Authorization: `Bearer ${clean(context.env.CUSTOMEROPS_API_KEY, 500)}`,
         Accept: 'application/json',
         ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
-        'User-Agent': 'Profile-Centre-Central-Support/1.1',
+        'User-Agent': 'Profile-Centre-Central-Support/2.0',
       },
       body,
       signal: controller.signal,
