@@ -8,6 +8,7 @@ const html = fs.readFileSync('index.html', 'utf8');
 
 assert.match(bridge, /HEAD_OFFICE_SUPPORT_CENTRE_ENABLED/);
 assert.match(bridge, /CUSTOMEROPS_API_KEY/);
+assert.match(bridge, /HEAD_OFFICE_CUSTOMEROPS_URL/);
 assert.match(bridge, /\/api\/v1\/platform\/support\//);
 assert.match(bridge, /\/api\/v1\/platform\/support-control/);
 assert.match(bridge, /sameOrigin/);
@@ -17,7 +18,16 @@ assert.match(bridge, /assistantEnabled: true/);
 assert.match(bridge, /maintenanceEnabled: true/);
 assert.match(bridge, /contact@jagroupservices\.co\.uk/);
 assert.match(bridge, /020 3834 2790/);
+assert.match(bridge, /2026-08-02-connection-recovery-1/);
+assert.match(bridge, /X-JA-Customer-Service-Bridge/);
+assert.match(bridge, /keyPresent: keyPresent\(env\)/);
+assert.match(bridge, /supportSwitchEnabled: supportSwitchEnabled\(env\)/);
+assert.match(bridge, /centralHttpStatus/);
+assert.match(bridge, /CUSTOMEROPS_API_KEY_MISSING/);
+assert.match(bridge, /HEAD_OFFICE_HTTP_/);
+assert.match(bridge, /HEAD_OFFICE_TIMEOUT/);
 assert.doesNotMatch(bridge, /Bearer\s+[A-Za-z0-9._-]{20,}/);
+assert.doesNotMatch(bridge, /diagnostics[\s\S]*CUSTOMEROPS_API_KEY\s*:/, 'Diagnostics must never return the credential value.');
 
 assert.match(assistant, /Profile Centre Support Assistant/);
 assert.match(assistant, /request_human/);
@@ -34,4 +44,4 @@ assert.match(layout, /CentralCustomerServiceAssistant/);
 assert.doesNotMatch(html, /tawk\.to/i);
 assert.doesNotMatch(html, /Tawk_API/);
 
-console.log('Profile Centre full Head Office customer service control checks passed.');
+console.log('Profile Centre Customer Service connection diagnostics and controls checks passed.');
