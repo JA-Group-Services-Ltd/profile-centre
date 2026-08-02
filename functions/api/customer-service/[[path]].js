@@ -19,6 +19,7 @@ function json(data, status = 200) {
       'Cache-Control': 'no-store',
       'X-Content-Type-Options': 'nosniff',
       'Referrer-Policy': 'same-origin',
+      'X-Frame-Options': 'DENY',
     },
   });
 }
@@ -28,8 +29,8 @@ function clean(value, max = 1000) {
 }
 
 function enabled(env) {
-  return String(env.HEAD_OFFICE_SUPPORT_CENTRE_ENABLED || '').toLowerCase() === 'true'
-    && clean(env.CUSTOMEROPS_API_KEY, 500).length > 20;
+  const switchValue = String(env.HEAD_OFFICE_SUPPORT_CENTRE_ENABLED ?? 'true').trim().toLowerCase();
+  return switchValue !== 'false' && clean(env.CUSTOMEROPS_API_KEY, 500).length > 20;
 }
 
 function headOfficeOrigin(env) {
@@ -43,7 +44,9 @@ function headOfficeOrigin(env) {
 
 function sameOrigin(request) {
   const origin = request.headers.get('Origin');
-  return !origin || origin === new URL(request.url).origin;
+  const fetchSite = request.headers.get('Sec-Fetch-Site');
+  if (origin && origin !== new URL(request.url).origin) return false;
+  return !fetchSite || ['same-origin', 'same-site', 'none'].includes(fetchSite);
 }
 
 function routePath(context) {
@@ -56,13 +59,16 @@ function routeAllowed(method, path) {
   return rules.some(rule => rule.test(path));
 }
 
-async function requestBody(request) {
+async function requestBody(request, path) {
   if (['GET', 'HEAD'].includes(request.method)) return undefined;
   const text = await request.text();
   if (text.length > 64_000) throw Object.assign(new Error('The support request is too large.'), { status: 413 });
-  if (!text) return '{}';
-  JSON.parse(text);
-  return text;
+  const payload = text ? JSON.parse(text) : {};
+  if (/^conversations\/[^/]+\/messages$/.test(path)) {
+    payload.senderType = 'customer';
+    delete payload.senderId;
+  }
+  return JSON.stringify(payload);
 }
 
 function centralPath(path, search) {
@@ -87,15 +93,17 @@ export async function onRequest(context) {
           assistantEnabled: false,
           aiEnabled: false,
           assistantName: 'Profile Centre Support Assistant',
-          greeting: 'Customer support is not yet available through this channel.',
+          greeting: 'Customer support is temporarily unavailable through this channel.',
         },
       });
     }
-    return json({ success: false, error: 'The Head Office Customer Service Centre is not enabled for this website.' }, 503);
+    return json({ success: false, error: 'The Head Office Customer Service Centre is not configured for this website.' }, 503);
   }
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10_000);
   try {
-    const body = await requestBody(context.request);
+    const body = await requestBody(context.request, path);
     const incomingUrl = new URL(context.request.url);
     const response = await fetch(`${headOfficeOrigin(context.env)}${centralPath(path, incomingUrl.search)}`, {
       method,
@@ -103,9 +111,10 @@ export async function onRequest(context) {
         Authorization: `Bearer ${clean(context.env.CUSTOMEROPS_API_KEY, 500)}`,
         Accept: 'application/json',
         ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
-        'User-Agent': 'Profile-Centre-Central-Support/1.0',
+        'User-Agent': 'Profile-Centre-Central-Support/1.1',
       },
       body,
+      signal: controller.signal,
     });
     const payload = await response.text();
     return new Response(payload || '{}', {
@@ -114,10 +123,19 @@ export async function onRequest(context) {
         'Content-Type': 'application/json; charset=utf-8',
         'Cache-Control': 'no-store',
         'X-Content-Type-Options': 'nosniff',
+        'Referrer-Policy': 'same-origin',
       },
     });
   } catch (error) {
-    const status = Number(error?.status || 502);
-    return json({ success: false, error: error instanceof Error ? error.message : 'Head Office Customer Service is temporarily unavailable.' }, status);
+    const timedOut = error?.name === 'AbortError';
+    const status = timedOut ? 504 : Number(error?.status || 502);
+    return json({
+      success: false,
+      error: timedOut
+        ? 'Head Office Customer Service did not respond within the secure timeout.'
+        : error instanceof Error ? error.message : 'Head Office Customer Service is temporarily unavailable.',
+    }, status);
+  } finally {
+    clearTimeout(timeout);
   }
 }
