@@ -33,6 +33,19 @@ function enabled(env) {
   return switchValue !== 'false' && clean(env.CUSTOMEROPS_API_KEY, 500).length > 20;
 }
 
+function unavailableConfig() {
+  return {
+    assistantEnabled: true,
+    aiEnabled: false,
+    humanTakeoverEnabled: false,
+    anonymousEnabled: true,
+    maintenanceEnabled: true,
+    assistantName: 'Profile Centre Customer Service',
+    greeting: 'Profile Centre support is available through JA Group Services Head Office.',
+    maintenanceMessage: 'Live Head Office chat is temporarily unavailable on Profile Centre. Please email contact@jagroupservices.co.uk or call 020 3834 2790.',
+  };
+}
+
 function headOfficeOrigin(env) {
   const configured = clean(env.CUSTOMEROPS_BASE_URL || DEFAULT_HEAD_OFFICE_URL, 500).replace(/\/$/, '');
   const url = new URL(configured);
@@ -87,17 +100,13 @@ export async function onRequest(context) {
 
   if (!enabled(context.env)) {
     if (method === 'GET' && path === 'config') {
-      return json({
-        success: true,
-        config: {
-          assistantEnabled: false,
-          aiEnabled: false,
-          assistantName: 'Profile Centre Support Assistant',
-          greeting: 'Customer support is temporarily unavailable through this channel.',
-        },
-      });
+      const config = unavailableConfig();
+      return json({ success: true, connected: false, config, branch: config });
     }
-    return json({ success: false, error: 'The Head Office Customer Service Centre is not configured for this website.' }, 503);
+    if (method === 'GET' && path === 'knowledge') {
+      return json({ success: true, connected: false, articles: [] });
+    }
+    return json({ success: false, error: 'Live Head Office chat is temporarily unavailable. Please email contact@jagroupservices.co.uk or call 020 3834 2790.' }, 503);
   }
 
   const controller = new AbortController();
