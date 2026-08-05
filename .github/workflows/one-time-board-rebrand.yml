@@ -54,8 +54,14 @@ jobs:
           text_names = {'Dockerfile', 'LICENSE', 'README'}
           changed = []
 
+          def is_excluded(path: Path) -> bool:
+              return (
+                  any(part in excluded_dirs for part in path.parts)
+                  or path.parts[:2] == ('.github', 'workflows')
+              )
+
           for path in Path('.').rglob('*'):
-              if not path.is_file() or any(part in excluded_dirs for part in path.parts):
+              if not path.is_file() or is_excluded(path):
                   continue
               if path.suffix.lower() not in text_suffixes and path.name not in text_names:
                   continue
@@ -110,7 +116,7 @@ jobs:
           old_markers = ['Profile Centre', 'JA Profile Studio', 'profilecentre.jagroupservices.co.uk', 'profilecenter.jagroupservices.co.uk']
           remaining = []
           for path in Path('.').rglob('*'):
-              if not path.is_file() or any(part in excluded_dirs for part in path.parts):
+              if not path.is_file() or is_excluded(path):
                   continue
               if path.suffix.lower() not in text_suffixes and path.name not in text_names:
                   continue
