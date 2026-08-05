@@ -3,6 +3,7 @@ import { createRoot, hydrateRoot } from 'react-dom/client';
 import { HelmetProvider } from '@dr.pogodin/react-helmet';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
+import { installPublicBrandScrubber } from './lib/public-brand-scrubber';
 import './styles/globals.css';
 
 if (import.meta.env.MODE === 'development') {
@@ -65,6 +66,8 @@ if (rootElement.firstElementChild) {
 } else {
   createRoot(rootElement).render(tree);
 }
+
+installPublicBrandScrubber();
 
 // ── Service Worker registration ───────────────────────────────────────────────
 // Only in production — dev uses Vite HMR which conflicts with SW caching.
