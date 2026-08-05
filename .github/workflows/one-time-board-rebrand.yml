@@ -1,0 +1,125 @@
+name: Apply Sousa Murray Profiles rebrand
+
+on:
+  push:
+    branches:
+      - 'rebrand/sousa-murray-profiles'
+
+permissions:
+  contents: write
+
+jobs:
+  rebrand:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out rebrand branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply Board-approved customer-facing identity
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          replacements = [
+              ('profilecentre.jagroupservices.co.uk', 'sousamurrayprofiles.jagroupservices.co.uk'),
+              ('profilecenter.jagroupservices.co.uk', 'sousamurrayprofiles.jagroupservices.co.uk'),
+              ('profilecentre.co.uk', 'sousamurrayprofiles.jagroupservices.co.uk'),
+              ('planyx.jagroupservices.co.uk', 'sousamurrayplaneia.jagroupservices.co.uk'),
+              ('aptenvo.jagroupservices.co.uk', 'sousamurrayelearning.jagroupservices.co.uk'),
+              ('profilecentre@jagroupservices.co.uk', 'contact@jagroupservices.co.uk'),
+              ('profilecenter@jagroupservices.co.uk', 'contact@jagroupservices.co.uk'),
+              ('JA Profile Studio', 'Sousa Murray Profiles'),
+              ('Profile Centre', 'Sousa Murray Profiles'),
+              ('PROFILE CENTRE', 'SOUSA MURRAY PROFILES'),
+              ('Planyx', 'Sousa Murray Planeia'),
+              ('Aptenvo', 'Sousa Murray eLearning'),
+          ]
+
+          excluded_dirs = {'.git', 'node_modules', 'dist', 'build', 'coverage', '.next', '.cache'}
+          text_suffixes = {
+              '.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.html', '.css', '.scss', '.json',
+              '.md', '.txt', '.yml', '.yaml', '.xml', '.svg', '.sql', '.toml', '.env', '.sh'
+          }
+          text_names = {'Dockerfile', 'LICENSE', 'README'}
+          changed = []
+
+          for path in Path('.').rglob('*'):
+              if not path.is_file() or any(part in excluded_dirs for part in path.parts):
+                  continue
+              if path.suffix.lower() not in text_suffixes and path.name not in text_names:
+                  continue
+              try:
+                  original = path.read_text(encoding='utf-8')
+              except (UnicodeDecodeError, OSError):
+                  continue
+              updated = original
+              for old, new in replacements:
+                  updated = updated.replace(old, new)
+              if updated != original:
+                  path.write_text(updated, encoding='utf-8')
+                  changed.append(str(path))
+
+          print('Changed files:')
+          for item in changed:
+              print(f' - {item}')
+
+          old_markers = ['Profile Centre', 'JA Profile Studio', 'profilecentre.jagroupservices.co.uk', 'profilecenter.jagroupservices.co.uk']
+          remaining = []
+          logo_lines = []
+          for path in Path('.').rglob('*'):
+              if not path.is_file() or any(part in excluded_dirs for part in path.parts):
+                  continue
+              if path.suffix.lower() not in text_suffixes and path.name not in text_names:
+                  continue
+              try:
+                  content = path.read_text(encoding='utf-8')
+              except (UnicodeDecodeError, OSError):
+                  continue
+              for marker in old_markers:
+                  if marker in content:
+                      remaining.append((str(path), marker))
+              if path.suffix.lower() in {'.ts', '.tsx', '.js', '.jsx', '.html', '.css', '.scss', '.svg'}:
+                  for number, line in enumerate(content.splitlines(), 1):
+                      if 'logo' in line.lower():
+                          logo_lines.append((str(path), number, line.strip()[:300]))
+
+          print('\nRemaining retired brand markers:')
+          if remaining:
+              for path, marker in remaining:
+                  print(f' - {path}: {marker}')
+              raise SystemExit('Retired Profile Centre customer-facing wording remains.')
+          print(' - none')
+
+          print('\nLogo audit candidates:')
+          for path, number, line in logo_lines:
+              print(f' - {path}:{number}: {line}')
+          PY
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check
+        run: npm run type-check
+
+      - name: Build
+        run: npm run build
+
+      - name: Commit repository-wide rebrand
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'No rebrand changes were required.'
+            exit 0
+          fi
+          git commit -m 'Rebrand Profile Centre as Sousa Murray Profiles'
+          git push origin HEAD:rebrand/sousa-murray-profiles
