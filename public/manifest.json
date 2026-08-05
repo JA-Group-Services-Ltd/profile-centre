@@ -1,6 +1,6 @@
 {
   "name": "Sousa Murray Profiles",
-  "short_name": "Sousa Murray Profiles",
+  "short_name": "SM Profiles",
   "description": "Your digital profile hub — personal and business cards, links, QR codes and more.",
   "start_url": "/dashboard",
   "scope": "/",
@@ -16,27 +16,15 @@
   "handle_links": "preferred",
   "icons": [
     {
-      "src": "/assets/JAPROFILESTUDIO FAVICON.PNG",
-      "sizes": "192x192",
-      "type": "image/png",
+      "src": "/sousa-murray-profiles-wordmark.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "/assets/JAPROFILESTUDIO FAVICON.PNG",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/assets/JAPROFILESTUDIO FAVICON.PNG",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/assets/JAPROFILESTUDIO FAVICON.PNG",
-      "sizes": "512x512",
-      "type": "image/png",
+      "src": "/sousa-murray-profiles-wordmark.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
       "purpose": "maskable"
     }
   ],
@@ -46,28 +34,28 @@
       "short_name": "Dashboard",
       "description": "Go to your dashboard",
       "url": "/dashboard",
-      "icons": [{ "src": "/assets/JAPROFILESTUDIO FAVICON.PNG", "sizes": "192x192" }]
+      "icons": [{ "src": "/sousa-murray-profiles-wordmark.svg", "sizes": "any", "type": "image/svg+xml" }]
     },
     {
       "name": "My Profile",
       "short_name": "Profile",
       "description": "View and edit your profile",
       "url": "/dashboard/profile",
-      "icons": [{ "src": "/assets/JAPROFILESTUDIO FAVICON.PNG", "sizes": "192x192" }]
+      "icons": [{ "src": "/sousa-murray-profiles-wordmark.svg", "sizes": "any", "type": "image/svg+xml" }]
     },
     {
       "name": "Links Manager",
       "short_name": "Links",
       "description": "Manage your profile links",
       "url": "/dashboard/links",
-      "icons": [{ "src": "/assets/JAPROFILESTUDIO FAVICON.PNG", "sizes": "192x192" }]
+      "icons": [{ "src": "/sousa-murray-profiles-wordmark.svg", "sizes": "any", "type": "image/svg+xml" }]
     },
     {
       "name": "Help Centre",
       "short_name": "Help",
       "description": "Get help and support",
       "url": "/help",
-      "icons": [{ "src": "/assets/JAPROFILESTUDIO FAVICON.PNG", "sizes": "192x192" }]
+      "icons": [{ "src": "/sousa-murray-profiles-wordmark.svg", "sizes": "any", "type": "image/svg+xml" }]
     }
   ],
   "screenshots": [],
