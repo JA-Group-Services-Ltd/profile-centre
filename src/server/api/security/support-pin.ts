@@ -172,7 +172,7 @@ export async function setCustomPin(req: AuthRequest, res: Response) {
       const { sendEmail } = await import('../../lib/send-email.js');
       const { pinVerificationEmail, EMAIL_REPLY_TO } = await import('../../lib/email-templates.js');
       const { subject, html, text } = pinVerificationEmail({ code });
-      await sendEmail({ fromName: 'Profile Centre', to: userEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
+      await sendEmail({ fromName: 'Sousa Murray Profiles', to: userEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
     } catch (emailErr) {
       console.warn('[support-pin] email send failed:', emailErr);
       // Still return mismatch — client will show the code entry form

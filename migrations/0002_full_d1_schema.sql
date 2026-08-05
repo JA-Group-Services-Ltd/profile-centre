@@ -1,4 +1,4 @@
--- Profile Centre full D1 schema
+-- Sousa Murray Profiles full D1 schema
 -- Schema version: 3
 -- Data-free; generated from the verified Airo SQLite schema.
 

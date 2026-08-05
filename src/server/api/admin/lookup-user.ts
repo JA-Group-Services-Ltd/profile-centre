@@ -1,6 +1,6 @@
 /**
  * GET /api/admin/users/lookup?ref=<email or user_number>
- * Resolves a user by email address OR Profile Centre user number.
+ * Resolves a user by email address OR Sousa Murray Profiles user number.
  * Returns minimal safe data for the authority report subject field.
  */
 import { type Request, type Response } from 'express';

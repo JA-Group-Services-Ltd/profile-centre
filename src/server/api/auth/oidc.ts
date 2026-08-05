@@ -1,5 +1,5 @@
 /**
- * Profile Centre — Microsoft Entra OIDC authentication
+ * Sousa Murray Profiles — Microsoft Entra OIDC authentication
  *
  * Two completely separate flows:
  *   Customer → JA Group Services ID / Entra External ID (CIAM)

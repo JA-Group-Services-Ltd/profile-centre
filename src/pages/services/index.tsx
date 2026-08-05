@@ -11,7 +11,7 @@ export default function ServicesPage() {
     <>
       <Helmet>
         <title>{`Services — ${branding.platform_name}`}</title>
-        <meta name="description" content="Services offered by Profile Centre, operated by JA Group Services Ltd. Digital profiles, QR codes, links and more." />
+        <meta name="description" content="Services offered by Sousa Murray Profiles, operated by JA Group Services Ltd. Digital profiles, QR codes, links and more." />
         <link rel="canonical" href={`${APP_URL}/services`} />
         <meta name="robots" content="index, follow" />
         <meta property="og:title" content={`Services — ${branding.platform_name}`} />
@@ -25,7 +25,7 @@ export default function ServicesPage() {
           <p className="text-sm text-muted-foreground mb-2">Services</p>
           <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-3">Our Services</h1>
           <p className="text-muted-foreground leading-relaxed max-w-2xl">
-            JA Group Services Ltd operates Profile Centre — a digital profile service for professionals and businesses.
+            JA Group Services Ltd operates Sousa Murray Profiles — a digital profile service for professionals and businesses.
           </p>
         </div>
 
@@ -39,7 +39,7 @@ export default function ServicesPage() {
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
-                <h2 className="font-bold text-foreground group-hover:text-primary transition-colors">Profile Centre</h2>
+                <h2 className="font-bold text-foreground group-hover:text-primary transition-colors">Sousa Murray Profiles</h2>
                 <span className="text-xs bg-green-100 text-green-700 border border-green-200 px-2 py-0.5 rounded-full font-medium">Live</span>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed mb-3">

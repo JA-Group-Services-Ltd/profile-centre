@@ -15,6 +15,6 @@ export interface SiteMeta {
 }
 
 export const siteMeta: SiteMeta = {
-	name: "Profile Centre",
+	name: "Sousa Murray Profiles",
 	summary: "A digital business card platform by JA Group Services Ltd — create a shareable profile page with your contact details, links, and QR code.",
 };

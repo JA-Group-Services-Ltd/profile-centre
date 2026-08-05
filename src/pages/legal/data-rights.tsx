@@ -5,8 +5,8 @@ export default function DataRightsPage() {
   return (
     <>
       <Helmet>
-        <title>Data Subject Rights — Profile Centre</title>
-        <meta name="description" content="Your data subject rights under UK GDPR — access, rectification, erasure, portability, and how to exercise them with Profile Centre." />
+        <title>Data Subject Rights — Sousa Murray Profiles</title>
+        <meta name="description" content="Your data subject rights under UK GDPR — access, rectification, erasure, portability, and how to exercise them with Sousa Murray Profiles." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/legal/data-rights" />
         <meta name="robots" content="index, follow" />
       </Helmet>
@@ -14,7 +14,7 @@ export default function DataRightsPage() {
       <DynamicLegalPage
         policyKey="data_rights"
         canonicalPath="/legal/data-rights"
-        metaDescription="Your data subject rights under UK GDPR — access, rectification, erasure, portability, and how to exercise them with Profile Centre."
+        metaDescription="Your data subject rights under UK GDPR — access, rectification, erasure, portability, and how to exercise them with Sousa Murray Profiles."
       />
     </>
   );

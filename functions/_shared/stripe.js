@@ -34,7 +34,7 @@ async function stripeRequest(env, path, { method = "GET", entries = [], idempote
 export async function verifyStripeAccount(env) {
   const account = await stripeRequest(env, "/account");
   if (account?.id !== STRIPE_ACCOUNT_ID) {
-    throw new HttpError(503, "The configured Stripe account is not Profile Centre.", "stripe_account_mismatch");
+    throw new HttpError(503, "The configured Stripe account is not Sousa Murray Profiles.", "stripe_account_mismatch");
   }
   return { id: account.id, livemode: true };
 }

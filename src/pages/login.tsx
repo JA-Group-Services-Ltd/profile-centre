@@ -92,7 +92,7 @@ export default function LoginPage() {
               />
             ) : (
               <span className="font-extrabold text-lg tracking-tight text-slate-900 dark:text-white">
-                <span className="text-blue-600 dark:text-blue-400">Profile Centre</span>
+                <span className="text-blue-600 dark:text-blue-400">Sousa Murray Profiles</span>
               </span>
             )}
           </Link>
@@ -249,7 +249,7 @@ export default function LoginPage() {
                         <Link to="/legal/terms" className="underline hover:text-slate-600 dark:hover:text-slate-300 transition-colors">Terms of Service</Link>
                         {' '}and{' '}
                         <Link to="/legal/privacy" className="underline hover:text-slate-600 dark:hover:text-slate-300 transition-colors">Privacy Policy</Link>
-                        {' '}of Profile Centre, operated by JA Group Services Ltd.
+                        {' '}of Sousa Murray Profiles, operated by JA Group Services Ltd.
                       </p>
                     </div>
                   </>

@@ -143,7 +143,7 @@ export default function AdminAuditPage() {
   </style>
 </head>
 <body>
-  <h1>Profile Centre — Audit Log</h1>
+  <h1>Sousa Murray Profiles — Audit Log</h1>
   <p class="meta">Exported: ${now} · ${rows.length} entries${search ? ` · Search: "${search}"` : ''}${actorType ? ` · Actor: ${actorType}` : ''}${resourceType ? ` · Resource: ${resourceType}` : ''}</p>
   <table>
     <thead>

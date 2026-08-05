@@ -359,7 +359,7 @@ export async function userReplyToTicket(req: AuthRequest, res: Response): Promis
           subject: `Re: ${ticket.subject} [#${ticket.id}]`,
           message: safeBody,
         });
-        await sendEmail({ fromName: 'Profile Centre', to: ae, subject, html, text, replyTo: ticket.user_email ?? ticket.email });
+        await sendEmail({ fromName: 'Sousa Murray Profiles', to: ae, subject, html, text, replyTo: ticket.user_email ?? ticket.email });
       } catch { /* non-fatal */ }
     }
 

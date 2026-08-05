@@ -295,7 +295,7 @@ export default function DashboardLayout() {
             If you believe this is an error, please get in touch with our team and we'll get you back up and running.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <a href={`mailto:${branding.contact_email || 'profilecentre@jagroupservices.co.uk'}`}>
+            <a href={`mailto:${branding.contact_email || 'contact@jagroupservices.co.uk'}`}>
               <Button className="bg-primary gap-2 w-full sm:w-auto">
                 <Phone className="w-4 h-4" /> Contact Us
               </Button>
@@ -618,7 +618,7 @@ export default function DashboardLayout() {
           {/* App update banner — shown when a new service worker version is available */}
           {swUpdateAvailable && (
             <div className="flex items-center justify-between gap-3 px-4 py-2.5 bg-primary/10 border-b border-primary/20 text-sm">
-              <span className="text-foreground">A new version of Profile Centre is available.</span>
+              <span className="text-foreground">A new version of Sousa Murray Profiles is available.</span>
               <button
                 onClick={() => window.location.reload()}
                 className="flex-shrink-0 px-3 py-1 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors"

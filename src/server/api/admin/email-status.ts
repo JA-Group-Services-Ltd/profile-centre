@@ -45,7 +45,7 @@ import { testEmail, EMAIL_REPLY_TO } from '../../lib/email-templates.js';
 // ── Constants ─────────────────────────────────────────────────────────────────
 const SENDING_DOMAIN = 'japrofilestudio.jagroupservices.co.uk';
 const FROM_ADDRESS = 'noreply@japrofilestudio.jagroupservices.co.uk';
-const REPLY_TO_ADDRESS = 'profilecentre@jagroupservices.co.uk';
+const REPLY_TO_ADDRESS = 'contact@jagroupservices.co.uk';
 const DKIM_SELECTOR = 'airo';
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
@@ -344,7 +344,7 @@ export async function sendTestEmail(req: Request, res: Response) {
     const sentAt = new Date().toLocaleString('en-GB', { timeZone: 'Europe/London', dateStyle: 'full', timeStyle: 'medium' });
     const { subject, html, text } = testEmail({ recipientEmail, sentAt });
 
-    const result = await sendEmail({ fromName: 'Profile Centre', to: recipientEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
+    const result = await sendEmail({ fromName: 'Sousa Murray Profiles', to: recipientEmail, subject, html, text, replyTo: EMAIL_REPLY_TO });
 
     return res.json({
       success: true,

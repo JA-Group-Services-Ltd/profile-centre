@@ -23,21 +23,21 @@ export interface Branding {
 }
 
 const DEFAULTS: Branding = {
-  platform_name: 'Profile Centre',
+  platform_name: 'Sousa Murray Profiles',
   platform_tagline: 'Your digital business card, reimagined.',
   platform_description: 'Create a stunning digital profile that showcases who you are and what you do — share it with a single link.',
-  platform_url: 'https://profilecentre.jagroupservices.co.uk',
-  platform_logo_url: '/assets/brand/profile-centre-logo.svg',
+  platform_url: 'https://sousamurrayprofiles.jagroupservices.co.uk',
+  platform_logo_url: '',
   platform_favicon_url: '',
-  master_brand_name: 'JA Group Services Ltd',
+  master_brand_name: 'Sousa Murray',
   master_brand_url: 'https://jagroupservices.co.uk',
   legal_company_name: 'JA Group Services Ltd',
-  legal_company_number: '',
-  footer_tagline: 'Part of JA Group Services Ltd',
+  legal_company_number: '16314179',
+  footer_tagline: 'A Sousa Murray brand operated by JA Group Services Ltd',
   footer_show_legal_name: '1',
   footer_links: '',
-  support_email: 'profilecentre@jagroupservices.co.uk',
-  contact_email: 'profilecentre@jagroupservices.co.uk',
+  support_email: 'contact@jagroupservices.co.uk',
+  contact_email: 'contact@jagroupservices.co.uk',
   social_twitter: '',
   social_linkedin: '',
   social_instagram: '',
@@ -55,9 +55,8 @@ function fetchBranding(): Promise<void> {
     .then(data => {
       if (data.success) {
         cached = { ...DEFAULTS, ...data.data };
-        if (!cached.platform_logo_url?.trim()) {
-          cached.platform_logo_url = DEFAULTS.platform_logo_url;
-        }
+        // Board policy: customer-facing brands use a text-only word mark.
+        if (cached) cached.platform_logo_url = '';
       }
     })
     .catch(() => {

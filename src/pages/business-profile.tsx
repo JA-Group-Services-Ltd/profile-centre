@@ -1146,7 +1146,7 @@ export default function BusinessProfilePage({ _overrideBizSlug, _overridePersonS
           {!profile.plan.remove_branding && (
             <div className="text-center mt-4 mb-2">
               <Link to="/" className="inline-flex items-center gap-1.5 text-xs opacity-50 hover:opacity-70 transition-opacity" style={{ color: ttx }}>
-                Powered by {branding.platform_name || 'Profile Centre'}
+                Powered by {branding.platform_name || 'Sousa Murray Profiles'}
               </Link>
             </div>
           )}

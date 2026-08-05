@@ -1,6 +1,6 @@
 {
-  "name": "Profile Centre",
-  "short_name": "Profile Centre",
+  "name": "Sousa Murray Profiles",
+  "short_name": "Sousa Murray Profiles",
   "description": "Your digital profile hub — personal and business cards, links, QR codes and more.",
   "start_url": "/dashboard",
   "scope": "/",

@@ -34,7 +34,7 @@ export async function createUser(req: Request, res: Response) {
 
     const newUserId = Number(result.lastInsertRowid);
 
-    // Assign Profile Centre User Number (non-fatal)
+    // Assign Sousa Murray Profiles User Number (non-fatal)
     try {
       assignUserNumber(
         newUserId,
@@ -1044,7 +1044,7 @@ export async function updateSiteTheme(req: Request, res: Response) {
   }
 }
 
-// ── Profile Centre User Number — admin backfill endpoint ────────────────────
+// ── Sousa Murray Profiles User Number — admin backfill endpoint ────────────────────
 export async function backfillUserNumbersEndpoint(req: Request, res: Response) {
   try {
     const adminUser = (req as any).adminUser;

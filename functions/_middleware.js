@@ -65,7 +65,7 @@ function revokedResponse(request) {
   if (isApi(url.pathname)) {
     return Response.json({
       success: false,
-      error: 'This Profile Centre session has been revoked. Sign in again to continue.',
+      error: 'This Sousa Murray Profiles session has been revoked. Sign in again to continue.',
       code: 'connected_session_revoked',
     }, {
       status: 401,
@@ -127,7 +127,7 @@ async function registerSession(request, env, current) {
         expiresAt: new Date(Number(current.row.expires_at)).toISOString(),
         ...deviceDetails(request),
         metadata: {
-          service: 'Profile Centre',
+          service: 'Sousa Murray Profiles',
           source: 'profile_centre_customer_session',
         },
       },
@@ -152,7 +152,7 @@ async function closeCentralSession(env, current) {
   try {
     await requestHeadOffice(env, `/api/platform/sessions/${encodeURIComponent(current.data.sessionReference)}`, {
       method: 'DELETE',
-      body: JSON.stringify({ reason: 'Customer signed out of Profile Centre.' }),
+      body: JSON.stringify({ reason: 'Customer signed out of Sousa Murray Profiles.' }),
     });
   } catch (error) {
     if (Number(error?.headOfficeStatus) !== 404) {

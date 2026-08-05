@@ -229,7 +229,7 @@ export default function AdminFeaturesPage() {
   return (
     <div className="space-y-6">
       <Helmet>
-        <title>Feature Manager — Admin | Profile Centre</title>
+        <title>Feature Manager — Admin | Sousa Murray Profiles</title>
         <meta name="description" content="Admin feature manager — control which features and add-ons are visible to customers." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/admin/features" />
         <meta name="robots" content="noindex, nofollow" />

@@ -92,7 +92,7 @@ function AppearanceSection() {
     <Section
       icon={<Palette className="w-4 h-4" />}
       title="Appearance"
-      description="Choose how Profile Centre looks for you. Your preference is saved to your account and applies across all your devices."
+      description="Choose how Sousa Murray Profiles looks for you. Your preference is saved to your account and applies across all your devices."
     >
       <div className="space-y-4">
         <div>
@@ -309,7 +309,7 @@ export default function SettingsPage() {
   return (
     <div className="max-w-2xl mx-auto pb-20 lg:pb-0">
       <Helmet>
-        <title>Settings — Profile Centre Dashboard</title>
+        <title>Settings — Sousa Murray Profiles Dashboard</title>
         <meta name="description" content="Manage your account settings, display name, personalisation and notification preferences." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/dashboard/settings" />
         <meta name="robots" content="noindex, nofollow" />
@@ -477,7 +477,7 @@ export default function SettingsPage() {
       <AppearanceSection />
 
       {/* ── Notification Preferences ── */}
-      <Section icon={<Bell className="w-4 h-4" />} title="Notification Preferences" description="Control which email notifications you receive from Profile Centre">
+      <Section icon={<Bell className="w-4 h-4" />} title="Notification Preferences" description="Control which email notifications you receive from Sousa Murray Profiles">
         <div className="space-y-0">
           <ToggleRow
             label="Email notifications"
@@ -489,7 +489,7 @@ export default function SettingsPage() {
             <>
               <ToggleRow
                 label="Service messages and notices"
-                description="When Profile Centre sends you an account notice, billing alert, or service update"
+                description="When Sousa Murray Profiles sends you an account notice, billing alert, or service update"
                 checked={prefs.email_on_service_message}
                 onChange={v => setP('email_on_service_message', v)}
               />

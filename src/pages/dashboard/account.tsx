@@ -141,7 +141,7 @@ export default function AccountPage() {
   return (
     <div className="max-w-2xl mx-auto pb-20 lg:pb-0">
       <Helmet>
-        <title>My Account — Profile Centre</title>
+        <title>My Account — Sousa Murray Profiles</title>
         <meta name="description" content="Manage your account details and membership." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/dashboard/account" />
         <meta name="robots" content="noindex, nofollow" />
@@ -408,7 +408,7 @@ export default function AccountPage() {
               <CardTitle className="text-base flex items-center gap-2">
                 <HelpCircle className="w-4 h-4 text-primary" /> Support
               </CardTitle>
-              <CardDescription className="mt-1">Get help from the {branding.platform_name ?? 'Profile Centre'} team</CardDescription>
+              <CardDescription className="mt-1">Get help from the {branding.platform_name ?? 'Sousa Murray Profiles'} team</CardDescription>
             </div>
             <Button
               variant="outline"
@@ -478,10 +478,10 @@ export default function AccountPage() {
             <p className="text-xs text-muted-foreground mb-3">
               For account queries, billing questions, or technical support — we typically respond within 1 business day.
             </p>
-            <a href={`mailto:${branding.support_email || 'profilecentre@jagroupservices.co.uk'}`}>
+            <a href={`mailto:${branding.support_email || 'contact@jagroupservices.co.uk'}`}>
               <Button variant="outline" size="sm" className="border-border gap-1.5">
                 <Mail className="w-3.5 h-3.5" />
-                {branding.support_email || 'profilecentre@jagroupservices.co.uk'}
+                {branding.support_email || 'contact@jagroupservices.co.uk'}
               </Button>
             </a>
           </CardContent>

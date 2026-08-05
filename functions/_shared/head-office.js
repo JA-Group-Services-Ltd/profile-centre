@@ -74,9 +74,9 @@ export async function reportPlatformHeartbeat(env, options = {}) {
     method: "POST",
     body: JSON.stringify({
       healthStatus: "operational",
-      healthMessage: "Profile Centre connector is responding normally.",
+      healthMessage: "Sousa Murray Profiles connector is responding normally.",
       publicUrl: environment === "production"
-        ? "https://profilecentre.jagroupservices.co.uk/"
+        ? "https://sousamurrayprofiles.jagroupservices.co.uk/"
         : env.CF_PAGES_URL || null,
       environment,
       hostingProvider: "Cloudflare Pages",
@@ -141,7 +141,7 @@ async function storeDecision(database, userId, customer, access, error = null) {
 function enforceDecision(decision) {
   if (decision === "allow") return;
   if (decision === "deny") {
-    throw new HttpError(403, "Head Office has denied access to Profile Centre.", "head_office_access_denied");
+    throw new HttpError(403, "Head Office has denied access to Sousa Murray Profiles.", "head_office_access_denied");
   }
   if (decision === "step_up") {
     throw new HttpError(403, "Additional identity assurance is required before access can continue.",
@@ -174,7 +174,7 @@ export async function synchroniseCustomer(env, user, claims, tenantId, options =
       createdAt: user.created_at || null,
       lastSignInAt: options.recordSignIn === false ? null : now,
       lastActivityAt: primaryProfile?.updated_at || now,
-      secureRecordUrl: `https://profilecentre.jagroupservices.co.uk/admin/users/${encodeURIComponent(String(user.id))}`,
+      secureRecordUrl: `https://sousamurrayprofiles.jagroupservices.co.uk/admin/users/${encodeURIComponent(String(user.id))}`,
       platformMetadata: { platformCode: PLATFORM_CODE, profileCount: primaryProfile ? 1 : 0 },
     }),
   });
@@ -191,7 +191,7 @@ export async function synchroniseCustomer(env, user, claims, tenantId, options =
   if (payload.created) {
     await sendOperationalEvent(env,{...user,customer_number:payload.customer.customerNumber,
       head_office_customer_id:payload.customer.id},"account.created",{
-      outcome:"success",category:"account_lifecycle",targetType:"account",description:"Profile Centre account linked"
+      outcome:"success",category:"account_lifecycle",targetType:"account",description:"Sousa Murray Profiles account linked"
     });
   }
   if (options.recordSignIn !== false) {
@@ -271,7 +271,7 @@ export async function processHeadOfficeCommands(env) {
     let success = true;
     let message = "Command applied idempotently.";
     try {
-      if (!user) throw new Error("The linked Profile Centre customer was not found.");
+      if (!user) throw new Error("The linked Sousa Murray Profiles customer was not found.");
       if (String(command.command).includes("revoke") || String(command.command).includes("deny")) {
         await env.DB.prepare("DELETE FROM sessions WHERE json_extract(data, '$.userId')=?1").bind(user.id).run();
       }
@@ -315,7 +315,7 @@ export async function sendOperationalEvent(env, user, eventType, payload = {}) {
     eventId,
     eventType,
     platformCode: PLATFORM_CODE,
-    sourceSystem: "Profile Centre",
+    sourceSystem: "Sousa Murray Profiles",
     centralCustomerId: user.head_office_customer_id || null,
     customerNumber: user.customer_number || null,
     platformAccountId: String(user.id),

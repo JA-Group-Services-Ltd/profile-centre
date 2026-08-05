@@ -465,7 +465,7 @@ export default function AdminPinGate({ children }: AdminPinGateProps) {
 
           <div className="mt-5 pt-4 border-t border-slate-100 space-y-2">
             <p className="text-xs text-slate-400 text-center leading-relaxed">
-              Your Admin PIN is used to confirm sensitive admin actions. Profile Centre never stores or displays your actual PIN. Only a secure hashed version is stored.
+              Your Admin PIN is used to confirm sensitive admin actions. Sousa Murray Profiles never stores or displays your actual PIN. Only a secure hashed version is stored.
             </p>
             <p className="text-xs text-slate-400 text-center">
               10 failed attempts locks the account for 15 minutes. Sessions expire after 15 minutes of inactivity.

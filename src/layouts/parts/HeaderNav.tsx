@@ -44,16 +44,16 @@ export default function SiteNavHeader() {
         <div className="flex h-16 md:h-[72px] items-center justify-between gap-4">
 
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5 flex-shrink-0 group" aria-label="Profile Centre — home">
+          <Link to="/" className="flex items-center gap-2.5 flex-shrink-0 group" aria-label="Sousa Murray Profiles — home">
             {branding.platform_logo_url ? (
               <img
                 src={branding.platform_logo_url}
-                alt={branding.platform_name || 'Profile Centre'}
+                alt={branding.platform_name || 'Sousa Murray Profiles'}
                 className="h-12 w-auto max-w-[170px] object-contain shrink-0 md:h-14 md:max-w-[200px]"
               />
             ) : (
               <span className="font-extrabold text-lg tracking-tight text-foreground">
-                <span className="text-primary">Profile Centre</span>
+                <span className="text-primary">Sousa Murray Profiles</span>
               </span>
             )}
           </Link>

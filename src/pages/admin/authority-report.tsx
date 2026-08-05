@@ -269,7 +269,7 @@ export default function AuthorityReportPage() {
     <div className="max-w-4xl mx-auto pb-24 lg:pb-0 space-y-6">
       <Helmet>
         <title>Authority &amp; Incident Report — Staff Portal</title>
-        <meta name="description" content="Generate authority and incident reports for Profile Centre." />
+        <meta name="description" content="Generate authority and incident reports for Sousa Murray Profiles." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/admin/authority-report" />
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>

@@ -107,7 +107,7 @@ export default function NotificationPreferencesPage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-foreground">Email Notifications</h1>
         <p className="text-muted-foreground mt-1 text-sm">
-          Control which email notifications you receive from Profile Centre.
+          Control which email notifications you receive from Sousa Murray Profiles.
         </p>
       </div>
 

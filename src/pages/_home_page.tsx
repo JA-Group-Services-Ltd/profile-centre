@@ -66,7 +66,7 @@ function DemoProfileCard() {
             </div>
           ))}
         </div>
-        <p className="text-center text-white/30 text-xs mt-4">Powered by Profile Centre</p>
+        <p className="text-center text-white/30 text-xs mt-4">Powered by Sousa Murray Profiles</p>
       </div>
     </div>
   );
@@ -112,7 +112,7 @@ const POPULAR_SLUG = 'professional';
 
 const FAQ_ITEMS = [
   { q: "How do I get started?", a: "Sign in through JA Group Services ID to create your account. Your account is created automatically on first sign-in — no separate registration needed." },
-  { q: "What URL will my profile be on?", a: "Every profile gets a unique URL at profilecentre.jagroupservices.co.uk/profile/yourusername. Choose your username when you set up your profile." },
+  { q: "What URL will my profile be on?", a: "Every profile gets a unique URL at sousamurrayprofiles.jagroupservices.co.uk/profile/yourusername. Choose your username when you set up your profile." },
   { q: "How does the QR code work?", a: "Your QR code links directly to your public profile page. Starter plans can display it on screen; paid plans can download it as a PNG to print on physical cards or flyers." },
   { q: "Can people download my contact as a vCard?", a: "vCard download is available on the Professional and Business plans. Visitors can save your contact directly to their phone with one tap." },
   { q: "Can I remove the platform branding?", a: 'Yes — the Professional and Business plans allow you to remove the "Powered by" footer from your public profile.' },
@@ -640,20 +640,20 @@ export default function HomePage() {
                 <div className="mt-4 space-y-1">
                   <p className="text-xs text-muted-foreground">
                     Support:{' '}
-                    <a href={`mailto:${branding.support_email || 'profilecentre@jagroupservices.co.uk'}`} className="hover:text-foreground transition-colors">
-                      {branding.support_email || 'profilecentre@jagroupservices.co.uk'}
+                    <a href={`mailto:${branding.support_email || 'contact@jagroupservices.co.uk'}`} className="hover:text-foreground transition-colors">
+                      {branding.support_email || 'contact@jagroupservices.co.uk'}
                     </a>
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    <a href="https://profilecentre.jagroupservices.co.uk" className="hover:text-foreground transition-colors">
-                      profilecentre.jagroupservices.co.uk
+                    <a href="https://sousamurrayprofiles.jagroupservices.co.uk" className="hover:text-foreground transition-colors">
+                      sousamurrayprofiles.jagroupservices.co.uk
                     </a>
                   </p>
                 </div>
               </div>
               {[
                 { title: 'Product', links: [{ label: 'Features', href: '#features' }, { label: 'Pricing', href: '#pricing' }, { label: 'How it Works', href: '#how-it-works' }] },
-                { title: 'Support', links: [{ label: 'Report an Issue', href: '/report-issue' }, { label: 'Contact Us', href: `mailto:${branding.support_email || 'profilecentre@jagroupservices.co.uk'}` }] },
+                { title: 'Support', links: [{ label: 'Report an Issue', href: '/report-issue' }, { label: 'Contact Us', href: `mailto:${branding.support_email || 'contact@jagroupservices.co.uk'}` }] },
                 { title: 'Legal', links: [{ label: 'Privacy Policy', href: '/legal/privacy' }, { label: 'Terms of Service', href: '/legal/terms' }, { label: 'Cookie Policy', href: '/legal/cookies' }] },
               ].map((col, i) => (
                 <div key={i}>

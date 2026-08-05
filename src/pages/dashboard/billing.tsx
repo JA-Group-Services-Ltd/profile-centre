@@ -317,7 +317,7 @@ export default function BillingPage() {
             <div className="mt-4 p-3 rounded-xl bg-green-500/8 border border-green-500/15 flex items-start gap-2">
               <Check className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
               <p className="text-xs text-green-300">
-                Lifetime access is a discretionary access status granted by JA Group Services Ltd in selected cases. It may be reviewed, changed, or withdrawn where appropriate under the Profile Centre terms. If you have any questions about your access status, please contact support.
+                Lifetime access is a discretionary access status granted by JA Group Services Ltd in selected cases. It may be reviewed, changed, or withdrawn where appropriate under the Sousa Murray Profiles terms. If you have any questions about your access status, please contact support.
               </p>
             </div>
           </CardContent>
@@ -645,7 +645,7 @@ export default function BillingPage() {
                           Your current plan
                         </Button>
                       ) : (
-                        <a href={`mailto:${branding.contact_email || 'profilecentre@jagroupservices.co.uk'}?subject=Ultimate%20Organisation%2B%20Enquiry`} className="block w-full">
+                        <a href={`mailto:${branding.contact_email || 'contact@jagroupservices.co.uk'}?subject=Ultimate%20Organisation%2B%20Enquiry`} className="block w-full">
                           <Button className="w-full bg-amber-500 hover:bg-amber-400 text-white font-semibold gap-1.5">
                             <ExternalLink className="w-3.5 h-3.5" /> Contact us for pricing
                           </Button>
@@ -653,7 +653,7 @@ export default function BillingPage() {
                       )
                     ) : isLifetime && isPaidPlan ? (
                       /* Lifetime user — must contact us to change plan */
-                      <a href={`mailto:${branding.contact_email || 'profilecentre@jagroupservices.co.uk'}?subject=Plan%20Change%20Request`} className="block w-full">
+                      <a href={`mailto:${branding.contact_email || 'contact@jagroupservices.co.uk'}?subject=Plan%20Change%20Request`} className="block w-full">
                         <Button variant="outline" className="w-full border-border gap-1.5">
                           <ExternalLink className="w-3.5 h-3.5" /> Contact us to switch
                         </Button>
@@ -777,7 +777,7 @@ export default function BillingPage() {
             <p className="text-muted-foreground text-sm mb-4">
               Contact JA Group Services to upgrade or change your plan manually.
             </p>
-            <a href={`mailto:${branding.contact_email || 'profilecentre@jagroupservices.co.uk'}`}>
+            <a href={`mailto:${branding.contact_email || 'contact@jagroupservices.co.uk'}`}>
               <Button className="bg-primary">Contact JA Group Services</Button>
             </a>
           </CardContent>
@@ -797,10 +797,10 @@ export default function BillingPage() {
             <div>
               <p className="text-sm font-semibold text-foreground mb-1">Payment security</p>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                All subscription payments are processed securely by <strong className="text-foreground">Stripe</strong>. Profile Centre never stores your card details. Plan subscription payments are handled through Stripe Checkout only — you will always be redirected to a secure Stripe-hosted page.
+                All subscription payments are processed securely by <strong className="text-foreground">Stripe</strong>. Sousa Murray Profiles never stores your card details. Plan subscription payments are handled through Stripe Checkout only — you will always be redirected to a secure Stripe-hosted page.
               </p>
               <p className="text-xs text-muted-foreground leading-relaxed mt-2">
-                <strong className="text-foreground">Business Cards are separate.</strong> Business Card payments are handled through official Stripe invoices or Stripe payment links issued by admin — not through this subscription checkout. Never pay for Business Cards through any link that has not been officially issued by Profile Centre.
+                <strong className="text-foreground">Business Cards are separate.</strong> Business Card payments are handled through official Stripe invoices or Stripe payment links issued by admin — not through this subscription checkout. Never pay for Business Cards through any link that has not been officially issued by Sousa Murray Profiles.
               </p>
             </div>
           </div>

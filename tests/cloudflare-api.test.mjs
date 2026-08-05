@@ -200,7 +200,7 @@ describe("Cloudflare API router", () => {
       const body = JSON.parse(init?.body || "{}");
       expect(body).toMatchObject({
         healthStatus: "operational",
-        publicUrl: "https://profilecentre.jagroupservices.co.uk/",
+        publicUrl: "https://sousamurrayprofiles.jagroupservices.co.uk/",
         hostingProvider: "Cloudflare Pages",
         customerCount: 1,
         activeSessionCount: 3,
@@ -232,7 +232,7 @@ describe("Cloudflare API router", () => {
     );
     const digest = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(`${timestamp}.${event}`));
     const signature = [...new Uint8Array(digest)].map(value => value.toString(16).padStart(2, "0")).join("");
-    const stripeRequest = () => new Request("https://profilecentre.jagroupservices.co.uk/api/stripe/webhook", {
+    const stripeRequest = () => new Request("https://sousamurrayprofiles.jagroupservices.co.uk/api/stripe/webhook", {
       method: "POST",
       headers: { "stripe-signature": `t=${timestamp},v1=${signature}`, "content-type": "application/json" },
       body: event,

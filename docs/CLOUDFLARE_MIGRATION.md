@@ -1,8 +1,8 @@
-# Profile Centre — Cloudflare Migration
+# Sousa Murray Profiles — Cloudflare Migration
 
 ## Purpose
 
-This migration moves Profile Centre away from the Airo-specific Node and local SQLite runtime while preserving the existing React frontend and the live Cloudflare Pages deployment.
+This migration moves Sousa Murray Profiles away from the Airo-specific Node and local SQLite runtime while preserving the existing React frontend and the live Cloudflare Pages deployment.
 
 The migration must be completed in controlled stages. The existing Node API must not be removed until the corresponding Cloudflare Pages Functions have been implemented, tested and confirmed against a preview deployment.
 
@@ -23,7 +23,7 @@ Configure the following binding in both **Production** and **Preview**:
 
 | Binding | Cloudflare resource | Required |
 |---|---|---:|
-| `DB` | Profile Centre D1 database | Yes |
+| `DB` | Sousa Murray Profiles D1 database | Yes |
 
 Cloudflare dashboard path:
 

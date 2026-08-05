@@ -1922,7 +1922,7 @@ export default function ProfilePage() {
             ) : (
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  A verified badge shows visitors that your profile has been reviewed and confirmed by the Profile Centre team.
+                  A verified badge shows visitors that your profile has been reviewed and confirmed by the Sousa Murray Profiles team.
                 </p>
                 <div>
                   <Label htmlFor="verify-note">Why should your profile be verified? <span className="text-muted-foreground font-normal">(optional)</span></Label>
