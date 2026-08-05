@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - 'rebrand/sousa-murray-profiles'
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
@@ -17,6 +20,7 @@ jobs:
       - name: Check out rebrand branch
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
           fetch-depth: 0
           persist-credentials: true
 
