@@ -1,7 +1,11 @@
+const LEGACY_NAMES = '(?:JA Domain Hub|JA Plan Studio|Planyx|JA Profile Studio|Profile Centre|Aptenvo)';
+
 const LEGACY_REPLACEMENTS: Array<[RegExp, string]> = [
+  [new RegExp(`\\s*\\((?:formerly|previously)(?: known as)?\\s+${LEGACY_NAMES}\\)`, 'gi'), ''],
+  [new RegExp(`\\s*[–—-]\\s*(?:formerly|previously)(?: known as)?\\s+${LEGACY_NAMES}`, 'gi'), ''],
+  [new RegExp(`\\b(?:formerly|previously)(?: known as)?\\s+${LEGACY_NAMES}\\b`, 'gi'), ''],
   [/[A-Z0-9._%+-]+@(?:planyx|aptenvo|profilecentre|profilecenter|jadomainhub)\.jagroupservices\.co\.uk/gi, 'contact@jagroupservices.co.uk'],
   [/\b(?:planyx|aptenvo|profilecentre|profilecenter|jadomainhub)@jagroupservices\.co\.uk\b/gi, 'contact@jagroupservices.co.uk'],
-
   [/https?:\/\/(?:www\.)?planyx\.jagroupservices\.co\.uk/gi, 'https://sousamurrayplaneia.jagroupservices.co.uk'],
   [/\bplanyx\.jagroupservices\.co\.uk\b/gi, 'sousamurrayplaneia.jagroupservices.co.uk'],
   [/https?:\/\/(?:www\.)?aptenvo\.jagroupservices\.co\.uk/gi, 'https://sousamurrayelearning.jagroupservices.co.uk'],
@@ -10,7 +14,6 @@ const LEGACY_REPLACEMENTS: Array<[RegExp, string]> = [
   [/\bprofilecent(?:re|er)\.jagroupservices\.co\.uk\b/gi, 'sousamurrayprofiles.jagroupservices.co.uk'],
   [/https?:\/\/(?:www\.)?(?:shop\.)?jadomainhub\.jagroupservices\.co\.uk/gi, 'https://sousamurraydomains.jagroupservices.co.uk'],
   [/\b(?:shop\.)?jadomainhub\.jagroupservices\.co\.uk\b/gi, 'sousamurraydomains.jagroupservices.co.uk'],
-
   [/\bJA Domain Hub\b/gi, 'Sousa Murray Domains'],
   [/\bJA Plan Studio\b/gi, 'Sousa Murray Planeia'],
   [/\bPlanyx\b/gi, 'Sousa Murray Planeia'],
@@ -26,15 +29,11 @@ const VISIBLE_ATTRIBUTES = new Set([
 ]);
 
 function replaceLegacyBranding(value: string) {
-  return LEGACY_REPLACEMENTS.reduce(
-    (current, [pattern, replacement]) => current.replace(pattern, replacement),
-    value,
-  );
+  return LEGACY_REPLACEMENTS.reduce((current, [pattern, replacement]) => current.replace(pattern, replacement), value);
 }
 
 function shouldSkipTextNode(node: Node) {
-  const parent = node.parentElement;
-  return Boolean(parent?.closest('script, style, template, noscript'));
+  return Boolean(node.parentElement?.closest('script, style, template, noscript'));
 }
 
 function scrubElement(element: Element) {
