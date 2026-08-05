@@ -89,7 +89,7 @@ jobs:
                   )
                   updated = re.sub(
                       r"\n\s*if \(!cached\.platform_logo_url\?\.trim\(\)\) \{\n\s*cached\.platform_logo_url = DEFAULTS\.platform_logo_url;\n\s*\}",
-                      "\n        // Board policy: customer-facing brands use a text-only word mark.\n        cached.platform_logo_url = '';",
+                      "\n        // Board policy: customer-facing brands use a text-only word mark.\n        if (cached) cached.platform_logo_url = '';",
                       updated,
                       count=1,
                   )
@@ -129,7 +129,7 @@ jobs:
               raise SystemExit('Retired Profile Centre customer-facing wording remains.')
 
           branding = Path('src/lib/branding.ts').read_text(encoding='utf-8')
-          if "platform_logo_url: ''," not in branding or "cached.platform_logo_url = '';" not in branding:
+          if "platform_logo_url: ''," not in branding or "if (cached) cached.platform_logo_url = '';" not in branding:
               raise SystemExit('The text-only word mark policy has not been enforced.')
           if "master_brand_name: 'Sousa Murray'," not in branding:
               raise SystemExit('The Sousa Murray master brand is not configured.')
@@ -145,8 +145,11 @@ jobs:
         continue-on-error: true
         run: npm run type-check
 
-      - name: Build production application
-        run: npm run build
+      - name: Build client application
+        run: npx vite build
+
+      - name: Build server application
+        run: npx vite build --ssr src/server/entry.ts
 
       - name: Commit repository-wide rebrand
         shell: bash
