@@ -29,7 +29,7 @@ assert.match(bridge, /HEAD_OFFICE_TIMEOUT/);
 assert.doesNotMatch(bridge, /Bearer\s+[A-Za-z0-9._-]{20,}/);
 assert.doesNotMatch(bridge, /diagnostics[\s\S]*CUSTOMEROPS_API_KEY\s*:/, 'Diagnostics must never return the credential value.');
 
-assert.match(assistant, /Profile Centre Support Assistant/);
+assert.match(assistant, /Sousa Murray Profiles Support Assistant/);
 assert.match(assistant, /request_human/);
 assert.match(assistant, /Head Office Customer Adviser/);
 assert.match(assistant, /startsWith\('\/admin'\)/);
@@ -44,4 +44,4 @@ assert.match(layout, /CentralCustomerServiceAssistant/);
 assert.doesNotMatch(html, /tawk\.to/i);
 assert.doesNotMatch(html, /Tawk_API/);
 
-console.log('Profile Centre Customer Service connection diagnostics and controls checks passed.');
+console.log('Sousa Murray Profiles Customer Service connection diagnostics and controls checks passed.');

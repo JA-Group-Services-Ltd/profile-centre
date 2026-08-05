@@ -1,6 +1,6 @@
 PRAGMA foreign_keys = ON;
 
--- Profile Centre Cloudflare D1 foundation
+-- Sousa Murray Profiles Cloudflare D1 foundation
 -- Schema version: 1
 
 CREATE TABLE IF NOT EXISTS app_settings (

@@ -1,7 +1,7 @@
 /**
  * Dashboard — Security Settings
  * Sign-in security is managed through JA Group Services ID.
- * Profile Centre does not store passwords.
+ * Sousa Murray Profiles does not store passwords.
  */
 import { useState, useEffect } from 'react';
 import { fmtDateTime } from '@/lib/date';
@@ -24,7 +24,7 @@ import { recordPinSuccess, clearOfflinePin } from '@/hooks/useOfflinePin';
 // ── JA Group Services ID — security actions ───────────────────────────────────
 // Password and sign-in security changes are handled by contacting JA Group Services support.
 // No direct external portal URLs are exposed to customers.
-const JA_ID_SUPPORT_EMAIL = 'profilecentre@jagroupservices.co.uk';
+const JA_ID_SUPPORT_EMAIL = 'contact@jagroupservices.co.uk';
 
 // ── Redirect confirmation modal ───────────────────────────────────────────────
 interface JaIdRedirectModalProps {
@@ -70,7 +70,7 @@ function JaIdRedirectModal({ open, action, onConfirm, onCancel }: JaIdRedirectMo
           <ShieldCheck className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
           <p className="text-xs text-muted-foreground leading-relaxed">
             Your sign-in is managed through <strong className="text-foreground">JA Group Services ID</strong>.
-            Profile Centre does not store or manage your password — these actions are handled securely
+            Sousa Murray Profiles does not store or manage your password — these actions are handled securely
             by our support team.
           </p>
         </div>
@@ -302,7 +302,7 @@ export default function SecuritySettingsPage() {
             <UserCheck className="w-4 h-4 text-primary" /> Sign-in Security
           </CardTitle>
           <CardDescription className="text-xs">
-            Your sign-in is managed through JA Group Services ID. Profile Centre does not store your password.
+            Your sign-in is managed through JA Group Services ID. Sousa Murray Profiles does not store your password.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -312,7 +312,7 @@ export default function SecuritySettingsPage() {
             <p className="text-xs text-muted-foreground leading-relaxed">
               To change your password or manage sign-in security, continue to{' '}
               <strong className="text-foreground">JA Group Services ID</strong>. No passwords are collected
-              or stored inside Profile Centre.
+              or stored inside Sousa Murray Profiles.
             </p>
           </div>
 
@@ -496,7 +496,7 @@ export default function SecuritySettingsPage() {
             <Smartphone className="w-4 h-4 text-primary" /> Active Sessions
           </CardTitle>
           <CardDescription className="text-xs">
-            Devices and browsers currently signed in to your Profile Centre account.
+            Devices and browsers currently signed in to your Sousa Murray Profiles account.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -584,7 +584,7 @@ export default function SecuritySettingsPage() {
             <AlertTriangle className="w-4 h-4" /> Account Closure
           </CardTitle>
           <CardDescription className="text-xs">
-            Permanently close your Profile Centre account and delete your data. This cannot be undone.
+            Permanently close your Sousa Murray Profiles account and delete your data. This cannot be undone.
             Your JA Group Services ID account is not affected.
           </CardDescription>
         </CardHeader>

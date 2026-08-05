@@ -101,7 +101,7 @@ ensureAdminPinTable();
 ensureSiteEditorTables(); // keep tables intact — existing data preserved for admin review
 startAutoBackupScheduler(); // daily SQLite snapshots to /private/db/backups/
 
-// ── Profile Centre User Number — backfill on startup ────────────────────────
+// ── Sousa Murray Profiles User Number — backfill on startup ────────────────────────
 import { backfillUserNumbers } from './lib/user-number.js';
 try {
   const backfillResult = backfillUserNumbers();
@@ -877,7 +877,7 @@ app.get("/api/admin/support-pin-lookup", requireAdminApi, requireAdminPin, async
 
 /**
  * GET /api/admin/support-pin-lookup-by-number
- * Look up a customer by their Profile Centre User Number.
+ * Look up a customer by their Sousa Murray Profiles User Number.
  * Accepts the number with or without spaces (e.g. "742 918 305 614" or "742918305614").
  * Returns basic identity — no PIN data exposed.
  */
@@ -1520,7 +1520,7 @@ app.get("/api/me/data-export", requireAuth, async (req, res) => {
         export_version: '2.0',
         account_id: userId,
         privacy_contact: 'privacy@jagroupservices.co.uk',
-        note: 'This file contains all personal data held by Profile Centre for your account under UK GDPR. Passwords, PINs, session tokens and internal secrets are never included.',
+        note: 'This file contains all personal data held by Sousa Murray Profiles for your account under UK GDPR. Passwords, PINs, session tokens and internal secrets are never included.',
       },
       account: user,
       consent: {
@@ -1619,7 +1619,7 @@ function escapeXml(s: string): string {
 app.get("/robots.txt", (req, res) => {
 	const base = baseUrl(req);
 	const body = [
-		"# Profile Centre — robots.txt",
+		"# Sousa Murray Profiles — robots.txt",
 		"# Public profile pages and marketing pages are indexable.",
 		"# All admin, dashboard, auth, and internal pages are blocked.",
 		"",

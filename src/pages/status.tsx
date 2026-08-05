@@ -83,7 +83,7 @@ function OverallBanner({ overall, checkedAt, onRefresh, refreshing }: {
   const configs: Record<StatusValue, { label: string; sub: string; className: string; icon: React.ReactNode }> = {
     operational: {
       label: 'All systems operational',
-      sub: 'All Profile Centre services are running normally.',
+      sub: 'All Sousa Murray Profiles services are running normally.',
       className: 'bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-500/30',
       icon: <CheckCircle2 className="w-6 h-6 text-green-600 dark:text-green-400 flex-shrink-0" />,
     },
@@ -183,11 +183,11 @@ export default function StatusPage() {
     <>
       <Helmet>
         <title>{`Service Status — ${branding.platform_name}`}</title>
-        <meta name="description" content="Live operational status of Profile Centre services, operated by JA Group Services Ltd." />
+        <meta name="description" content="Live operational status of Sousa Murray Profiles services, operated by JA Group Services Ltd." />
         <link rel="canonical" href={`${APP_URL}/status`} />
         <meta name="robots" content="index, follow" />
         <meta property="og:title" content={`Service Status — ${branding.platform_name}`} />
-        <meta property="og:description" content="Live operational status of Profile Centre services." />
+        <meta property="og:description" content="Live operational status of Sousa Murray Profiles services." />
         <meta property="og:url" content={`${APP_URL}/status`} />
         <meta property="og:type" content="website" />
       </Helmet>
@@ -207,7 +207,7 @@ export default function StatusPage() {
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">Service Status</h1>
           <p className="text-muted-foreground leading-relaxed">
-            Real-time operational status for all Profile Centre services, operated by{' '}
+            Real-time operational status for all Sousa Murray Profiles services, operated by{' '}
             <strong className="text-foreground">JA Group Services Ltd</strong>.
           </p>
         </div>
@@ -287,7 +287,7 @@ export default function StatusPage() {
             {/* Footer note */}
             <div className="text-sm text-muted-foreground leading-relaxed border-t border-border pt-6">
               <p>
-                This page reflects the live status of Profile Centre services operated by{' '}
+                This page reflects the live status of Sousa Murray Profiles services operated by{' '}
                 <strong className="text-foreground">JA Group Services Ltd</strong>.
                 Status is checked automatically every 60 seconds. For urgent issues, contact us at{' '}
                 <a href={`mailto:${branding.support_email}`} className="text-primary hover:underline">

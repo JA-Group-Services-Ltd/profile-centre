@@ -186,7 +186,7 @@ export default function InstallAppBanner() {
   return (
     <div
       role="banner"
-      aria-label="Install Profile Centre as an app"
+      aria-label="Install Sousa Murray Profiles as an app"
       className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pointer-events-none"
     >
       <div className="max-w-lg mx-auto pointer-events-auto">
@@ -206,7 +206,7 @@ export default function InstallAppBanner() {
                 {platform === 'ios' && !iosStep && (
                   <>
                     <p className="text-sm font-semibold text-foreground leading-snug">
-                      Add Profile Centre to your home screen
+                      Add Sousa Murray Profiles to your home screen
                     </p>
                     <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
                       Get quick access — works like a native app, no App Store needed.
@@ -257,8 +257,8 @@ export default function InstallAppBanner() {
                   <>
                     <p className="text-sm font-semibold text-foreground leading-snug">
                       {platform === 'android'
-                        ? 'Add Profile Centre to your home screen'
-                        : 'Install Profile Centre as a desktop app'}
+                        ? 'Add Sousa Murray Profiles to your home screen'
+                        : 'Install Sousa Murray Profiles as a desktop app'}
                     </p>
                     <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
                       {platform === 'android'
@@ -287,7 +287,7 @@ export default function InstallAppBanner() {
                 {platform === 'unsupported' && (
                   <>
                     <p className="text-sm font-semibold text-foreground leading-snug">
-                      Install Profile Centre as an app
+                      Install Sousa Murray Profiles as an app
                     </p>
                     <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
                       Get quick access from your home screen — no app store needed.

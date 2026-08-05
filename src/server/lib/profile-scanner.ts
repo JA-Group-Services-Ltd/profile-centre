@@ -1,7 +1,7 @@
 /**
  * Profile Safety Scanner
  * ─────────────────────────────────────────────────────────────────────────────
- * Analyses a Profile Centre for safety/policy violations and produces a
+ * Analyses a Sousa Murray Profiles for safety/policy violations and produces a
  * structured risk report for admin review.
  *
  * Scan categories:

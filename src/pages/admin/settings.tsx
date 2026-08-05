@@ -60,12 +60,12 @@ interface AdminUser {
 }
 
 const defaultSettings: Settings = {
-  site_name: 'Profile Centre', site_url: 'https://profilecentre.jagroupservices.co.uk',
-  platform_name: 'Profile Centre', platform_tagline: 'Your digital business card, reimagined.',
+  site_name: 'Sousa Murray Profiles', site_url: 'https://sousamurrayprofiles.jagroupservices.co.uk',
+  platform_name: 'Sousa Murray Profiles', platform_tagline: 'Your digital business card, reimagined.',
   platform_description: 'A professional digital profile service for UK-based individuals and businesses. Share your contact details, links and QR code in one place.',
-  platform_url: 'https://profilecentre.jagroupservices.co.uk',
+  platform_url: 'https://sousamurrayprofiles.jagroupservices.co.uk',
   footer_tagline: 'Part of JA Group Services Ltd',
-  support_email: 'profilecentre@jagroupservices.co.uk', contact_email: 'profilecentre@jagroupservices.co.uk',
+  support_email: 'contact@jagroupservices.co.uk', contact_email: 'contact@jagroupservices.co.uk',
   max_free_profiles: '1', max_free_links: '5', allow_registration: '1',
   require_email_verification: '0', maintenance_mode: '0',
   maintenance_message: 'We are performing scheduled maintenance. We will be back shortly.',
@@ -229,7 +229,7 @@ function TroubleshootingTab() {
       <TroubleshootingSection icon={<LogIn className="w-4 h-4 text-primary" />} title="Login issues">
         <IssueRow
           title="User cannot log in — redirected back to login page"
-          cause="The user's Microsoft account is not registered in the Profile Centre CIAM tenant (3c0074dd), or the redirect URI for the customer OIDC flow is not registered in Azure."
+          cause="The user's Microsoft account is not registered in the Sousa Murray Profiles CIAM tenant (3c0074dd), or the redirect URI for the customer OIDC flow is not registered in Azure."
           fix="Check Azure AD B2C tenant 3c0074dd → App registrations → Redirect URIs. Ensure the production URL is listed. If the user is new, they may need to complete self-service registration first. Check the audit log for any failed OIDC callback entries."
         />
         <IssueRow
@@ -244,7 +244,7 @@ function TroubleshootingTab() {
         />
         <IssueRow
           title="'User not found' error after successful Microsoft login"
-          cause="The OIDC callback received a valid token but the user record does not exist in the Profile Centre database. This can happen if the account was deleted or if the OID claim does not match."
+          cause="The OIDC callback received a valid token but the user record does not exist in the Sousa Murray Profiles database. This can happen if the account was deleted or if the OID claim does not match."
           fix="Check the users table for the email address. If the user exists but with a different OID, update the oid column via the CRM. If the user does not exist, they need to register. Check the OIDC callback handler logs for the raw claims received."
         />
         <IssueRow
@@ -1025,7 +1025,7 @@ export default function AdminSettings() {
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium text-muted-foreground">Brand Name (site-wide)</Label>
-                  <Input value={settings.platform_name} onChange={e => set('platform_name', e.target.value)} className="bg-background border-border" placeholder="Profile Centre" />
+                  <Input value={settings.platform_name} onChange={e => set('platform_name', e.target.value)} className="bg-background border-border" placeholder="Sousa Murray Profiles" />
                   <p className="text-xs text-muted-foreground">Shown in header, footer, emails, and browser tabs</p>
                 </div>
                 <div className="space-y-1.5">
@@ -2655,7 +2655,7 @@ export default function AdminSettings() {
                 <BookOpen className="w-5 h-5 text-primary" />
                 <CardTitle>Platform Manual</CardTitle>
               </div>
-              <CardDescription>Download the complete Profile Centre platform manual as a PDF. Includes admin guide, user dashboard guide, API reference, and all policies. For internal staff use only — do not distribute externally.</CardDescription>
+              <CardDescription>Download the complete Sousa Murray Profiles platform manual as a PDF. Includes admin guide, user dashboard guide, API reference, and all policies. For internal staff use only — do not distribute externally.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

@@ -1,5 +1,5 @@
 /**
- * Profile Centre — Database layer
+ * Sousa Murray Profiles — Database layer
  *
  * Uses SQLite (better-sqlite3) stored at /private/db/ — persistent and
  * not web-accessible. All schema creation happens at startup in this file.
@@ -1086,7 +1086,7 @@ if (themeCount < 10) {
 const settingCount = (sqliteDb.prepare('SELECT COUNT(*) as c FROM admin_settings').get() as { c: number }).c;
 if (settingCount === 0) {
   const insertSetting = sqliteDb.prepare('INSERT OR IGNORE INTO admin_settings (key, value) VALUES (?, ?)');
-  insertSetting.run('site_name', 'Profile Centre');
+  insertSetting.run('site_name', 'Sousa Murray Profiles');
   insertSetting.run('site_tagline', 'Your digital business card, reimagined.');
   insertSetting.run('allow_registration', 'true');
   insertSetting.run('maintenance_mode', 'false');
@@ -1094,40 +1094,40 @@ if (settingCount === 0) {
 
 // Seed branding settings
 const brandingDefaults: [string, string][] = [
-  ['platform_name', 'Profile Centre'],
+  ['platform_name', 'Sousa Murray Profiles'],
   ['platform_tagline', 'Your digital business card, reimagined.'],
   ['platform_description', 'Create a stunning digital profile that showcases who you are and what you do — share it with a single link.'],
-  ['platform_url', 'https://profilecentre.jagroupservices.co.uk'],
+  ['platform_url', 'https://sousamurrayprofiles.jagroupservices.co.uk'],
   ['master_brand_name', 'JA Group Services Ltd'],
   ['master_brand_url', 'https://jagroupservices.co.uk'],
   ['legal_company_name', 'JA Group Services Ltd'],
   ['legal_company_number', ''],
   ['legal_registered_address', ''],
   ['legal_vat_number', ''],
-  ['legal_email', 'profilecentre@jagroupservices.co.uk'],
+  ['legal_email', 'contact@jagroupservices.co.uk'],
   ['legal_privacy_email', 'privacy@jagroupservices.co.uk'],
-  ['support_email', 'profilecentre@jagroupservices.co.uk'],
-  ['contact_email', 'profilecentre@jagroupservices.co.uk'],
+  ['support_email', 'contact@jagroupservices.co.uk'],
+  ['contact_email', 'contact@jagroupservices.co.uk'],
   ['footer_tagline', 'Part of JA Group Services Ltd'],
   ['footer_show_legal_name', '1'],
   ['social_twitter', ''],
   ['social_linkedin', ''],
   ['social_instagram', ''],
   ['social_facebook', ''],
-  ['email_from_name', 'Profile Centre'],
-  ['custom_domain_cname_target', 'profilecentre.jagroupservices.co.uk'],
+  ['email_from_name', 'Sousa Murray Profiles'],
+  ['custom_domain_cname_target', 'sousamurrayprofiles.jagroupservices.co.uk'],
 ];
 const upsertBranding = sqliteDb.prepare('INSERT OR IGNORE INTO admin_settings (key, value) VALUES (?, ?)');
 for (const [k, v] of brandingDefaults) upsertBranding.run(k, v);
 
 // Force-correct stale values (runs on every startup — idempotent)
 const correctValues: [string, string][] = [
-  ['platform_name',  'Profile Centre'],
-  ['site_name',      'Profile Centre'],
-  ['support_email',  'profilecentre@jagroupservices.co.uk'],
-  ['contact_email',  'profilecentre@jagroupservices.co.uk'],
-  ['legal_email',    'profilecentre@jagroupservices.co.uk'],
-  ['platform_url',   'https://profilecentre.jagroupservices.co.uk'],
+  ['platform_name',  'Sousa Murray Profiles'],
+  ['site_name',      'Sousa Murray Profiles'],
+  ['support_email',  'contact@jagroupservices.co.uk'],
+  ['contact_email',  'contact@jagroupservices.co.uk'],
+  ['legal_email',    'contact@jagroupservices.co.uk'],
+  ['platform_url',   'https://sousamurrayprofiles.jagroupservices.co.uk'],
 ];
 const fixBranding = sqliteDb.prepare('UPDATE admin_settings SET value = ? WHERE key = ? AND value != ?');
 for (const [k, v] of correctValues) fixBranding.run(v, k, v);
@@ -1699,7 +1699,7 @@ const templateSeed: [string, string, string, string, string, string, string, str
   ['bold-modern',          'Bold Modern',          'High-contrast bold design with strong typography. Great for creative professionals.', '#0f172a', '#ffffff', '#f59e0b', '#ffffff', '#0f172a', 'bold', 2],
   ['premium-dark',         'Premium Dark',         'Sophisticated dark background with gold accents. Perfect for luxury or executive branding.', '#1a1a2e', '#f5f0e8', '#c8a96e', '#f5f0e8', '#1a1a2e', 'premium', 3],
   ['clean-corporate',      'Clean Corporate',      'Professional blue corporate style with clean layout. Ideal for business and finance.', '#1e3a5f', '#ffffff', '#e8f0fe', '#ffffff', '#1e3a5f', 'corporate', 4],
-  ['qr-focus',             'QR Focus',             'Design built around your Profile Centre QR code. QR code is the centrepiece.', '#ffffff', '#111827', '#2563eb', '#111827', '#ffffff', 'qr_focus', 5],
+  ['qr-focus',             'QR Focus',             'Design built around your Sousa Murray Profiles QR code. QR code is the centrepiece.', '#ffffff', '#111827', '#2563eb', '#111827', '#ffffff', 'qr_focus', 5],
 ];
 for (const row of templateSeed) seedTemplate.run(...row);
 
@@ -1847,14 +1847,14 @@ const seedFeature = sqliteDb.prepare(`
   VALUES (?, ?, ?, ?, 'hidden', 'quote_required', ?)
 `);
 const featureSeed: [string, string, string, string, number][] = [
-  ['printed_business_cards',   'Printed Business Cards',          'Professionally printed business cards connected to your Profile Centre.',                    'print',    1],
-  ['custom_card_design',       'Custom Business Card Design',     'Profile Centre designs your business card artwork from scratch.',                            'print',    2],
+  ['printed_business_cards',   'Printed Business Cards',          'Professionally printed business cards connected to your Sousa Murray Profiles.',                    'print',    1],
+  ['custom_card_design',       'Custom Business Card Design',     'Sousa Murray Profiles designs your business card artwork from scratch.',                            'print',    2],
   ['business_card_builder',    'Business Card Builder',           'Self-service card builder — choose a template, customise, and submit for print.',              'print',    3],
   ['qr_code_pack',             'QR Code Pack',                    'High-resolution QR code files in multiple formats for print and digital use.',                 'qr',       10],
   ['qr_stickers',              'QR Stickers',                     'Printed QR code stickers for your products, packaging or premises.',                           'print',    11],
   ['window_qr_display',        'Window QR Display',               'Printed A5/A4 window display with your QR code and branding.',                                 'print',    12],
   ['desk_qr_display',          'Desk QR Display',                 'Freestanding desk display with your QR code for reception or counter use.',                    'print',    13],
-  ['nfc_card_addon',           'NFC Card Add-on',                 'NFC-enabled card that taps to open your Profile Centre.',                                    'print',    14],
+  ['nfc_card_addon',           'NFC Card Add-on',                 'NFC-enabled card that taps to open your Sousa Murray Profiles.',                                    'print',    14],
   ['email_signature_setup',    'Email Signature Setup',           'Admin-assisted setup of a branded HTML email signature linked to your profile.',               'setup',    20],
   ['social_media_link_setup',  'Social Media Link Setup',         'Admin adds and arranges your social media links on your profile.',                              'setup',    21],
   ['booking_link_setup',       'Booking Link Setup',              'Admin adds a booking link (Calendly, Acuity, etc.) to your profile.',                          'setup',    22],
@@ -1869,7 +1869,7 @@ const featureSeed: [string, string, string, string, number][] = [
   ['menu_price_list',          'Menu / Price List Add-on',        'A formatted menu or price list section on your profile.',                                       'feature',  52],
   ['mini_portfolio',           'Mini Portfolio / Gallery',        'A photo or work gallery section on your profile.',                                              'feature',  53],
   ['document_pdf_attachment',  'Document / PDF Attachment',       'Attach a PDF (brochure, menu, CV) to your profile for visitors to download.',                  'feature',  54],
-  ['custom_domain_link',       'Custom Domain Link',              'Link a custom domain to your Profile Centre where supported.',                                'account',  60],
+  ['custom_domain_link',       'Custom Domain Link',              'Link a custom domain to your Sousa Murray Profiles where supported.',                                'account',  60],
   ['priority_setup_support',   'Priority Setup Support',          'Dedicated admin support to set up or configure your profile as a priority.',                   'support',  70],
   ['reorder_support',          'Reorder Support',                 'Admin-assisted reorder of a previous business card or print product.',                         'support',  71],
   ['admin_assisted_changes',   'Admin-Assisted Changes',          'Admin makes specific changes to your profile on your behalf.',                                  'support',  72],
@@ -2331,7 +2331,7 @@ console.log('[db] Plan feature flags enforced on all plans');
 // before downgrading them to no-plan. payment_grace_until stores the deadline.
 runMigration('ALTER TABLE users ADD COLUMN payment_grace_until TEXT');
 
-// ── Profile Centre User Number ──────────────────────────────────────────────
+// ── Sousa Murray Profiles User Number ──────────────────────────────────────────────
 // user_number: unique 12-digit identifier (no letters, no hyphens, no leading zero)
 // Format: 11-digit base + 1 Luhn check digit. Stored without spaces.
 // Display: "742 918 305 614"

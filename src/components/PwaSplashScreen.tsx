@@ -69,7 +69,7 @@ export default function PwaSplashScreen() {
       }}>
         <img
           src="/icon-192.png"
-          alt="Profile Centre"
+          alt="Sousa Murray Profiles"
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
       </div>
@@ -83,7 +83,7 @@ export default function PwaSplashScreen() {
         letterSpacing: '-0.01em',
         marginBottom: 6,
       }}>
-        Profile Centre
+        Sousa Murray Profiles
       </p>
 
       {/* Tagline */}

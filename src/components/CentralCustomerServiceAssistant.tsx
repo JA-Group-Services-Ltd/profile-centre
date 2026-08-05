@@ -20,8 +20,8 @@ type SupportMessage = { id: string; senderType: string; senderName: string; body
 type KnowledgeArticle = { id?: string; title?: string; summary?: string };
 
 const API = '/api/customer-service';
-const SITE_NAME = 'Profile Centre';
-const DEFAULT_NAME = 'Profile Centre Support Assistant';
+const SITE_NAME = 'Sousa Murray Profiles';
+const DEFAULT_NAME = 'Sousa Murray Profiles Support Assistant';
 const DEFAULT_APPEARANCE: Required<AppearanceConfig> = {
   accentColour: '#7c3aed', launcherColour: '#7c3aed', launcherTextColour: '#ffffff', headerBackground: '#0f172a', headerTextColour: '#ffffff',
   panelBackground: '#ffffff', panelTextColour: '#0f172a', position: 'bottom-right', theme: 'auto', messageStyle: 'rounded', panelWidth: 430, panelHeight: 680,
@@ -74,7 +74,7 @@ export default function CentralCustomerServiceAssistant() {
   const onLeft = appearance.position === 'bottom-left';
   const greeting = useMemo(() => {
     if (config.maintenanceEnabled) return config.maintenanceMessage || 'Customer support is temporarily unavailable while maintenance is completed.';
-    return config.greeting || 'Hello. I can help with Profile Centre accounts, profiles and sharing, or pass your enquiry to a Head Office Customer Adviser.';
+    return config.greeting || 'Hello. I can help with Sousa Murray Profiles accounts, profiles and sharing, or pass your enquiry to a Head Office Customer Adviser.';
   }, [config]);
 
   useEffect(() => {
@@ -127,7 +127,7 @@ export default function CentralCustomerServiceAssistant() {
     try {
       await ensureConversation();
       await api(`conversations/${encodeURIComponent(sessionId.current)}/messages`, {
-        method: 'POST', body: JSON.stringify({ externalMessageId: makeId('customer'), senderType: 'customer', senderName: 'Profile Centre customer', body, metadata: { pagePath: window.location.pathname } }),
+        method: 'POST', body: JSON.stringify({ externalMessageId: makeId('customer'), senderType: 'customer', senderName: 'Sousa Murray Profiles customer', body, metadata: { pagePath: window.location.pathname } }),
       });
       await refreshMessages();
     } catch (reason) { setInput(body); setError(reason instanceof Error ? reason.message : 'Your message could not be sent.'); }

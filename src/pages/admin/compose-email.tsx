@@ -198,7 +198,7 @@ export default function AdminComposeEmail() {
                 className="bg-background border-border resize-none min-h-[200px]"
                 required
               />
-              <p className="text-xs text-muted-foreground">Plain text — line breaks are preserved. The email will be wrapped in the Profile Centre branded template.</p>
+              <p className="text-xs text-muted-foreground">Plain text — line breaks are preserved. The email will be wrapped in the Sousa Murray Profiles branded template.</p>
             </div>
           </CardContent>
         </Card>

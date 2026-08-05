@@ -68,9 +68,9 @@ function unavailableConfig() {
     humanTakeoverEnabled: false,
     anonymousEnabled: true,
     maintenanceEnabled: true,
-    assistantName: 'Profile Centre Customer Service',
-    greeting: 'Profile Centre support is available through JA Group Services Head Office.',
-    maintenanceMessage: 'Live Head Office chat is temporarily unavailable on Profile Centre. Please email contact@jagroupservices.co.uk or call 020 3834 2790.',
+    assistantName: 'Sousa Murray Profiles Customer Service',
+    greeting: 'Sousa Murray Profiles support is available through JA Group Services Head Office.',
+    maintenanceMessage: 'Live Head Office chat is temporarily unavailable on Sousa Murray Profiles. Please email contact@jagroupservices.co.uk or call 020 3834 2790.',
     appearance: {},
     contactOptions: { email: 'contact@jagroupservices.co.uk', phone: '020 3834 2790' },
   };

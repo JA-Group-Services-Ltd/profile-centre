@@ -8,7 +8,7 @@ export default function RefundsPage() {
     <>
       <Helmet>
         <title>{`Refund Policy — ${branding.platform_name}`}</title>
-        <meta name="description" content="Refund Policy for Profile Centre. Learn about our policy on refunds, cancellations and billing disputes." />
+        <meta name="description" content="Refund Policy for Sousa Murray Profiles. Learn about our policy on refunds, cancellations and billing disputes." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/legal/refunds" />
         <meta name="robots" content="index, follow" />
       </Helmet>
@@ -16,7 +16,7 @@ export default function RefundsPage() {
       <DynamicLegalPage
         policyKey="refunds"
         canonicalPath="/legal/refunds"
-        metaDescription="Refund Policy for Profile Centre. Learn about our policy on refunds, cancellations and billing disputes."
+        metaDescription="Refund Policy for Sousa Murray Profiles. Learn about our policy on refunds, cancellations and billing disputes."
       />
     </>
   );

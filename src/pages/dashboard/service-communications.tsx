@@ -1,6 +1,6 @@
 /**
  * Dashboard — Service Communications
- * Shows official messages from Profile Centre / JA Group Services to the user.
+ * Shows official messages from Sousa Murray Profiles / JA Group Services to the user.
  * Platform-to-user only. No visitor or user-to-user messaging.
  */
 import { useState, useEffect } from 'react';
@@ -116,7 +116,7 @@ export default function ServiceCommunicationsPage() {
     <div className="max-w-2xl mx-auto pb-20 lg:pb-0">
       <Helmet>
         <title>Service Communications — Dashboard</title>
-        <meta name="description" content="Official messages and updates from Profile Centre." />
+        <meta name="description" content="Official messages and updates from Sousa Murray Profiles." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/dashboard/service-communications" />
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
@@ -126,7 +126,7 @@ export default function ServiceCommunicationsPage() {
         <div>
           <h1 className="text-2xl font-bold text-foreground">Service Communications</h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            Official messages from Profile Centre and JA Group Services
+            Official messages from Sousa Murray Profiles and JA Group Services
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -147,7 +147,7 @@ export default function ServiceCommunicationsPage() {
         <div>
           <p className="text-sm font-medium text-blue-300">How to verify official contact</p>
           <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-            Profile Centre will never ask for your password, payment card details, or sensitive login information through this notification centre.
+            Sousa Murray Profiles will never ask for your password, payment card details, or sensitive login information through this notification centre.
             Official communications appear here in your dashboard. If you receive a suspicious message or call, do not share personal details — contact support to verify.
           </p>
         </div>

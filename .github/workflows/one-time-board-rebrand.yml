@@ -1,0 +1,172 @@
+name: Apply Sousa Murray Profiles rebrand
+
+on:
+  push:
+    branches:
+      - 'rebrand/sousa-murray-profiles'
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  rebrand:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out rebrand branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply Board-approved customer-facing identity
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          replacements = [
+              ('profilecentre.jagroupservices.co.uk', 'sousamurrayprofiles.jagroupservices.co.uk'),
+              ('profilecenter.jagroupservices.co.uk', 'sousamurrayprofiles.jagroupservices.co.uk'),
+              ('profilecentre.co.uk', 'sousamurrayprofiles.jagroupservices.co.uk'),
+              ('planyx.jagroupservices.co.uk', 'sousamurrayplaneia.jagroupservices.co.uk'),
+              ('aptenvo.jagroupservices.co.uk', 'sousamurrayelearning.jagroupservices.co.uk'),
+              ('profilecentre@jagroupservices.co.uk', 'contact@jagroupservices.co.uk'),
+              ('profilecenter@jagroupservices.co.uk', 'contact@jagroupservices.co.uk'),
+              ('JA Profile Studio', 'Sousa Murray Profiles'),
+              ('Profile Centre', 'Sousa Murray Profiles'),
+              ('PROFILE CENTRE', 'SOUSA MURRAY PROFILES'),
+              ('Planyx', 'Sousa Murray Planeia'),
+              ('Aptenvo', 'Sousa Murray eLearning'),
+          ]
+
+          excluded_dirs = {'.git', 'node_modules', 'dist', 'build', 'coverage', '.next', '.cache'}
+          text_suffixes = {
+              '.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.html', '.css', '.scss', '.json',
+              '.md', '.txt', '.yml', '.yaml', '.xml', '.svg', '.sql', '.toml', '.env', '.sh'
+          }
+          text_names = {'Dockerfile', 'LICENSE', 'README'}
+          changed = []
+
+          def is_excluded(path: Path) -> bool:
+              return (
+                  any(part in excluded_dirs for part in path.parts)
+                  or path.parts[:2] == ('.github', 'workflows')
+              )
+
+          for path in Path('.').rglob('*'):
+              if not path.is_file() or is_excluded(path):
+                  continue
+              if path.suffix.lower() not in text_suffixes and path.name not in text_names:
+                  continue
+              try:
+                  original = path.read_text(encoding='utf-8')
+              except (UnicodeDecodeError, OSError):
+                  continue
+
+              updated = original
+              for old, new in replacements:
+                  updated = updated.replace(old, new)
+
+              if path.as_posix() == 'src/lib/branding.ts':
+                  updated = re.sub(
+                      r"platform_logo_url:\s*'[^']*',",
+                      "platform_logo_url: '',",
+                      updated,
+                      count=1,
+                  )
+                  updated = updated.replace(
+                      "master_brand_name: 'JA Group Services Ltd',",
+                      "master_brand_name: 'Sousa Murray',",
+                  )
+                  updated = updated.replace(
+                      "legal_company_number: '',",
+                      "legal_company_number: '16314179',",
+                  )
+                  updated = updated.replace(
+                      "footer_tagline: 'Part of JA Group Services Ltd',",
+                      "footer_tagline: 'A Sousa Murray brand operated by JA Group Services Ltd',",
+                  )
+                  updated = re.sub(
+                      r"\n\s*if \(!cached\.platform_logo_url\?\.trim\(\)\) \{\n\s*cached\.platform_logo_url = DEFAULTS\.platform_logo_url;\n\s*\}",
+                      "\n        // Board policy: customer-facing brands use a text-only word mark.\n        if (cached) cached.platform_logo_url = '';",
+                      updated,
+                      count=1,
+                  )
+
+              updated = updated.replace(
+                  'A Sousa Murray Profiles is your digital business card',
+                  'A profile created with Sousa Murray Profiles is your digital business card',
+              )
+
+              if updated != original:
+                  path.write_text(updated, encoding='utf-8')
+                  changed.append(str(path))
+
+          print('Changed files:')
+          for item in changed:
+              print(f' - {item}')
+
+          old_markers = ['Profile Centre', 'JA Profile Studio', 'profilecentre.jagroupservices.co.uk', 'profilecenter.jagroupservices.co.uk']
+          remaining = []
+          for path in Path('.').rglob('*'):
+              if not path.is_file() or is_excluded(path):
+                  continue
+              if path.suffix.lower() not in text_suffixes and path.name not in text_names:
+                  continue
+              try:
+                  content = path.read_text(encoding='utf-8')
+              except (UnicodeDecodeError, OSError):
+                  continue
+              for marker in old_markers:
+                  if marker in content:
+                      remaining.append((str(path), marker))
+
+          if remaining:
+              print('Remaining retired brand markers:')
+              for path, marker in remaining:
+                  print(f' - {path}: {marker}')
+              raise SystemExit('Retired Profile Centre customer-facing wording remains.')
+
+          branding = Path('src/lib/branding.ts').read_text(encoding='utf-8')
+          if "platform_logo_url: ''," not in branding or "if (cached) cached.platform_logo_url = '';" not in branding:
+              raise SystemExit('The text-only word mark policy has not been enforced.')
+          if "master_brand_name: 'Sousa Murray'," not in branding:
+              raise SystemExit('The Sousa Murray master brand is not configured.')
+
+          print('Retired brand audit passed.')
+          print('Text-only word mark enforcement passed.')
+          PY
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check inherited repository baseline
+        continue-on-error: true
+        run: npm run type-check
+
+      - name: Build client application
+        run: npx vite build
+
+      - name: Build server application
+        run: npx vite build --ssr src/server/entry.ts
+
+      - name: Commit repository-wide rebrand
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'No rebrand changes were required.'
+            exit 0
+          fi
+          git commit -m 'Rebrand Profile Centre as Sousa Murray Profiles'
+          git push origin HEAD:rebrand/sousa-murray-profiles

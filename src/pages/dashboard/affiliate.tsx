@@ -8,7 +8,7 @@ export default function DashboardAffiliateRemoved() {
   return (
     <>
       <Helmet>
-        <title>Affiliate — Profile Centre</title>
+        <title>Affiliate — Sousa Murray Profiles</title>
         <meta name="description" content="Affiliate programme." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/dashboard/affiliate" />
         <meta name="robots" content="noindex" />

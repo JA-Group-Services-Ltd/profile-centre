@@ -198,7 +198,7 @@ export default function SupportPinCard() {
           Telephone Support PIN
         </CardTitle>
         <CardDescription>
-          Quote this PIN when calling Profile Centre support to verify your identity.
+          Quote this PIN when calling Sousa Murray Profiles support to verify your identity.
           It rotates automatically every {data?.lifetimeMinutes ?? 30} minutes. You can also set your own custom PIN below.
         </CardDescription>
       </CardHeader>

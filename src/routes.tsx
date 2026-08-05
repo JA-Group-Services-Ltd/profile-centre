@@ -358,7 +358,7 @@ export const routes: RouteObject[] = [
     element: <Navigate to="/" replace />,
   },
   {
-    // /services/ja-profile-studio is retired — Profile Centre IS the platform.
+    // /services/ja-profile-studio is retired — Sousa Murray Profiles IS the platform.
     // Redirect visitors to the homepage.
     path: '/services/ja-profile-studio',
     element: <AuthProvider><RootLayout><S><RedirectToHome /></S></RootLayout></AuthProvider>,

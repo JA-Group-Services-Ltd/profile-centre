@@ -145,7 +145,7 @@ export default function PosPage() {
   return (
     <>
       <Helmet>
-        <title>Point of Sale — Profile Centre</title>
+        <title>Point of Sale — Sousa Murray Profiles</title>
         <meta name="description" content="Create a payment link for any amount. Stripe handles card collection securely." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/dashboard/pos" />
         <meta name="robots" content="noindex, nofollow" />

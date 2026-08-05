@@ -1,7 +1,7 @@
 /**
  * GET /api/admin/manual/pdf?section=all|admin|user
  *
- * Generates a comprehensive PDF manual for Profile Centre.
+ * Generates a comprehensive PDF manual for Sousa Murray Profiles.
  * - section=admin  → Admin Manual only
  * - section=user   → User Dashboard Manual only
  * - section=all    → Full combined manual (default)
@@ -78,7 +78,7 @@ function newPage(ctx: Ctx): PDFPage {
 
   // Header rule
   page.drawLine({ start: { x: MARGIN, y: A4H - 36 }, end: { x: A4W - MARGIN, y: A4H - 36 }, thickness: 0.5, color: C.border });
-  page.drawText(s('Profile Centre - Platform Manual'), { x: MARGIN, y: A4H - 28, size: 7, font: ctx.fontR, color: C.muted });
+  page.drawText(s('Sousa Murray Profiles - Platform Manual'), { x: MARGIN, y: A4H - 28, size: 7, font: ctx.fontR, color: C.muted });
   page.drawText(`Page ${ctx.pageNum}`, { x: A4W - MARGIN - 30, y: A4H - 28, size: 7, font: ctx.fontR, color: C.muted });
 
   // Footer rule
@@ -227,7 +227,7 @@ function buildCover(ctx: Ctx, section: string) {
 
   // Title
   const titleY = A4H / 2 + 80;
-  page.drawText('Profile Centre', { x: MARGIN, y: titleY, size: 32, font: ctx.fontB, color: C.white });
+  page.drawText('Sousa Murray Profiles', { x: MARGIN, y: titleY, size: 32, font: ctx.fontB, color: C.white });
   page.drawText('Platform Manual', { x: MARGIN, y: titleY - 42, size: 24, font: ctx.fontR, color: C.accent });
 
   const subtitle = section === 'admin' ? 'Administrator Guide'
@@ -302,7 +302,7 @@ function buildAdminManual(ctx: Ctx) {
   // ── 1. Admin Overview ──────────────────────────────────────────────────────
   drawPageBreak(ctx);
   drawH1(ctx, '1. Admin Portal Overview', true);
-  drawPara(ctx, 'The Profile Centre Admin Portal is accessible at /admin. It is protected by two layers of authentication: JA Group Services ID (Microsoft Entra OIDC) and a secondary PIN gate. Only authorised JA Group Services staff may access the admin portal.');
+  drawPara(ctx, 'The Sousa Murray Profiles Admin Portal is accessible at /admin. It is protected by two layers of authentication: JA Group Services ID (Microsoft Entra OIDC) and a secondary PIN gate. Only authorised JA Group Services staff may access the admin portal.');
   drawNote(ctx, 'Admin access requires: (1) Microsoft Entra login via JA Group Services ID, and (2) a 4-8 digit PIN. After 10 failed PIN attempts, the account is locked. The rate limiter blocks after 15 attempts per 15 minutes (IP-based). Admins can self-unlock from Security Settings.', 'warning');
 
   drawH2(ctx, '1.1 Admin Navigation');
@@ -382,7 +382,7 @@ function buildAdminManual(ctx: Ctx) {
   drawBullet(ctx, 'Preview: view profile as it appears to the public');
 
   drawH2(ctx, '3.2 Profile Types');
-  drawPara(ctx, 'Profile Centre supports 14 profile types, each with type-specific sections:');
+  drawPara(ctx, 'Sousa Murray Profiles supports 14 profile types, each with type-specific sections:');
   const profileTypes = [
     ['professional', 'Full set: skills, experience, education, certifications, awards'],
     ['freelancer', 'Full set + portfolio links'],
@@ -431,7 +431,7 @@ function buildAdminManual(ctx: Ctx) {
   drawBullet(ctx, 'Target: single user (by email), plan group, or all users');
   drawBullet(ctx, 'Template: uses the adminBroadcastEmail branded template (white card, navy header)');
   drawBullet(ctx, 'From: noreply@japrofilestudio.jagroupservices.co.uk (set by Airo gateway -- do not override)');
-  drawBullet(ctx, 'Reply-To: profilecentre@jagroupservices.co.uk');
+  drawBullet(ctx, 'Reply-To: contact@jagroupservices.co.uk');
   drawBullet(ctx, 'Encryption: all email is sent over TLS via the Airo gateway (127.0.0.1:2525)');
   drawBullet(ctx, 'Authentication: SPF, DKIM (selector: airo), and DMARC records protect sender identity');
   drawBullet(ctx, 'Audit: every send is logged in the audit trail with timestamp, target, and admin identity');
@@ -540,10 +540,10 @@ function buildAdminManual(ctx: Ctx) {
   drawTableRow(ctx, ['1', 'Classic Professional', 'White background, navy header, gold accent'], [80, 200, 200], false);
   drawTableRow(ctx, ['2', 'Bold Dark', 'Dark background, blue accents, white text'], [80, 200, 200], false);
   drawTableRow(ctx, ['3', 'Minimal Clean', 'White background, thin rules, monochrome'], [80, 200, 200], false);
-  drawTableRow(ctx, ['4', 'JA Branded', 'Profile Centre brand colours with blue header'], [80, 200, 200], false);
+  drawTableRow(ctx, ['4', 'JA Branded', 'Sousa Murray Profiles brand colours with blue header'], [80, 200, 200], false);
   ctx.y -= 8;
   drawPara(ctx, 'Each poster includes: name, job title, company, bio (up to 300 chars), skills (up to 12), email, phone, website, and a scannable QR code linking to the live profile. Portrait and landscape orientations are both supported.');
-  drawPara(ctx, 'Wordmark: "Created with Profile Centre" footer appears on Starter plan posters. Removed automatically on Professional, Organisation, Ultimate Organisation, Ultimate Organisation+, and Lifetime plans.');
+  drawPara(ctx, 'Wordmark: "Created with Sousa Murray Profiles" footer appears on Starter plan posters. Removed automatically on Professional, Organisation, Ultimate Organisation, Ultimate Organisation+, and Lifetime plans.');
   drawNote(ctx, 'Poster PDF endpoint: GET /api/profiles/:id/poster-pdf?template=1-4&orientation=portrait|landscape. Plan-gated: Starter and above. Profile must be published.', 'info');
   drawNote(ctx, 'This feature is the Profile Poster -- NOT a business card. Do not describe it as a card, print-ready file, or physical product. It is a digital A4 sharing document.', 'warning');
 
@@ -603,7 +603,7 @@ function buildAdminManual(ctx: Ctx) {
   drawPara(ctx, 'Email is sent via the Airo gateway on 127.0.0.1:2525.');
   drawTableRow(ctx, ['Setting', 'Value'], [200, 280], true);
   drawTableRow(ctx, ['From address', 'noreply@japrofilestudio.jagroupservices.co.uk'], [200, 280], false);
-  drawTableRow(ctx, ['Reply-To address', 'profilecentre@jagroupservices.co.uk'], [200, 280], false);
+  drawTableRow(ctx, ['Reply-To address', 'contact@jagroupservices.co.uk'], [200, 280], false);
   drawTableRow(ctx, ['Admin alerts', 'admin@jagroupservices.co.uk'], [200, 280], false);
   drawTableRow(ctx, ['Gateway host', '127.0.0.1:2525'], [200, 280], false);
   ctx.y -= 8;
@@ -750,8 +750,8 @@ function buildUserManual(ctx: Ctx) {
   // ── 1. Getting Started ─────────────────────────────────────────────────────
   drawPageBreak(ctx);
   drawH1(ctx, '1. Getting Started', false);
-  drawPara(ctx, 'Profile Centre is a digital business card and professional profile platform. This guide covers everything you need to know to set up and manage your account.');
-  drawNote(ctx, 'Profile Centre is available to UK-based users aged 18 and over. You authenticate via JA Group Services ID — no separate password is needed.', 'info');
+  drawPara(ctx, 'Sousa Murray Profiles is a digital business card and professional profile platform. This guide covers everything you need to know to set up and manage your account.');
+  drawNote(ctx, 'Sousa Murray Profiles is available to UK-based users aged 18 and over. You authenticate via JA Group Services ID — no separate password is needed.', 'info');
 
   drawH2(ctx, '1.1 Creating Your Account');
   drawBullet(ctx, 'Visit japrofilestudio.jagroupservices.co.uk');
@@ -900,8 +900,8 @@ function buildUserManual(ctx: Ctx) {
   drawBullet(ctx, 'Template 1 — Classic Professional: white background, navy header, gold accent');
   drawBullet(ctx, 'Template 2 — Bold Dark: dark background, blue accents, white text');
   drawBullet(ctx, 'Template 3 — Minimal Clean: white background, thin rules, monochrome');
-  drawBullet(ctx, 'Template 4 — JA Branded: Profile Centre brand colours with blue header');
-  drawPara(ctx, 'Each poster includes: name, job title, company, bio, skills, email, phone, website, and a scannable QR code. On Starter plans a "Created with Profile Centre" wordmark appears; this is removed on Professional, Business, and Lifetime plans.');
+  drawBullet(ctx, 'Template 4 — JA Branded: Sousa Murray Profiles brand colours with blue header');
+  drawPara(ctx, 'Each poster includes: name, job title, company, bio, skills, email, phone, website, and a scannable QR code. On Starter plans a "Created with Sousa Murray Profiles" wordmark appears; this is removed on Professional, Business, and Lifetime plans.');
   drawNote(ctx, 'The Profile Poster is for digital sharing only. It does not include crop marks, bleed, or print specifications. For physical printed cards, use Dashboard -> Business Cards.', 'info');
 
   drawH2(ctx, '4.3 Printed Business Cards (/dashboard/business-cards)');
@@ -918,13 +918,13 @@ function buildUserManual(ctx: Ctx) {
   drawH1(ctx, '6. Email Signature Builder', false);
 
   drawH2(ctx, '5.1 Creating an Email Signature (/dashboard/email-signature)');
-  drawPara(ctx, 'Build a branded email signature that links to your Profile Centre. Available on Starter and higher plans.');
+  drawPara(ctx, 'Build a branded email signature that links to your Sousa Murray Profiles. Available on Starter and higher plans.');
   drawBullet(ctx, 'Go to Dashboard → Email Signature');
   drawBullet(ctx, 'Choose a signature template');
   drawBullet(ctx, 'Customise with your name, title, company, contact details');
   drawBullet(ctx, 'Add your profile link and social icons');
   drawBullet(ctx, 'Copy the HTML signature to paste into your email client');
-  drawNote(ctx, 'The signature includes a link to your live Profile Centre. Keep your profile published for the link to work.', 'tip');
+  drawNote(ctx, 'The signature includes a link to your live Sousa Murray Profiles. Keep your profile published for the link to work.', 'tip');
 
   // ── 6. Analytics ───────────────────────────────────────────────────────────
   drawPageBreak(ctx);
@@ -999,7 +999,7 @@ function buildUserManual(ctx: Ctx) {
   drawH1(ctx, '9. Data & Privacy', false);
 
   drawH2(ctx, '9.1 Data Requests (/dashboard/data-requests)');
-  drawPara(ctx, 'Exercise your UK GDPR rights directly from your dashboard. All requests are reviewed by the Profile Centre team and responded to within 30 days.');
+  drawPara(ctx, 'Exercise your UK GDPR rights directly from your dashboard. All requests are reviewed by the Sousa Murray Profiles team and responded to within 30 days.');
   drawBullet(ctx, 'Subject Access Request (SAR): request a copy of all your data — our team will prepare a verified PDF');
   drawBullet(ctx, 'Correct inaccurate data: ask us to fix incorrect information');
   drawBullet(ctx, 'Delete My Data: request permanent deletion of your account and data');
@@ -1056,11 +1056,11 @@ export async function getManualPdf(req: Request, res: Response) {
   }
 
   const doc = await PDFDocument.create();
-  doc.setTitle('Profile Centre - Platform Manual');
+  doc.setTitle('Sousa Murray Profiles - Platform Manual');
   doc.setAuthor('JA Group Services Ltd');
   doc.setSubject(section === 'admin' ? 'Administrator Guide' : section === 'user' ? 'User Dashboard Guide' : 'Complete Platform Reference');
-  doc.setCreator('Profile Centre - japrofilestudio.jagroupservices.co.uk');
-  doc.setKeywords(['Profile Centre', 'manual', 'admin', 'user guide', 'JA Group Services']);
+  doc.setCreator('Sousa Murray Profiles - japrofilestudio.jagroupservices.co.uk');
+  doc.setKeywords(['Sousa Murray Profiles', 'manual', 'admin', 'user guide', 'JA Group Services']);
 
   const fontB  = await doc.embedFont(StandardFonts.HelveticaBold);
   const fontR  = await doc.embedFont(StandardFonts.Helvetica);
@@ -1111,7 +1111,7 @@ export async function getManualPdf(req: Request, res: Response) {
       p.drawRectangle({ x: 0, y: 0, width: A4W, height: 8, color: C.gold });
       p.drawText('PART B', { x: MARGIN, y: A4H / 2 + 40, size: 14, font: fontR, color: C.accent });
       p.drawText('User Dashboard Guide', { x: MARGIN, y: A4H / 2, size: 28, font: fontB, color: C.white });
-      p.drawText('For Profile Centre users', { x: MARGIN, y: A4H / 2 - 36, size: 12, font: fontI, color: C.gold });
+      p.drawText('For Sousa Murray Profiles users', { x: MARGIN, y: A4H / 2 - 36, size: 12, font: fontI, color: C.gold });
     }
     buildUserManual(ctx);
   }

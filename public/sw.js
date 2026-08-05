@@ -1,5 +1,5 @@
 /**
- * Profile Centre — Service Worker v4
+ * Sousa Murray Profiles — Service Worker v4
  *
  * ┌─────────────────────────────────────────────────────────────────────────┐
  * │  CACHING STRATEGY                                                       │

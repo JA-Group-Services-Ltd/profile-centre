@@ -17,7 +17,7 @@ import { useBranding } from '@/lib/branding';
 
 export default function LoggedOutPage() {
   const branding = useBranding();
-  const platformName = branding.platform_name ?? 'Profile Centre';
+  const platformName = branding.platform_name ?? 'Sousa Murray Profiles';
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 

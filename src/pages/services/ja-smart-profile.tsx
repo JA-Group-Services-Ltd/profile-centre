@@ -27,11 +27,11 @@ export default function JASmartProfileServicePage() {
   return (
     <>
       <Helmet>
-        <title>{`Profile Centre — ${branding.platform_name}`}</title>
-        <meta name="description" content="Profile Centre is a digital profile service by JA Group Services Ltd. Share your contact details, links and QR code in one professional profile." />
+        <title>{`Sousa Murray Profiles — ${branding.platform_name}`}</title>
+        <meta name="description" content="Sousa Murray Profiles is a digital profile service by JA Group Services Ltd. Share your contact details, links and QR code in one professional profile." />
         <link rel="canonical" href={`${APP_URL}/services/ja-profile-studio`} />
         <meta name="robots" content="index, follow" />
-        <meta property="og:title" content={`Profile Centre — ${branding.platform_name}`} />
+        <meta property="og:title" content={`Sousa Murray Profiles — ${branding.platform_name}`} />
         <meta property="og:description" content="A professional digital profile service. Share your contact details, links and QR code in one place." />
         <meta property="og:url" content={`${APP_URL}/services/ja-profile-studio`} />
         <meta property="og:type" content="website" />
@@ -42,7 +42,7 @@ export default function JASmartProfileServicePage() {
         <p className="text-sm text-muted-foreground mb-8">
           <Link to="/services" className="hover:text-foreground transition-colors">Services</Link>
           {' / '}
-          <span className="text-foreground">Profile Centre</span>
+          <span className="text-foreground">Sousa Murray Profiles</span>
         </p>
 
         {/* Hero */}
@@ -51,7 +51,7 @@ export default function JASmartProfileServicePage() {
             <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
             Live service
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Profile Centre</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Sousa Murray Profiles</h1>
           <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mb-6">
             A professional digital profile service that helps you keep your contact details, business information, links and QR code in one simple place.
           </p>

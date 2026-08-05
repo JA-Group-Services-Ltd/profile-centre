@@ -1,5 +1,5 @@
 /**
- * Branded email template helpers for Profile Centre.
+ * Branded email template helpers for Sousa Murray Profiles.
  *
  * Anti-spam best practices applied throughout:
  *  - No emoji in subject lines (spam filter trigger)
@@ -12,11 +12,11 @@
  *  - Light professional design — white card, navy header/footer
  */
 
-const BRAND_NAME = 'Profile Centre';
+const BRAND_NAME = 'Sousa Murray Profiles';
 const BRAND_COMPANY = 'JA Group Services Ltd';
 const BRAND_DOMAIN = 'japrofilestudio.jagroupservices.co.uk';
 const BRAND_URL = `https://${BRAND_DOMAIN}`;
-const SUPPORT_EMAIL = 'profilecentre@jagroupservices.co.uk';   // reply-to / support inbox
+const SUPPORT_EMAIL = 'contact@jagroupservices.co.uk';   // reply-to / support inbox
 const NOREPLY_EMAIL = 'noreply@japrofilestudio.jagroupservices.co.uk'; // outbound reply-to
 const PRIVACY_URL = `${BRAND_URL}/legal/privacy`;
 const TERMS_URL = `${BRAND_URL}/legal/terms`;
@@ -28,12 +28,12 @@ const TERMS_URL = `${BRAND_URL}/legal/terms`;
 //   — set by the Airo gateway automatically from the app's attached domain.
 //   — do NOT pass a custom `from` field; the gateway owns this.
 //
-// Reply-To: profilecentre@jagroupservices.co.uk
+// Reply-To: contact@jagroupservices.co.uk
 //   — when a recipient hits Reply, their email client opens a compose window
 //     addressed to the support inbox, not the noreply address.
-export const EMAIL_REPLY_TO = SUPPORT_EMAIL;   // profilecentre@jagroupservices.co.uk
+export const EMAIL_REPLY_TO = SUPPORT_EMAIL;   // contact@jagroupservices.co.uk
 export const EMAIL_NOREPLY  = NOREPLY_EMAIL;   // noreply@japrofilestudio.jagroupservices.co.uk (for reference)
-export const EMAIL_SUPPORT  = SUPPORT_EMAIL;   // profilecentre@jagroupservices.co.uk
+export const EMAIL_SUPPORT  = SUPPORT_EMAIL;   // contact@jagroupservices.co.uk
 
 // ── Colour palette (light, professional) ─────────────────────────────────────
 const C = {
@@ -287,7 +287,7 @@ export function securityAlertEmail(opts: {
 export function pinVerificationEmail(opts: {
   code: string;
 }): { subject: string; html: string; text: string } {
-  const subject = `Profile Centre — PIN verification code`;
+  const subject = `Sousa Murray Profiles — PIN verification code`;
 
   const html = htmlWrapper(`
     ${h1('PIN verification code')}
@@ -299,7 +299,7 @@ export function pinVerificationEmail(opts: {
     ${alertBox('This code expires in 10 minutes. If you did not request this, you can safely ignore this email.', 'info')}
   `, 'PIN verification code');
 
-  const text = `Your Profile Centre PIN verification code is: ${opts.code}\n\nThis code expires in 10 minutes. If you did not request this, you can safely ignore this email.${textFooter()}`;
+  const text = `Your Sousa Murray Profiles PIN verification code is: ${opts.code}\n\nThis code expires in 10 minutes. If you did not request this, you can safely ignore this email.${textFooter()}`;
 
   return { subject, html, text };
 }
@@ -749,7 +749,7 @@ export function passwordResetEmail(opts: {
     ${p('If the button above does not work, copy and paste this link into your browser:', C.muted, '13px')}
     <p style="margin:0 0 12px;font-size:12px;color:${C.accent};word-break:break-all;">${opts.resetUrl}</p>
     ${p('For security, this link can only be used once. If you need a new link, visit the login page and request another reset.', C.muted, '12px')}
-  `, 'Reset your Profile Centre password');
+  `, 'Reset your Sousa Murray Profiles password');
 
   const text = `Reset your password — ${BRAND_NAME}\n\nHi ${opts.userName},\n\nWe received a request to reset your password. Click the link below (expires in ${expires} minutes):\n\n${opts.resetUrl}\n\nIf you did not request this, ignore this email — your password will not change.${textFooter()}`;
 
@@ -887,7 +887,7 @@ export function accountClosureEmail(opts: {
     </table>
     ${alertBox('Your data will be retained for 30 days in accordance with our Privacy Policy, then permanently and irreversibly deleted. You will not be able to recover your account after this date.', 'warning')}
     ${p(`If you changed your mind and wish to keep your account, please contact us immediately at <a href="mailto:${SUPPORT_EMAIL}" style="color:${C.accent};">${SUPPORT_EMAIL}</a> before the deletion date.`, C.muted, '13px')}
-  `, 'Your Profile Centre account closure is confirmed');
+  `, 'Your Sousa Murray Profiles account closure is confirmed');
 
   const text = `Account closure confirmed — ${BRAND_NAME}\n\nHi ${opts.userName},\n\nWe have received your account closure request.\nAccount: ${opts.userEmail}${opts.requestId ? `\nReference: #${opts.requestId}` : ''}${opts.scheduledDeletionDate ? `\nData deletion date: ${opts.scheduledDeletionDate}` : ''}\n\nYour data will be retained for 30 days then permanently deleted.\n\nTo cancel this request, contact us immediately: ${SUPPORT_EMAIL}${textFooter()}`;
 
@@ -944,7 +944,7 @@ export function testEmail(opts: {
     </table>
     ${alertBox('If you received this email, delivery is working. Check your spam folder if it did not arrive in your inbox.', 'success')}
     ${p('To improve deliverability, ensure DKIM, SPF, and DMARC records are correctly configured for your sending domain.', C.muted, '13px')}
-  `, 'Email delivery test from Profile Centre admin panel');
+  `, 'Email delivery test from Sousa Murray Profiles admin panel');
 
   const text = `Email delivery test — ${BRAND_NAME}\n\nThis is a test email to verify the email delivery pipeline.\n\nSent to: ${opts.recipientEmail}\nSent at: ${opts.sentAt}\nOperated by: ${BRAND_COMPANY}\n\nIf you received this, delivery is working correctly.${textFooter()}`;
 

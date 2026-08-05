@@ -143,7 +143,7 @@ export default function InvitePage() {
       {children}
       <p className="text-center text-xs text-muted-foreground mt-8">
         Questions?{' '}
-        <a href={`mailto:${branding.support_email || branding.contact_email || 'profilecentre@jagroupservices.co.uk'}`}
+        <a href={`mailto:${branding.support_email || branding.contact_email || 'contact@jagroupservices.co.uk'}`}
           className="hover:text-foreground transition-colors underline underline-offset-2">
           Get in touch
         </a>

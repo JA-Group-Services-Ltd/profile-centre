@@ -6,7 +6,7 @@ import { useBranding } from '@/lib/branding';
 const APP_URL = 'https://japrofilestudio.jagroupservices.co.uk';
 
 const legalDocs = [
-  { to: '/legal/terms',          icon: FileText,       title: 'Terms of Service',              desc: 'The terms and conditions governing your use of Profile Centre.' },
+  { to: '/legal/terms',          icon: FileText,       title: 'Terms of Service',              desc: 'The terms and conditions governing your use of Sousa Murray Profiles.' },
   { to: '/legal/privacy',        icon: Shield,         title: 'Privacy Policy',                desc: 'How JA Group Services Ltd collects, uses and protects your personal data under UK GDPR.' },
   { to: '/legal/cookies',        icon: Cookie,         title: 'Cookie Policy',                 desc: 'How we use cookies and similar technologies on this platform.' },
   { to: '/legal/acceptable-use', icon: CheckCircle2,   title: 'Acceptable Use Policy',         desc: 'Rules for acceptable use of the platform and its services. Applies to all users aged 18+.' },
@@ -26,11 +26,11 @@ export default function LegalIndexPage() {
     <>
       <Helmet>
         <title>{`Legal — ${branding.platform_name}`}</title>
-        <meta name="description" content="Legal documents for Profile Centre, operated by JA Group Services Ltd. Terms, Privacy Policy, Cookie Policy, Refund Policy and more." />
+        <meta name="description" content="Legal documents for Sousa Murray Profiles, operated by JA Group Services Ltd. Terms, Privacy Policy, Cookie Policy, Refund Policy and more." />
         <link rel="canonical" href={`${APP_URL}/legal`} />
         <meta name="robots" content="index, follow" />
         <meta property="og:title" content={`Legal — ${branding.platform_name}`} />
-        <meta property="og:description" content="Legal documents for Profile Centre." />
+        <meta property="og:description" content="Legal documents for Sousa Murray Profiles." />
         <meta property="og:url" content={`${APP_URL}/legal`} />
         <meta property="og:type" content="website" />
       </Helmet>
@@ -40,7 +40,7 @@ export default function LegalIndexPage() {
           <p className="text-sm text-muted-foreground mb-2">Legal</p>
           <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-3">Legal Documents</h1>
           <p className="text-muted-foreground leading-relaxed max-w-2xl">
-            The following documents govern your use of Profile Centre, operated by JA Group Services Ltd. This service is available to UK-based users aged 18 and over only.
+            The following documents govern your use of Sousa Murray Profiles, operated by JA Group Services Ltd. This service is available to UK-based users aged 18 and over only.
           </p>
         </div>
 
@@ -72,7 +72,7 @@ export default function LegalIndexPage() {
           </div>
           <div className="flex-1">
             <p className="font-semibold text-foreground text-sm mb-1">Service Status</p>
-            <p className="text-xs text-muted-foreground leading-relaxed">Live operational status of all Profile Centre services.</p>
+            <p className="text-xs text-muted-foreground leading-relaxed">Live operational status of all Sousa Murray Profiles services.</p>
           </div>
           <Link to="/status" className="text-xs font-medium text-primary hover:underline flex-shrink-0 mt-0.5">
             View status →
@@ -86,7 +86,7 @@ export default function LegalIndexPage() {
             <h2 className="text-sm font-semibold text-foreground">JA Group Services Ltd — Corporate Policies</h2>
           </div>
           <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-            Profile Centre is operated by JA Group Services Ltd. The following corporate policies also apply to your use of this service and JA Group Services ID.
+            Sousa Murray Profiles is operated by JA Group Services Ltd. The following corporate policies also apply to your use of this service and JA Group Services ID.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {[
@@ -103,7 +103,7 @@ export default function LegalIndexPage() {
               {
                 href: 'https://www.jagroupservices.co.uk/legal/id-terms',
                 label: 'JA Group Services ID Terms',
-                desc: 'Terms governing the use of JA Group Services ID, the single sign-on identity service used to access Profile Centre.',
+                desc: 'Terms governing the use of JA Group Services ID, the single sign-on identity service used to access Sousa Murray Profiles.',
               },
               {
                 href: 'https://www.jagroupservices.co.uk/legal/cookies',
@@ -135,7 +135,7 @@ export default function LegalIndexPage() {
 
         <div className="mt-8 p-5 rounded-2xl bg-muted/40 border border-border text-sm text-muted-foreground">
           <p>
-            Profile Centre is a service operated by <strong className="text-foreground">JA Group Services Ltd</strong>, a company registered in England and Wales.
+            Sousa Murray Profiles is a service operated by <strong className="text-foreground">JA Group Services Ltd</strong>, a company registered in England and Wales.
             This service is available to UK-based users aged 18 and over only. Public profiles may be viewed worldwide.
             If you have questions about any of these documents, please contact us at{' '}
             <a href={`mailto:${branding.support_email || branding.contact_email}`} className="text-primary hover:underline break-all">

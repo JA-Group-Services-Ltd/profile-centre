@@ -5,7 +5,7 @@ export default function CookiesPage() {
     <DynamicLegalPage
       policyKey="cookies"
       canonicalPath="/legal/cookies"
-      metaDescription="Cookie Policy for Profile Centre. Learn about the cookies we use and how to manage your preferences."
+      metaDescription="Cookie Policy for Sousa Murray Profiles. Learn about the cookies we use and how to manage your preferences."
     />
   );
 }

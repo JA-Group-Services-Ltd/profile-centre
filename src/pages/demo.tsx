@@ -2,7 +2,7 @@ import { demo } from 'virtual:content';
 /**
  * Public Demo Page — /demo
  *
- * A fully public, no-login-required showcase of the Profile Centre platform.
+ * A fully public, no-login-required showcase of the Sousa Murray Profiles platform.
  * Visitors can explore what the platform looks like and what it does.
  * Links to /login (sign up / create account) as the conversion CTA.
  */
@@ -303,11 +303,11 @@ export default function PublicDemoPage() {
   return (
     <>
       <Helmet>
-        <title>See How It Works — Profile Centre Demo</title>
-        <meta name="description" content="Explore Profile Centre — personal and business digital profiles, QR codes, email signatures, and analytics. No login required." />
+        <title>See How It Works — Sousa Murray Profiles Demo</title>
+        <meta name="description" content="Explore Sousa Murray Profiles — personal and business digital profiles, QR codes, email signatures, and analytics. No login required." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/demo" />
-        <meta property="og:title" content="See How It Works — Profile Centre Demo" />
-        <meta property="og:description" content="Explore Profile Centre — personal and business digital profiles, QR codes, email signatures, and analytics." />
+        <meta property="og:title" content="See How It Works — Sousa Murray Profiles Demo" />
+        <meta property="og:description" content="Explore Sousa Murray Profiles — personal and business digital profiles, QR codes, email signatures, and analytics." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://japrofilestudio.jagroupservices.co.uk/demo" />
       </Helmet>
@@ -324,7 +324,7 @@ export default function PublicDemoPage() {
                 Interactive Demo — no login needed
               </Badge>
               <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-5 leading-tight">
-                See what Profile Centre<br className="hidden md:block" /> can do for you
+                See what Sousa Murray Profiles<br className="hidden md:block" /> can do for you
               </h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed">
                 Explore every feature below — personal profiles, business pages, QR codes, email signatures, and analytics. Then create your own for free.
@@ -402,11 +402,11 @@ export default function PublicDemoPage() {
           </AnimatePresence>
         </section>
 
-        {/* ── Why Profile Centre ── */}
+        {/* ── Why Sousa Murray Profiles ── */}
         <section className="border-t border-border bg-muted/20">
           <div className="max-w-5xl mx-auto px-5 py-16">
             <div className="text-center mb-10">
-              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">Why people choose Profile Centre</h2>
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">Why people choose Sousa Murray Profiles</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {[
@@ -451,7 +451,7 @@ export default function PublicDemoPage() {
             </div>
             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">Ready to create your profile?</h2>
             <p className="text-muted-foreground mb-8 max-w-md mx-auto leading-relaxed">
-              Join thousands of professionals and businesses already using Profile Centre. Free to start — no credit card needed.
+              Join thousands of professionals and businesses already using Sousa Murray Profiles. Free to start — no credit card needed.
             </p>
             <div className="flex flex-wrap gap-3 justify-center">
               <Link to="/login">

@@ -23,7 +23,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <PwaSplashScreen />
       <OfflineBanner />
       <Helmet>
-        <title>Profile Centre | Your Digital Business Card, Reimagined</title>
+        <title>Sousa Murray Profiles | Your Digital Business Card, Reimagined</title>
         <meta name="description" content="Create a stunning digital profile that showcases who you are and what you do — share it with a single link. Free to start." />
         <link rel="icon" type="image/png" href="/airo-assets/images/favicon/ja-profile-studio" />
       </Helmet>

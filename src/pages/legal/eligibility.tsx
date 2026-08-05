@@ -5,8 +5,8 @@ export default function EligibilityPage() {
   return (
     <>
       <Helmet>
-        <title>Eligibility Policy — Profile Centre</title>
-        <meta name="description" content="Profile Centre eligibility policy — this service is available to UK-based users aged 18 and over only." />
+        <title>Eligibility Policy — Sousa Murray Profiles</title>
+        <meta name="description" content="Sousa Murray Profiles eligibility policy — this service is available to UK-based users aged 18 and over only." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/legal/eligibility" />
         <meta name="robots" content="index, follow" />
       </Helmet>
@@ -14,7 +14,7 @@ export default function EligibilityPage() {
       <DynamicLegalPage
         policyKey="eligibility"
         canonicalPath="/legal/eligibility"
-        metaDescription="Profile Centre eligibility policy — this service is available to UK-based users aged 18 and over only."
+        metaDescription="Sousa Murray Profiles eligibility policy — this service is available to UK-based users aged 18 and over only."
       />
     </>
   );

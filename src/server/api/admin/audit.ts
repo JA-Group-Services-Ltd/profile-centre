@@ -44,15 +44,15 @@ const POLICY_SEEDS: Array<{ key: string; title: string; content: string; forceVe
 
 ## 1. Acceptance of Terms
 
-By accessing or using Profile Centre ("the Service"), operated by JA Group Services Ltd ("we", "us", "our"), you agree to be bound by these Terms of Service and all policies incorporated by reference. If you do not agree, please do not use the Service.
+By accessing or using Sousa Murray Profiles ("the Service"), operated by JA Group Services Ltd ("we", "us", "our"), you agree to be bound by these Terms of Service and all policies incorporated by reference. If you do not agree, please do not use the Service.
 
 This Service is available to users aged **18 and over**. Public profiles may be viewed worldwide.
 
 ---
 
-## 2. What Profile Centre Is
+## 2. What Sousa Murray Profiles Is
 
-Profile Centre is a digital business card and professional profile platform operated by JA Group Services Ltd. It allows users to:
+Sousa Murray Profiles is a digital business card and professional profile platform operated by JA Group Services Ltd. It allows users to:
 
 - Create and manage a personal or organisation digital profile
 - Share their profile via a unique URL or QR code
@@ -116,7 +116,7 @@ You agree not to use the Service for any unlawful purpose, to post defamatory or
 
 8.1 Printed business card orders are a separate paid service and are not included in any subscription plan.
 8.2 Orders are fulfilled by our print partner. Pricing, turnaround times, and specifications are confirmed by admin before payment is taken.
-8.3 Payment for business card orders is collected via a Stripe payment link or invoice issued by Profile Centre admin. Do not pay via any link that has not been issued through this official process.
+8.3 Payment for business card orders is collected via a Stripe payment link or invoice issued by Sousa Murray Profiles admin. Do not pay via any link that has not been issued through this official process.
 8.4 Once a design proof has been approved and sent to print, the order cannot be cancelled or refunded.
 8.5 Delivery timescales are estimates and not guaranteed.
 8.6 See our Refund Policy for full details on business card orders.
@@ -126,7 +126,7 @@ You agree not to use the Service for any unlawful purpose, to post defamatory or
 ## 9. Intellectual Property
 
 9.1 The Service, its design, code, and original content are owned by JA Group Services Ltd and protected by UK intellectual property law.
-9.2 "Profile Centre" and "JA Group Services" are trading names of JA Group Services Ltd. You may not use them without our written consent.
+9.2 "Sousa Murray Profiles" and "JA Group Services" are trading names of JA Group Services Ltd. You may not use them without our written consent.
 9.3 You may not copy, reverse-engineer, or create derivative works from the Service.
 
 ---
@@ -195,11 +195,11 @@ Website: jagroupservices.co.uk`,
 
 ## 1. Introduction
 
-JA Group Services Ltd ("we", "us", "our") is committed to protecting your personal data. This Privacy Policy explains how we collect, use, store, and protect your information when you use Profile Centre ("the Service"). It also sets out your rights under UK GDPR and how to exercise them.
+JA Group Services Ltd ("we", "us", "our") is committed to protecting your personal data. This Privacy Policy explains how we collect, use, store, and protect your information when you use Sousa Murray Profiles ("the Service"). It also sets out your rights under UK GDPR and how to exercise them.
 
 This policy complies with the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.
 
-**Note on JA Group Services ID:** Authentication for Profile Centre is handled by JA Group Services ID, the identity and access management system operated by JA Group Services Ltd. Your use of JA Group Services ID is additionally governed by the JA Group Services website privacy policy and terms at jagroupservices.co.uk. This policy covers data processed by Profile Centre specifically.
+**Note on JA Group Services ID:** Authentication for Sousa Murray Profiles is handled by JA Group Services ID, the identity and access management system operated by JA Group Services Ltd. Your use of JA Group Services ID is additionally governed by the JA Group Services website privacy policy and terms at jagroupservices.co.uk. This policy covers data processed by Sousa Murray Profiles specifically.
 
 ---
 
@@ -480,7 +480,7 @@ Website: jagroupservices.co.uk`,
 
 ## 1. Introduction
 
-This Acceptable Use Policy ("AUP") sets out the rules governing the use of Profile Centre ("the Service"), operated by JA Group Services Ltd. By using the Service, you agree to comply with this policy. This AUP is incorporated into our Terms of Service.
+This Acceptable Use Policy ("AUP") sets out the rules governing the use of Sousa Murray Profiles ("the Service"), operated by JA Group Services Ltd. By using the Service, you agree to comply with this policy. This AUP is incorporated into our Terms of Service.
 
 This Service is available to users aged **18 and over**.
 
@@ -581,7 +581,7 @@ Website: jagroupservices.co.uk`,
 
 ## 1. Overview
 
-This Refund Policy applies to all paid subscriptions and services offered by JA Group Services Ltd through Profile Centre. By purchasing a subscription or service, you agree to the terms of this policy.
+This Refund Policy applies to all paid subscriptions and services offered by JA Group Services Ltd through Sousa Murray Profiles. By purchasing a subscription or service, you agree to the terms of this policy.
 
 ---
 
@@ -605,7 +605,7 @@ The Free plan has no charge and is not subject to this policy.
 ## 3. Printed Business Card Orders
 
 3.1 Business card orders are a separate paid service and are not included in any subscription plan.
-3.2 Payment is collected via a Stripe payment link or invoice issued by Profile Centre admin after your order details have been confirmed. Do not pay via any link that has not been issued through this official process.
+3.2 Payment is collected via a Stripe payment link or invoice issued by Sousa Murray Profiles admin after your order details have been confirmed. Do not pay via any link that has not been issued through this official process.
 3.3 Once a design proof has been **approved by you and sent to print**, no refund is available.
 3.4 If a proof has not yet been approved, a partial refund may be available at our discretion, less any design work already completed.
 3.5 We are not responsible for errors in content you approved on the proof.
@@ -662,7 +662,7 @@ Website: jagroupservices.co.uk`,
 
 ## 1. Our Commitment
 
-JA Group Services Ltd is committed to providing a high-quality service. If something goes wrong or you are dissatisfied with any aspect of Profile Centre, we want to hear from you so we can put it right.
+JA Group Services Ltd is committed to providing a high-quality service. If something goes wrong or you are dissatisfied with any aspect of Sousa Murray Profiles, we want to hear from you so we can put it right.
 
 ---
 
@@ -745,7 +745,7 @@ Website: jagroupservices.co.uk`,
 
 ## 1. Our Commitment
 
-JA Group Services Ltd is committed to making Profile Centre accessible to as many people as possible. We aim to meet the **Web Content Accessibility Guidelines (WCAG) 2.1 Level AA** standard across all pages of the Service.
+JA Group Services Ltd is committed to making Sousa Murray Profiles accessible to as many people as possible. We aim to meet the **Web Content Accessibility Guidelines (WCAG) 2.1 Level AA** standard across all pages of the Service.
 
 ---
 
@@ -778,7 +778,7 @@ We are actively working to address these issues.
 
 ## 4. Technical Information
 
-Profile Centre is built using React, TypeScript, and standard HTML5 with semantic markup. We test accessibility using:
+Sousa Murray Profiles is built using React, TypeScript, and standard HTML5 with semantic markup. We test accessibility using:
 - NVDA screen reader on Windows
 - VoiceOver on macOS and iOS
 - Keyboard-only navigation testing
@@ -788,7 +788,7 @@ Profile Centre is built using React, TypeScript, and standard HTML5 with semanti
 
 ## 5. Feedback and Contact
 
-If you experience any accessibility barriers when using Profile Centre, please contact us:
+If you experience any accessibility barriers when using Sousa Murray Profiles, please contact us:
 
 **Email:** accessibility@jagroupservices.co.uk
 
@@ -824,7 +824,7 @@ Website: jagroupservices.co.uk`,
 
 ## 1. Age Requirement
 
-Profile Centre is available to users aged **18 and over only**. By registering for an account, you confirm that you are at least 18 years of age.
+Sousa Murray Profiles is available to users aged **18 and over only**. By registering for an account, you confirm that you are at least 18 years of age.
 
 We do not knowingly collect personal data from individuals under 18. If we become aware that an account has been created by someone under 18, we will close the account and delete the associated data promptly.
 
@@ -832,7 +832,7 @@ We do not knowingly collect personal data from individuals under 18. If we becom
 
 ## 2. Geographic Availability
 
-Profile Centre is operated by JA Group Services Ltd, a company registered in England and Wales. The Service is primarily intended for **UK-based users**.
+Sousa Murray Profiles is operated by JA Group Services Ltd, a company registered in England and Wales. The Service is primarily intended for **UK-based users**.
 
 - **Account registration** is open to users aged 18 and over.
 - **Public profiles** may be viewed worldwide by anyone with the profile URL.
@@ -898,7 +898,7 @@ Website: jagroupservices.co.uk`,
 
 ## 1. Introduction
 
-JA Group Services Ltd operates Profile Centre ("the Service"). This policy explains how we handle reports of harmful, illegal, or policy-violating content on public profiles, and how we moderate the platform.
+JA Group Services Ltd operates Sousa Murray Profiles ("the Service"). This policy explains how we handle reports of harmful, illegal, or policy-violating content on public profiles, and how we moderate the platform.
 
 ---
 
@@ -989,7 +989,7 @@ Website: jagroupservices.co.uk`,
 
 ## 1. Introduction
 
-JA Group Services Ltd takes the security of Profile Centre and your personal data seriously. This Security Policy describes our approach to protecting the Service and its users. It is written for public transparency — it does not disclose implementation details that could create security risks.
+JA Group Services Ltd takes the security of Sousa Murray Profiles and your personal data seriously. This Security Policy describes our approach to protecting the Service and its users. It is written for public transparency — it does not disclose implementation details that could create security risks.
 
 ---
 
@@ -1074,7 +1074,7 @@ Website: jagroupservices.co.uk`,
 
 ## 1. Overview
 
-This policy explains how long JA Group Services Ltd retains personal data collected through Profile Centre, and when that data is deleted. It should be read alongside our Privacy Policy.
+This policy explains how long JA Group Services Ltd retains personal data collected through Sousa Murray Profiles, and when that data is deleted. It should be read alongside our Privacy Policy.
 
 ---
 

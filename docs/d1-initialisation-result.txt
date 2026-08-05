@@ -1,6 +1,6 @@
 result=success
 timestamp=2026-07-31T00:37:26Z
-message=Profile Centre D1 schema version 1 was created and verified.
+message=Sousa Murray Profiles D1 schema version 1 was created and verified.
 readiness_http=200
 setup_http=201
 health_http=200

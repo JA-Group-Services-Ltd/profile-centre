@@ -114,12 +114,12 @@ export default function Footer() {
               {branding.platform_logo_url ? (
                 <img
                   src={branding.platform_logo_url}
-                  alt={branding.platform_name || 'Profile Centre'}
+                  alt={branding.platform_name || 'Sousa Murray Profiles'}
                   className="h-14 w-auto max-w-[200px] object-contain"
                 />
               ) : (
                 <span className="font-extrabold text-lg text-foreground">
-                  <span className="text-primary">Profile Centre</span>
+                  <span className="text-primary">Sousa Murray Profiles</span>
                 </span>
               )}
             </Link>
@@ -157,11 +157,11 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="border-t border-border mt-12 pt-6 space-y-2">
           <p className="text-sm text-muted-foreground">
-            © {year} {branding.platform_name || 'Profile Centre'}. All rights reserved.
+            © {year} {branding.platform_name || 'Sousa Murray Profiles'}. All rights reserved.
             {branding.footer_tagline ? ` ${branding.footer_tagline}.` : ''}
           </p>
           <p className="text-xs text-muted-foreground leading-relaxed max-w-3xl">
-            Profile Centre is a service brand operated by JA Group Services Ltd, a company registered in England and Wales. This service is available to UK-based users aged 18 and over only. Public profiles may be viewed worldwide.
+            Sousa Murray Profiles is a service brand operated by JA Group Services Ltd, a company registered in England and Wales. This service is available to UK-based users aged 18 and over only. Public profiles may be viewed worldwide.
           </p>
           <p className="text-xs text-muted-foreground">
             Separate terms may apply to third-party print providers or connected services where used.

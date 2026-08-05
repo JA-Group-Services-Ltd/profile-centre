@@ -70,7 +70,7 @@ export async function adminComposeEmail(req: Request, res: Response) {
           subject: subject.trim(),
           body: body.trim(),
         });
-        await sendEmail({ fromName: 'Profile Centre', to: r.email, subject: emailSubject, html, text, replyTo: EMAIL_REPLY_TO });
+        await sendEmail({ fromName: 'Sousa Murray Profiles', to: r.email, subject: emailSubject, html, text, replyTo: EMAIL_REPLY_TO });
         sent++;
       } catch (err) {
         failed++;

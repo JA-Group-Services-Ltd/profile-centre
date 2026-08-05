@@ -134,7 +134,7 @@ export default function QRCodePage() {
   if (!hasPaidAccess) return (
     <div className="max-w-2xl mx-auto pb-20 lg:pb-0">
       <Helmet>
-        <title>QR Codes — Profile Centre</title>
+        <title>QR Codes — Sousa Murray Profiles</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
       <div className="mb-8">
@@ -163,7 +163,7 @@ export default function QRCodePage() {
   return (
     <div className="max-w-2xl mx-auto pb-20 lg:pb-0">
       <Helmet>
-        <title>QR Codes — Profile Centre</title>
+        <title>QR Codes — Sousa Murray Profiles</title>
         <meta name="description" content="Generate and download QR codes for your profiles." />
         <link rel="canonical" href="https://japrofilestudio.jagroupservices.co.uk/dashboard/qr-code" />
         <meta name="robots" content="noindex, nofollow" />
