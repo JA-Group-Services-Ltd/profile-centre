@@ -2,6 +2,7 @@ import { HttpError } from "./http.js";
 import { requestHeadOffice } from "./head-office.js";
 
 const BRAND = "SOUSA_MURRAY_PROFILES";
+const SYNC_FRESH_MS = 30_000;
 
 const PROFILE_PLAN_MAP = Object.freeze({
   starter: Object.freeze({ productCode: "PROFILES_STARTER", priceCode: "PROFILES_STARTER_MONTHLY" }),
@@ -41,6 +42,23 @@ async function headOfficeJson(env, path, method = "GET", body) {
   });
 }
 
+function syncKey(userId) {
+  return `central_payments_sync_user_${Number(userId)}`;
+}
+
+async function recentlySynced(env, userId) {
+  const row = await env.DB.prepare("SELECT value FROM app_settings WHERE key=?1 LIMIT 1").bind(syncKey(userId)).first().catch(() => null);
+  const timestamp = Date.parse(row?.value || "");
+  return Number.isFinite(timestamp) && Date.now() - timestamp < SYNC_FRESH_MS;
+}
+
+async function markSynced(env, userId) {
+  await env.DB.prepare(`INSERT INTO app_settings (key,value,is_secret,updated_at)
+    VALUES (?1,?2,0,CURRENT_TIMESTAMP)
+    ON CONFLICT(key) DO UPDATE SET value=excluded.value,is_secret=0,updated_at=CURRENT_TIMESTAMP`)
+    .bind(syncKey(userId), new Date().toISOString()).run().catch(() => null);
+}
+
 export async function initialiseCentralPaymentCustomer(env, userId) {
   const user = await userRecord(env, userId);
   const status = await headOfficeJson(env, `/api/v1/payments/status?customerNumber=${encodeURIComponent(ucn(user))}`).catch(error => {
@@ -52,6 +70,8 @@ export async function initialiseCentralPaymentCustomer(env, userId) {
     await env.DB.prepare("UPDATE users SET stripe_customer_id=?1,updated_at=CURRENT_TIMESTAMP WHERE id=?2")
       .bind(customerId, user.id).run();
   }
+  if (status?.subscriptions?.length) await applyCentralStatus(env, user, status);
+  await markSynced(env, user.id);
   return { success: true, linked: Boolean(customerId), central: true };
 }
 
@@ -83,6 +103,7 @@ export async function createCentralCheckout(env, userId, input, origin) {
 
 export async function createCentralBillingPortal(env, userId, origin) {
   const user = await userRecord(env, userId);
+  await syncCentralSubscription(env, userId, { force: true }).catch(() => null);
   const payload = await headOfficeJson(env, "/api/v1/payments/portal", "POST", {
     brand: BRAND,
     customerNumber: ucn(user),
@@ -98,7 +119,7 @@ export async function cancelCentralSubscription(env, userId) {
     action: "cancel_at_period_end",
     customerNumber: ucn(user),
   });
-  await syncCentralSubscription(env, userId).catch(() => null);
+  await syncCentralSubscription(env, userId, { force: true }).catch(() => null);
   return { success: true, cancel_at_period_end: true, central: true, subscription: payload?.subscription || null };
 }
 
@@ -117,16 +138,16 @@ async function planIdForPrice(env, priceCode) {
   return null;
 }
 
-export async function syncCentralSubscription(env, userId) {
-  const user = await userRecord(env, userId);
-  const status = await headOfficeJson(env, `/api/v1/payments/status?customerNumber=${encodeURIComponent(ucn(user))}`);
+async function applyCentralStatus(env, user, status) {
   const current = [...(status?.subscriptions || [])].sort((a, b) => rank(a.status) - rank(b.status))[0] || null;
   if (!current) return { success: true, subscription: null, central: true };
 
   const subscriptionStatus = String(current.status || "").toLowerCase();
   const activePlanId = await planIdForPrice(env, current.price_code);
   const freePlan = await env.DB.prepare("SELECT id FROM plans WHERE slug='free' LIMIT 1").first();
-  const effectivePlanId = ["canceled", "cancelled"].includes(subscriptionStatus) ? Number(freePlan?.id || user.plan_id) : (activePlanId || Number(user.plan_id));
+  const effectivePlanId = ["canceled", "cancelled"].includes(subscriptionStatus)
+    ? Number(freePlan?.id || user.plan_id)
+    : (activePlanId || Number(user.plan_id));
   const stripeCustomerId = current.stripe_customer_id || null;
 
   await env.DB.prepare(`INSERT INTO subscriptions
@@ -150,4 +171,13 @@ export async function syncCentralSubscription(env, userId) {
   await env.DB.prepare("UPDATE users SET plan_id=?1,stripe_customer_id=COALESCE(?2,stripe_customer_id),updated_at=CURRENT_TIMESTAMP WHERE id=?3")
     .bind(effectivePlanId, stripeCustomerId, user.id).run();
   return { success: true, subscription: current, planId: effectivePlanId, central: true };
+}
+
+export async function syncCentralSubscription(env, userId, options = {}) {
+  if (!options.force && await recentlySynced(env, userId)) return { success: true, skipped: true, central: true };
+  const user = await userRecord(env, userId);
+  const status = await headOfficeJson(env, `/api/v1/payments/status?customerNumber=${encodeURIComponent(ucn(user))}`);
+  const result = await applyCentralStatus(env, user, status);
+  await markSynced(env, user.id);
+  return result;
 }
