@@ -84,6 +84,15 @@ assert.match(profileExport, /function escapeHtml/);
 assert.match(profileExport, /normaliseWebUrl/);
 assert.doesNotMatch(profileExport, /japrofilestudio\.jagroupservices\.co\.uk/i);
 
+// Public profile rendering must use the current brand, validate URLs and never inject a stored customer bio as raw HTML.
+assert.match(profileRoute, /https:\/\/sousamurrayprofiles\.jagroupservices\.co\.uk/);
+assert.doesNotMatch(profileRoute, /japrofilestudio\.jagroupservices\.co\.uk/i);
+assert.match(profileRoute, /safeExternalUrl/);
+assert.match(profileRoute, /safeImageUrl/);
+assert.match(profileRoute, /<Lock className=/);
+assert.doesNotMatch(profileRoute, /dangerouslySetInnerHTML/);
+assert.doesNotMatch(profileRoute, /__html:\s*profile\.bio_html/);
+
 // Legal public and Admin pages must use one complete API contract.
 for (const key of [
   'terms', 'privacy', 'cookies', 'acceptable_use', 'refunds', 'complaints',
