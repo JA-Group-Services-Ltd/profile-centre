@@ -112,9 +112,9 @@ const PLAN_MUTABLE = [
   "name", "slug", "price_monthly", "price_yearly", "max_profiles", "max_org_profiles",
   "max_links", "max_seats", "max_themes", "has_qr_download", "has_contact_form",
   "has_advanced_analytics", "has_vcard_download", "has_custom_themes",
-  "remove_branding", "has_messaging", "has_lifetime", "is_active", "is_public",
-  "stripe_product_id", "stripe_price_monthly", "stripe_price_yearly",
-  "stripe_price_lifetime",
+  "has_profile_link_customisation", "remove_branding", "has_messaging", "has_lifetime",
+  "is_active", "is_public", "stripe_product_id", "stripe_price_monthly",
+  "stripe_price_yearly", "stripe_price_lifetime",
 ];
 
 function mutableEntries(body, fields) {
@@ -158,4 +158,3 @@ export async function deactivatePlan(request, database, admin, id) {
   await writeAudit(database, request, admin, "deactivate", "plan", `Deactivated plan ${id}`);
   return { success: true };
 }
-
