@@ -1,6 +1,7 @@
 import { HttpError } from "./http.js";
 
 const API_BASE = "https://api.cloudflare.com/client/v4";
+const REQUEST_TIMEOUT_MS = 12_000;
 
 function cleanConfigValue(value) {
   return String(value ?? "").trim();
@@ -30,34 +31,46 @@ export function cloudflareSaasConfig(env) {
 
 async function cfRequest(env, path, { method = "GET", body, allow404 = false } = {}) {
   const config = cloudflareSaasConfig(env);
-  const response = await fetch(`${API_BASE}${path}`, {
-    method,
-    headers: {
-      authorization: `Bearer ${config.token}`,
-      accept: "application/json",
-      ...(body === undefined ? {} : { "content-type": "application/json" }),
-    },
-    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
-  });
-
-  if (allow404 && response.status === 404) return null;
-
-  let payload = null;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   try {
-    payload = await response.json();
-  } catch {
-    payload = null;
-  }
+    const response = await fetch(`${API_BASE}${path}`, {
+      method,
+      signal: controller.signal,
+      headers: {
+        authorization: `Bearer ${config.token}`,
+        accept: "application/json",
+        ...(body === undefined ? {} : { "content-type": "application/json" }),
+      },
+      ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+    });
 
-  if (!response.ok || payload?.success === false) {
-    const message = payload?.errors?.map((error) => error?.message).filter(Boolean).join("; ")
-      || `Cloudflare request failed with HTTP ${response.status}.`;
-    const error = new HttpError(502, `Cloudflare could not complete the custom-domain request: ${message}`, "cloudflare_saas_error");
-    error.cloudflareStatus = response.status;
+    if (allow404 && response.status === 404) return null;
+
+    let payload = null;
+    try {
+      payload = await response.json();
+    } catch {
+      payload = null;
+    }
+
+    if (!response.ok || payload?.success === false) {
+      const message = payload?.errors?.map((error) => error?.message).filter(Boolean).join("; ")
+        || `Cloudflare request failed with HTTP ${response.status}.`;
+      const error = new HttpError(502, `Cloudflare could not complete the custom-domain request: ${message}`, "cloudflare_saas_error");
+      error.cloudflareStatus = response.status;
+      throw error;
+    }
+
+    return payload?.result ?? payload;
+  } catch (error) {
+    if (error?.name === "AbortError") {
+      throw new HttpError(504, "Cloudflare did not respond to the custom-domain request in time.", "cloudflare_saas_timeout");
+    }
     throw error;
+  } finally {
+    clearTimeout(timeout);
   }
-
-  return payload?.result ?? payload;
 }
 
 async function listWorkerRoutes(env) {
@@ -146,7 +159,6 @@ export async function createCustomHostname(env, hostname) {
     const route = await ensureWorkerRoute(env, hostname);
     return hostnameSnapshot(result, env, route);
   } catch (error) {
-    // Do not leave an unreachable SaaS hostname behind if routing could not be created.
     if (result?.id) {
       await cfRequest(
         env,
