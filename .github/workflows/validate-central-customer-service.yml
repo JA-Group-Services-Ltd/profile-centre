@@ -26,8 +26,8 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
-      - name: Type-check React and TypeScript
-        run: npm run type-check
+      - name: Type-check deployed public customer and admin application
+        run: npx tsc --noEmit -p tsconfig.production.json
 
       - name: Validate full public customer admin and integration contracts
         run: node tests/full-site-contracts.test.mjs
