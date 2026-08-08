@@ -10,9 +10,8 @@ export function cloudflareSaasConfig(env) {
   const token = cleanConfigValue(env.CLOUDFLARE_SAAS_API_TOKEN);
   const zoneId = cleanConfigValue(env.CLOUDFLARE_SAAS_ZONE_ID);
   const cnameTarget = cleanConfigValue(env.CLOUDFLARE_SAAS_CNAME_TARGET).toLowerCase().replace(/\.$/, "");
-  const routerScript = cleanConfigValue(env.CLOUDFLARE_SAAS_ROUTER_SCRIPT || "sousa-murray-profiles-custom-domain-router");
 
-  if (!token || !zoneId || !cnameTarget || !routerScript) {
+  if (!token || !zoneId || !cnameTarget) {
     throw new HttpError(
       503,
       "Custom domains are not fully configured yet. Contact support if this continues.",
@@ -22,7 +21,7 @@ export function cloudflareSaasConfig(env) {
   if (!/^[a-z0-9.-]+$/i.test(cnameTarget) || !cnameTarget.includes(".")) {
     throw new HttpError(503, "The custom-domain CNAME target is invalid.", "custom_domain_target_invalid");
   }
-  return { token, zoneId, cnameTarget, routerScript };
+  return { token, zoneId, cnameTarget };
 }
 
 async function cfRequest(env, path, { method = "GET", body, allow404 = false } = {}) {
@@ -136,51 +135,6 @@ export async function deleteCustomHostname(env, hostnameId) {
   await cfRequest(
     env,
     `/zones/${encodeURIComponent(config.zoneId)}/custom_hostnames/${encodeURIComponent(hostnameId)}`,
-    { method: "DELETE", allow404: true },
-  );
-}
-
-async function listWorkerRoutes(env) {
-  const config = cloudflareSaasConfig(env);
-  const result = await cfRequest(env, `/zones/${encodeURIComponent(config.zoneId)}/workers/routes`);
-  return Array.isArray(result) ? result : [];
-}
-
-export async function ensureCustomDomainWorkerRoute(env, hostname) {
-  const config = cloudflareSaasConfig(env);
-  const pattern = `${hostname}/*`;
-  const routes = await listWorkerRoutes(env);
-  const existing = routes.find((route) => String(route?.pattern).toLowerCase() === pattern.toLowerCase());
-
-  if (existing?.id) {
-    if (existing.script === config.routerScript) {
-      return { id: existing.id, pattern: existing.pattern, script: existing.script };
-    }
-    return cfRequest(
-      env,
-      `/zones/${encodeURIComponent(config.zoneId)}/workers/routes/${encodeURIComponent(existing.id)}`,
-      { method: "PUT", body: { pattern, script: config.routerScript } },
-    );
-  }
-
-  return cfRequest(env, `/zones/${encodeURIComponent(config.zoneId)}/workers/routes`, {
-    method: "POST",
-    body: { pattern, script: config.routerScript },
-  });
-}
-
-export async function deleteCustomDomainWorkerRoute(env, routeId, hostname = null) {
-  const config = cloudflareSaasConfig(env);
-  let id = routeId;
-  if (!id && hostname) {
-    const pattern = `${hostname}/*`;
-    const routes = await listWorkerRoutes(env);
-    id = routes.find((route) => String(route?.pattern).toLowerCase() === pattern.toLowerCase())?.id ?? null;
-  }
-  if (!id) return;
-  await cfRequest(
-    env,
-    `/zones/${encodeURIComponent(config.zoneId)}/workers/routes/${encodeURIComponent(id)}`,
     { method: "DELETE", allow404: true },
   );
 }
