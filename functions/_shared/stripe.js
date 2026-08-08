@@ -27,7 +27,10 @@ function legacyWebhookConfigured(env) {
 }
 
 function centralConnector(env) {
-  const token = String(env.CUSTOMEROPS_API_KEY || env.HEAD_OFFICE_PLATFORM_KEY || "").trim();
+  // Central Payments has its own scoped Head Office credential. Prefer that
+  // dedicated secret so an older customer/security platform key can never be
+  // selected merely because it is also valid for Head Office APIs.
+  const token = String(env.CENTRAL_PAYMENTS_API_KEY || env.CUSTOMEROPS_API_KEY || env.HEAD_OFFICE_PLATFORM_KEY || "").trim();
   const base = String(env.CUSTOMEROPS_BASE_URL || env.HEAD_OFFICE_API_BASE_URL || HEAD_OFFICE_DEFAULT)
     .trim().replace(/\/+$/, "");
   return { token, base };
