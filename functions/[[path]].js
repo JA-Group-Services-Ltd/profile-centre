@@ -3,6 +3,7 @@ import { errorResponse, methodNotAllowed, withRequestId } from "./_shared/http.j
 import { handleAdminPlanApiRequest } from "./_shared/admin-plan-routes.js";
 import { handleCustomDomainApiRequest } from "./_shared/custom-domain-routes.js";
 import { ensureCustomDomainPlanPolicy } from "./_shared/custom-domain-policy.js";
+import { handleCurrentUserApiRequest } from "./_shared/current-user-route.js";
 import { handleApiRequest } from "./_shared/router.js";
 
 const AUTH_ROUTES = new Map([
@@ -25,6 +26,11 @@ export async function onRequest(context) {
     ) {
       await ensureCustomDomainPlanPolicy(context.env.DB);
     }
+
+    // Cloudflare is the production backend. Serve the same computed entitlement
+    // contract the dashboard was originally built against instead of a raw users row.
+    const currentUserResponse = await handleCurrentUserApiRequest(context);
+    if (currentUserResponse) return currentUserResponse;
 
     const customDomainResponse = await handleCustomDomainApiRequest(context);
     if (customDomainResponse) return customDomainResponse;
