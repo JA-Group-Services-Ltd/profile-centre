@@ -1,0 +1,23 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "vite.config.ts",
+    "plugins/**/*.ts",
+    "plugins/**/*.tsx"
+  ],
+  "exclude": [
+    "src/server/**",
+    "src/lib/__tests__/**",
+    "src/pages/_home_page.tsx",
+    "src/pages/business-profile.tsx",
+    "src/pages/demo.tsx",
+    "src/pages/dashboard/business-profile.tsx",
+    "src/pages/dashboard/demo.tsx"
+  ]
+}

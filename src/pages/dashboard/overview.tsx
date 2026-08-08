@@ -334,7 +334,7 @@ export default function OverviewPage() {
     });
   };
 
-  const bizProfileUrl = businessProfile ? `japrofilestudio.jagroupservices.co.uk${getProfilePath(businessProfile)}` : null;
+  const bizProfileUrl = businessProfile ? `sousamurrayprofiles.jagroupservices.co.uk${getProfilePath(businessProfile)}` : null;
   const copyBizUrl = () => {
     if (!bizProfileUrl) return;
     navigator.clipboard.writeText(`https://${bizProfileUrl}`).then(() => {
@@ -547,7 +547,7 @@ export default function OverviewPage() {
                 </div>
                 <p className="text-2xl font-bold text-foreground tabular-nums leading-none">
                   <AnimatedNumber value={stat.value} />
-                  {'suffix' in stat && <span className="text-lg">{stat.suffix}</span>}
+                  {'suffix' in stat && <span className="text-lg">{String(stat.suffix ?? '')}</span>}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1.5 flex items-center gap-1">
                   {stat.trend
@@ -698,7 +698,7 @@ export default function OverviewPage() {
                     <div className="flex items-center gap-1.5 bg-muted/40 rounded-lg px-2.5 py-1.5 min-w-0">
                       <Globe className="w-3 h-3 text-muted-foreground flex-shrink-0" />
                       <span className="text-xs text-muted-foreground font-mono truncate flex-1">
-                        {`japrofilestudio.jagroupservices.co.uk${getProfilePath(businessProfile)}`}
+                        {`sousamurrayprofiles.jagroupservices.co.uk${getProfilePath(businessProfile)}`}
                       </span>
                     </div>
                     <div className="flex gap-2">
@@ -707,7 +707,7 @@ export default function OverviewPage() {
                           <Button size="sm" variant="outline" className="w-full text-xs h-8">Edit</Button>
                         </Link>
                       )}
-                      <a href={`https://japrofilestudio.jagroupservices.co.uk${getProfilePath(businessProfile)}`} target="_blank" rel="noopener noreferrer" className="flex-1">
+                      <a href={`https://sousamurrayprofiles.jagroupservices.co.uk${getProfilePath(businessProfile)}`} target="_blank" rel="noopener noreferrer" className="flex-1">
                         <Button size="sm" variant="outline" className="w-full text-xs h-8 gap-1"><ExternalLink className="w-3 h-3" /> View</Button>
                       </a>
                       <button

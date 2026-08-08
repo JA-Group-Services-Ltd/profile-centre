@@ -1,4 +1,4 @@
-name: Validate Central Customer Service
+name: Validate Sousa Murray Profiles
 
 on:
   pull_request:
@@ -12,7 +12,7 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -26,6 +26,15 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
+      - name: Type-check deployed public customer and admin application
+        run: npx tsc --noEmit -p tsconfig.production.json
+
+      - name: Inventory frontend API calls and Cloudflare Functions
+        run: node scripts/one-off-api-inventory.mjs
+
+      - name: Validate full public customer admin and integration contracts
+        run: node tests/full-site-contracts.test.mjs
+
       - name: Validate customer service contract
         run: node tests/central-customer-service-bridge.test.mjs
 
@@ -38,6 +47,9 @@ jobs:
       - name: Validate Head Office event outbox
         run: npx vitest run tests/head-office-event-outbox.test.mjs
 
+      - name: Run complete automated test suite
+        run: npm test
+
       - name: Validate Cloudflare backend syntax
         run: |
           node --check functions/_shared/current-user-access.js
@@ -47,8 +59,20 @@ jobs:
           node --check functions/_shared/custom-domains.js
           node --check functions/_shared/custom-domain-routes.js
           node --check functions/_shared/head-office-schema.js
+          node --check functions/_shared/head-office.js
+          node --check functions/_shared/legal-policies.js
+          node --check functions/_shared/public-profile-pin.js
+          node --check functions/_shared/stripe.js
+          node --check 'functions/api/legal/[key].js'
+          node --check functions/api/admin/legal.js
+          node --check 'functions/api/admin/legal/[key].js'
+          node --check 'functions/api/profiles/[username]/public.js'
+          node --check 'functions/api/profiles/[username]/public-pin/verify.js'
+          node --check 'functions/api/profiles/[id]/public-pin.js'
+          node --check 'functions/api/profiles/[id]/pin/status.js'
+          node --check 'functions/api/profiles/[id]/enquiry.js'
           node --check 'functions/[[path]].js'
           node --check workers/custom-domain-router/index.js
 
-      - name: Build Cloudflare website
+      - name: Build Cloudflare production website
         run: npm run build:cloudflare

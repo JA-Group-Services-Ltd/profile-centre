@@ -1,13 +1,27 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { fmtMonthYear } from '@/lib/date';
 import { Helmet } from '@dr.pogodin/react-helmet';
 import LegalLayout from '@/components/legal/LegalLayout';
 import { useBranding } from '@/lib/branding';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-const APP_URL = 'https://japrofilestudio.jagroupservices.co.uk';
+const APP_URL = 'https://sousamurrayprofiles.jagroupservices.co.uk';
+
+type PolicyKey =
+  | 'terms'
+  | 'privacy'
+  | 'cookies'
+  | 'acceptable_use'
+  | 'refunds'
+  | 'complaints'
+  | 'accessibility'
+  | 'reporting'
+  | 'security'
+  | 'eligibility'
+  | 'data_retention'
+  | 'data_rights';
 
 interface PolicyData {
   title: string;
@@ -18,9 +32,61 @@ interface PolicyData {
 }
 
 interface Props {
-  policyKey: 'terms' | 'privacy' | 'cookies' | 'acceptable_use' | 'refunds' | 'complaints' | 'accessibility' | 'reporting' | 'security' | 'eligibility' | 'data_retention' | 'data_rights';
+  policyKey: PolicyKey;
   canonicalPath: string;
   metaDescription: string;
+}
+
+const TITLES: Record<PolicyKey, string> = {
+  terms: 'Terms of Service',
+  privacy: 'Privacy Policy',
+  cookies: 'Cookie and Storage Technologies Policy',
+  acceptable_use: 'Acceptable Use Policy',
+  refunds: 'Refund and Cancellation Policy',
+  complaints: 'Complaints Policy',
+  accessibility: 'Accessibility Statement',
+  reporting: 'Reporting and Moderation Policy',
+  security: 'Security Policy',
+  eligibility: 'Eligibility Policy',
+  data_retention: 'Data Retention Policy',
+  data_rights: 'Data Subject Rights',
+};
+
+/**
+ * Older Admin policy records may contain HTML. Keep that backwards-compatible,
+ * but never inject the raw stored HTML into the public page. This small browser
+ * sanitiser strips active content and unsafe attributes/protocols first.
+ */
+function sanitiseLegacyHtml(value: string): string {
+  if (typeof window === 'undefined' || typeof DOMParser === 'undefined') return '';
+  const parsed = new DOMParser().parseFromString(value, 'text/html');
+  parsed.querySelectorAll('script,iframe,object,embed,form,input,button,textarea,select,option,link,meta,base,style,svg,math').forEach(node => node.remove());
+
+  parsed.body.querySelectorAll('*').forEach(element => {
+    for (const attribute of Array.from(element.attributes)) {
+      const name = attribute.name.toLowerCase();
+      const raw = attribute.value.trim();
+      if (name.startsWith('on') || ['srcdoc', 'formaction', 'style'].includes(name)) {
+        element.removeAttribute(attribute.name);
+        continue;
+      }
+      if (['href', 'src'].includes(name) && raw) {
+        const allowed = raw.startsWith('/') || raw.startsWith('#') || raw.startsWith('mailto:') || raw.startsWith('tel:');
+        if (!allowed) {
+          try {
+            const parsedUrl = new URL(raw, APP_URL);
+            if (!['https:', 'http:'].includes(parsedUrl.protocol)) element.removeAttribute(attribute.name);
+          } catch {
+            element.removeAttribute(attribute.name);
+          }
+        }
+      }
+    }
+    if (element.getAttribute('target') === '_blank') {
+      element.setAttribute('rel', 'noopener noreferrer');
+    }
+  });
+  return parsed.body.innerHTML;
 }
 
 export default function DynamicLegalPage({ policyKey, canonicalPath, metaDescription }: Props) {
@@ -30,83 +96,87 @@ export default function DynamicLegalPage({ policyKey, canonicalPath, metaDescrip
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    fetch('/api/legal/' + policyKey)
-      .then(function(r) { return r.json(); })
-      .then(function(d) {
-        if (d.success && d.data) {
-          setPolicy(d.data);
-        } else {
-          setError(true);
-        }
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), 10_000);
+    setLoading(true);
+    setError(false);
+
+    fetch(`/api/legal/${encodeURIComponent(policyKey)}`, {
+      credentials: 'same-origin',
+      signal: controller.signal,
+      headers: { accept: 'application/json' },
+    })
+      .then(async response => {
+        const data = await response.json().catch(() => null);
+        if (!response.ok || !data?.success || !data?.data) throw new Error('policy_unavailable');
+        setPolicy(data.data);
       })
-      .catch(function() { setError(true); })
-      .finally(function() { setLoading(false); });
+      .catch(() => setError(true))
+      .finally(() => {
+        window.clearTimeout(timer);
+        setLoading(false);
+      });
+
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
   }, [policyKey]);
 
-  const title = policy
-    ? policy.title
-    : policyKey === 'terms'
-    ? 'Terms of Service'
-    : policyKey === 'privacy'
-    ? 'Privacy Policy'
-    : policyKey === 'cookies'
-    ? 'Cookie Policy'
-    : policyKey === 'refunds'
-    ? 'Refund Policy'
-    : policyKey === 'complaints'
-    ? 'Complaints Policy'
-    : policyKey === 'accessibility'
-    ? 'Accessibility Statement'
-    : policyKey === 'reporting'
-    ? 'Reporting & Moderation Policy'
-    : policyKey === 'security'
-    ? 'Security Policy'
-    : 'Acceptable Use Policy';
-
-  const lastUpdated = policy
-    ? fmtMonthYear(policy.last_updated)
-    : '';
-
-  const isHtml = policy ? policy.content.trimStart().startsWith('<') : false;
+  const title = policy?.title || TITLES[policyKey];
+  const lastUpdated = policy?.last_updated ? fmtMonthYear(policy.last_updated) : '';
+  const isHtml = Boolean(policy?.content.trimStart().startsWith('<'));
+  const safeHtml = useMemo(
+    () => (isHtml && policy?.content ? sanitiseLegacyHtml(policy.content) : ''),
+    [isHtml, policy?.content],
+  );
 
   return (
     <>
       <Helmet>
-        <title>{`${title} — ${branding.platform_name}`}</title>
+        <title>{`${title} — ${branding.platform_name || 'Sousa Murray Profiles'}`}</title>
         <meta name="description" content={metaDescription} />
         <link rel="canonical" href={APP_URL + canonicalPath} />
         <meta name="robots" content="index, follow" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={APP_URL + canonicalPath} />
-        <meta property="og:title" content={`${title} — ${branding.platform_name}`} />
+        <meta property="og:title" content={`${title} — ${branding.platform_name || 'Sousa Murray Profiles'}`} />
         <meta property="og:description" content={metaDescription} />
-        <meta property="og:site_name" content={branding.platform_name} />
+        <meta property="og:site_name" content={branding.platform_name || 'Sousa Murray Profiles'} />
       </Helmet>
-      <h1 className="sr-only">{title}</h1>
+
       <LegalLayout title={title} lastUpdated={lastUpdated}>
         {loading && (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+          <div className="flex items-center justify-center py-20" role="status" aria-live="polite">
+            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" aria-hidden="true" />
+            <span className="sr-only">Loading policy</span>
           </div>
         )}
+
         {!loading && error && (
-          <div className="flex flex-col items-center justify-center py-20 gap-3 text-muted-foreground">
-            <AlertCircle className="w-8 h-8" />
-            <p className="text-sm">This policy is not currently available. Please check back later.</p>
+          <div className="rounded-2xl border border-amber-300/40 bg-amber-50/60 dark:bg-amber-500/10 p-6 text-foreground">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5 shrink-0" />
+              <div>
+                <h2 className="font-semibold mb-1">Policy temporarily unavailable</h2>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  We could not load the published policy. Please try again shortly or contact{' '}
+                  <a className="text-primary underline" href="mailto:contact@jagroupservices.co.uk">contact@jagroupservices.co.uk</a>.
+                </p>
+              </div>
+            </div>
           </div>
         )}
+
         {!loading && !error && policy && (
           <div>
-            {policy.version && (
-              <p className="text-xs text-muted-foreground mb-6">
-                Version {policy.version} · Effective {policy.effective_date}
-              </p>
-            )}
+            <div className="mb-6 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+              {policy.version && <span>Version {policy.version}</span>}
+              {policy.effective_date && <span>Effective {policy.effective_date}</span>}
+            </div>
+
             {isHtml ? (
-              <div
-                className="legal-prose"
-                dangerouslySetInnerHTML={{ __html: policy.content }}
-              />
+              <div className="legal-prose" dangerouslySetInnerHTML={{ __html: safeHtml }} />
             ) : (
               <div className="legal-prose">
                 <ReactMarkdown
@@ -122,7 +192,16 @@ export default function DynamicLegalPage({ policyKey, canonicalPath, metaDescrip
                     li: ({ children }) => <li className="leading-relaxed">{children}</li>,
                     strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
                     em: ({ children }) => <em className="italic text-muted-foreground">{children}</em>,
-                    a: ({ href, children }) => <a href={href} className="text-primary underline hover:text-primary/80 transition-colors" target={href?.startsWith('http') ? '_blank' : undefined} rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}>{children}</a>,
+                    a: ({ href, children }) => (
+                      <a
+                        href={href}
+                        className="text-primary underline hover:text-primary/80 transition-colors"
+                        target={href?.startsWith('http') ? '_blank' : undefined}
+                        rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+                      >
+                        {children}
+                      </a>
+                    ),
                     blockquote: ({ children }) => <blockquote className="border-l-4 border-primary/30 pl-4 my-4 text-muted-foreground italic">{children}</blockquote>,
                     hr: () => <hr className="border-border my-6" />,
                     table: ({ children }) => <div className="overflow-x-auto mb-4"><table className="w-full text-sm border-collapse">{children}</table></div>,

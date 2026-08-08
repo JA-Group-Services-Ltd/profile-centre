@@ -1,0 +1,88 @@
+name: Full Site Final QA
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  full-site:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Type-check deployed Cloudflare application
+        run: npx tsc --noEmit -p tsconfig.production.json
+
+      - name: Validate public customer admin legal and integration contracts
+        run: node tests/full-site-contracts.test.mjs
+
+      - name: Validate public profile interactions and PIN security
+        run: node tests/profile-interactions-contracts.test.mjs
+
+      - name: Validate Admin moderation and verification contracts
+        run: node tests/admin-moderation-contracts.test.mjs
+
+      - name: Run complete repository test suite
+        run: npm test
+
+      - name: Syntax-check upgraded Cloudflare Functions
+        run: |
+          node --check functions/_shared/legal-policies.js
+          node --check functions/_shared/head-office.js
+          node --check functions/_shared/cloudflare-saas.js
+          node --check functions/_shared/public-profile-pin.js
+          node --check functions/_shared/profile-interactions.js
+          node --check functions/_shared/admin-profile-operations.js
+          node --check functions/_shared/admin-issue-reports.js
+          node --check 'functions/api/legal/[key].js'
+          node --check functions/api/admin/legal.js
+          node --check 'functions/api/admin/legal/[key].js'
+          node --check 'functions/api/profiles/[username]/public.js'
+          node --check 'functions/api/profiles/[username]/public-pin/verify.js'
+          node --check 'functions/api/profiles/[username]/report.js'
+          node --check 'functions/api/profiles/[id]/public-pin.js'
+          node --check 'functions/api/profiles/[id]/pin/status.js'
+          node --check 'functions/api/profiles/[id]/enquiry.js'
+          node --check 'functions/api/profiles/[id]/request-verification.js'
+          node --check 'functions/api/analytics/view/[username].js'
+          node --check 'functions/api/analytics/[id].js'
+          node --check 'functions/api/links/[id]/click.js'
+          node --check 'functions/api/enquiries/[username].js'
+          node --check functions/api/enquiries.js
+          node --check 'functions/api/enquiries/[id]/read.js'
+          node --check 'functions/api/qr/[id].js'
+          node --check 'functions/api/qr/[id]/person.js'
+          node --check 'functions/api/qr/public/[username].js'
+          node --check functions/api/admin/profiles.js
+          node --check 'functions/api/admin/profiles/[id].js'
+          node --check 'functions/api/admin/profiles/[id]/[action].js'
+          node --check 'functions/api/admin/profiles/[id]/action.js'
+          node --check functions/api/admin/issue-reports.js
+          node --check 'functions/api/admin/issue-reports/[id].js'
+          node --check 'functions/api/admin/issue-reports/[id]/[action].js'
+          node --check 'functions/api/admin/issue-reports/[id]/action.js'
+          node --check 'functions/api/admin/issue-reports/[id]/status.js'
+          node --check 'functions/api/admin/issue-reports/[id]/assign.js'
+          node --check 'functions/api/admin/issue-reports/[id]/scan.js'
+
+      - name: Build production Cloudflare website
+        run: npm run build:cloudflare
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high

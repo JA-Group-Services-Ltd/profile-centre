@@ -1,934 +1,272 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { Helmet } from '@dr.pogodin/react-helmet';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { useState, useEffect, useLayoutEffect } from 'react';
+import {
+  ArrowRight,
+  BarChart3,
+  Building2,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  ContactRound,
+  Globe2,
+  Link2,
+  LockKeyhole,
+  MessageSquareText,
+  Palette,
+  QrCode,
+  Share2,
+  ShieldCheck,
+  Smartphone,
+  Users,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import InstallAppBanner from '@/components/InstallAppBanner';
+import PlanComparison from '@/components/public/PlanComparison';
 
-/**
- * When the app is running as an installed PWA (standalone display mode),
- * the marketing homepage makes no sense — redirect straight to the dashboard.
- * The manifest already sets start_url=/dashboard, but this catches any edge
- * case where the user navigates back to / while in standalone mode.
- */
+const SITE = 'https://sousamurrayprofiles.jagroupservices.co.uk';
+
+interface HomepageContent {
+  hero_badge?: string;
+  hero_title_line1?: string;
+  hero_title_highlight?: string;
+  hero_subtitle?: string;
+  hero_cta_primary?: string;
+  hero_cta_secondary?: string;
+  announcement_enabled?: boolean;
+  announcement_text?: string;
+  announcement_link?: string;
+  announcement_link_label?: string;
+}
+
+const defaults: Required<HomepageContent> = {
+  hero_badge: 'Professional digital profiles by Sousa Murray',
+  hero_title_line1: 'One professional profile.',
+  hero_title_highlight: 'Ready to share everywhere.',
+  hero_subtitle: 'Create a public digital profile for yourself or your organisation, keep the important details in one place, and share the same live profile through a link, QR code, social app or website embed.',
+  hero_cta_primary: 'Create your profile',
+  hero_cta_secondary: 'Compare plans',
+  announcement_enabled: false,
+  announcement_text: '',
+  announcement_link: '',
+  announcement_link_label: 'Learn more',
+};
+
 function usePwaRedirect() {
   const navigate = useNavigate();
   useLayoutEffect(() => {
     if (typeof window === 'undefined') return;
-    const isStandalone =
-      window.matchMedia('(display-mode: standalone)').matches ||
-      (window.navigator as { standalone?: boolean }).standalone === true;
-    if (isStandalone) {
-      navigate('/dashboard', { replace: true });
-    }
+    const standalone = window.matchMedia('(display-mode: standalone)').matches
+      || (window.navigator as { standalone?: boolean }).standalone === true;
+    if (standalone) navigate('/dashboard', { replace: true });
   }, [navigate]);
 }
-import {
-  QrCode, Link2, Globe, Phone, Mail, BarChart3, Palette,
-  Check, ArrowRight, Users, Briefcase,
-  Scissors, Wrench, Star, Zap, Shield,
-  Layout, UserCheck, Loader2, Building2,
-  Share2, ChevronDown, ChevronUp, Megaphone,
-  Lock, Smartphone, FileText,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
-/* ─── Shared class helpers ──────────────────────────────────────────────── */
-const glass = [
-  'bg-card',
-  'border border-border',
-  'rounded-2xl',
-  'shadow-[0_4px_24px_-4px_rgba(37,99,235,0.10)] dark:shadow-[0_4px_24px_-4px_rgba(37,99,235,0.18)]',
-].join(' ');
-
-const glassStrong = [
-  'bg-card',
-  'border border-border',
-  'rounded-2xl',
-  'shadow-[0_8px_40px_-8px_rgba(37,99,235,0.14),0_2px_8px_-2px_rgba(0,0,0,0.06)]',
-  'dark:shadow-[0_8px_40px_-8px_rgba(37,99,235,0.28),0_2px_8px_-2px_rgba(0,0,0,0.30)]',
-].join(' ');
-
-const glassHover = 'hover:-translate-y-1 hover:shadow-[0_12px_40px_-8px_rgba(37,99,235,0.20)] dark:hover:shadow-[0_12px_40px_-8px_rgba(37,99,235,0.35)] transition-all duration-300';
-
-/* ─── Demo profile card ──────────────────────────────────────────────────── */
-function DemoProfileCard() {
+function SectionHeading({ eyebrow, title, text }: { eyebrow: string; title: string; text: string }) {
   return (
-    <div className="relative mx-auto w-full max-w-[320px]">
-      <div className="absolute inset-0 rounded-3xl bg-blue-500/20 dark:bg-blue-500/30 blur-3xl scale-110 pointer-events-none" />
-      <div className={`relative ${glassStrong} overflow-hidden`}>
-        <div className="flex items-center gap-2 px-4 py-2.5 bg-black/4 dark:bg-white/5 border-b border-black/6 dark:border-white/8">
-          <div className="flex gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
-            <div className="w-2.5 h-2.5 rounded-full bg-muted-foreground/30" />
-            <div className="w-2.5 h-2.5 rounded-full bg-green-400/70" />
-          </div>
-          <div className="flex-1 mx-2 bg-black/6 dark:bg-white/10 rounded-md px-2.5 py-1 text-[10px] text-muted-foreground font-mono truncate">
-            sousamurrayprofiles.jagroupservices.co.uk/profile/<span className="text-primary">alex-johnson</span>
-          </div>
+    <div className="max-w-3xl">
+      <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">{eyebrow}</p>
+      <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">{title}</h2>
+      <p className="mt-4 text-muted-foreground leading-relaxed">{text}</p>
+    </div>
+  );
+}
+
+function ProfilePreview() {
+  return (
+    <div className="relative mx-auto max-w-sm">
+      <div className="absolute -inset-6 rounded-[2.5rem] bg-primary/15 blur-3xl" aria-hidden="true" />
+      <div className="relative overflow-hidden rounded-3xl border border-border bg-card shadow-2xl shadow-primary/10">
+        <div className="border-b border-border bg-muted/40 px-4 py-3 flex items-center gap-2">
+          <div className="flex gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-red-400" /><span className="w-2.5 h-2.5 rounded-full bg-amber-400" /><span className="w-2.5 h-2.5 rounded-full bg-green-400" /></div>
+          <div className="ml-2 min-w-0 flex-1 rounded-lg bg-background px-3 py-1.5 text-[10px] text-muted-foreground truncate">sousamurrayprofiles.jagroupservices.co.uk/profile/alex</div>
         </div>
-        <div className="px-5 py-5">
-          <div className="flex flex-col items-center mb-4">
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-400 to-blue-700 flex items-center justify-center text-white text-lg font-bold mb-2.5 ring-4 ring-blue-500/20 shadow-lg shadow-blue-500/25">
-              AJ
-            </div>
-            <h3 className="text-foreground font-bold text-sm">Alex Johnson</h3>
-            <p className="text-primary text-xs mt-0.5 font-medium">Senior Product Designer</p>
-            <p className="text-muted-foreground text-[10px] mt-0.5">JA Group Services Ltd</p>
+        <div className="p-6 text-center">
+          <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-primary to-indigo-600 text-white flex items-center justify-center text-2xl font-extrabold shadow-lg">AJ</div>
+          <h3 className="mt-4 text-xl font-bold text-foreground">Alex Johnson</h3>
+          <p className="text-sm text-primary font-medium">Independent Consultant</p>
+          <p className="mt-3 text-sm text-muted-foreground leading-relaxed">Strategy, operations and practical support for growing businesses.</p>
+          <div className="mt-5 grid grid-cols-2 gap-2">
+            {['Call', 'Email', 'Website', 'Save contact'].map(label => <div key={label} className="rounded-xl border border-border bg-muted/30 py-2.5 text-xs font-semibold text-foreground">{label}</div>)}
           </div>
-          <div className="space-y-2 mb-4">
-            {[
-              { icon: <Phone className="w-3 h-3" />, label: '+44 7700 900000' },
-              { icon: <Mail className="w-3 h-3" />, label: 'alex@jagroupservices.co.uk' },
-              { icon: <Globe className="w-3 h-3" />, label: 'jagroupservices.co.uk' },
-            ].map(item => (
-              <div key={item.label} className="flex items-center gap-2 bg-muted rounded-xl px-3 py-2 border border-border">
-                <span className="text-primary flex-shrink-0">{item.icon}</span>
-                <span className="text-foreground text-[10px] truncate">{item.label}</span>
-              </div>
-            ))}
-          </div>
-          <div className="flex gap-2">
-            <div className="flex-1 bg-blue-600 rounded-xl py-2 text-center text-white text-[10px] font-semibold shadow-sm shadow-blue-600/30">
-              Save Contact
-            </div>
-            <div className="flex-1 bg-muted rounded-xl py-2 text-center text-muted-foreground text-[10px] font-semibold border border-border">
-              Send Enquiry
-            </div>
-          </div>
+          <div className="mt-4 flex items-center justify-center gap-3 text-primary"><QrCode className="w-5 h-5" /><Share2 className="w-5 h-5" /><Link2 className="w-5 h-5" /></div>
         </div>
       </div>
     </div>
   );
 }
 
-/* ─── Demo business profile card ─────────────────────────────────────────── */
-function DemoBusinessCard() {
-  return (
-    <div className={`relative ${glassStrong} overflow-hidden w-full max-w-[300px]`}>
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-600/8 via-transparent to-purple-600/6 pointer-events-none" />
-      <div className="relative p-5">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-xl bg-blue-600/80 flex items-center justify-center text-white font-bold text-sm shadow-sm flex-shrink-0">JA</div>
-          <div>
-            <p className="text-foreground font-bold text-sm leading-tight">JA Group Services Ltd</p>
-            <p className="text-primary text-[10px] mt-0.5">Digital Services & Solutions</p>
-          </div>
-        </div>
-        <div className="space-y-1.5 mb-4">
-          {[
-            { icon: <Globe className="w-3 h-3" />, label: 'jagroupservices.co.uk' },
-            { icon: <Mail className="w-3 h-3" />, label: 'contact@jagroupservices.co.uk' },
-            { icon: <Phone className="w-3 h-3" />, label: '+44 7700 900000' },
-          ].map(item => (
-            <div key={item.label} className="flex items-center gap-2 text-[10px] text-muted-foreground">
-              <span className="text-primary">{item.icon}</span>
-              {item.label}
-            </div>
-          ))}
-        </div>
-        <div className="flex gap-2">
-          <div className="flex-1 bg-blue-600 rounded-lg py-1.5 text-center text-white text-[10px] font-semibold">
-            View Profile
-          </div>
-          <div className="flex-1 bg-muted rounded-lg py-1.5 text-center text-muted-foreground text-[10px] font-semibold border border-border">
-            Get Directions
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ─── Section badge ──────────────────────────────────────────────────────── */
-function SectionBadge({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 dark:bg-blue-600/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-500/30 mb-4">
-      {children}
-    </span>
-  );
-}
-
-/* ─── Trust strip ────────────────────────────────────────────────────────── */
-function TrustStrip() {
-  const items = [
-    { icon: <Lock className="w-4 h-4" />,       label: 'UK-based & GDPR compliant' },
-    { icon: <Shield className="w-4 h-4" />,      label: 'Secure sign-in via JA Group Services ID' },
-    { icon: <Smartphone className="w-4 h-4" />,  label: 'Works on any device' },
-    { icon: <FileText className="w-4 h-4" />,    label: 'No credit card to get started' },
-  ];
-  return (
-    <div className="border-y border-border bg-muted/20 py-5">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap justify-center gap-x-8 gap-y-3">
-          {items.map(item => (
-            <div key={item.label} className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span className="text-primary">{item.icon}</span>
-              <span>{item.label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ─── FAQ item ───────────────────────────────────────────────────────────── */
-function FaqItem({ q, a }: { q: string; a: string }) {
+function Faq({ question, answer }: { question: string; answer: string }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className={`${glass} overflow-hidden`}>
-      <button
-        onClick={() => setOpen(v => !v)}
-        className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left hover:bg-muted/30 transition-colors"
-      >
-        <span className="text-foreground font-semibold text-sm">{q}</span>
-        {open ? <ChevronUp className="w-4 h-4 text-muted-foreground flex-shrink-0" /> : <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />}
+    <div className="rounded-2xl border border-border bg-card overflow-hidden">
+      <button type="button" className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left" onClick={() => setOpen(v => !v)} aria-expanded={open}>
+        <span className="font-semibold text-foreground">{question}</span>
+        {open ? <ChevronUp className="w-4 h-4 text-muted-foreground shrink-0" /> : <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />}
       </button>
-      {open && (
-        <div className="px-5 pb-4 text-muted-foreground text-sm leading-relaxed border-t border-border/50 pt-3">
-          {a}
-        </div>
-      )}
+      {open && <div className="border-t border-border px-5 py-4 text-sm text-muted-foreground leading-relaxed">{answer}</div>}
     </div>
   );
 }
 
-/* ─── Homepage content type ──────────────────────────────────────────────── */
-interface HomepageContent {
-  hero_badge: string;
-  hero_title_line1: string;
-  hero_title_highlight: string;
-  hero_subtitle: string;
-  hero_cta_primary: string;
-  hero_cta_secondary: string;
-  announcement_enabled: boolean;
-  announcement_text: string;
-  announcement_link: string;
-  announcement_link_label: string;
-}
-
-const HOMEPAGE_DEFAULTS: HomepageContent = {
-  hero_badge:              'Personal & Business Digital Profiles',
-  hero_title_line1:        'Your professional profile,',
-  hero_title_highlight:    'ready to share anywhere',
-  hero_subtitle:           'Sousa Murray Profiles gives you a personal or business digital profile page with your contact details, links, QR code and everything people need to find and connect with you — all in one place.',
-  hero_cta_primary:        'Create Your Profile',
-  hero_cta_secondary:      'See how it works',
-  stats_users:             '',
-  stats_profiles:          '',
-  stats_countries:         '',
-  stats_uptime:            '',
-  announcement_enabled:    false,
-  announcement_text:       '',
-  announcement_link:       '',
-  announcement_link_label: 'Learn more',
-};
-
-/* ─── Plan types ─────────────────────────────────────────────────────────── */
-interface ApiPlan {
-  id: number; name: string; slug: string;
-  price_monthly: number; price_yearly: number;
-  is_lifetime: boolean;
-  max_profiles: number;
-  max_org_profiles: number;
-  max_seats: number;
-  core_features: string[];
-  included_features: string[];
-  coming_soon_features: string[];
-}
-
-const PLAN_META: Record<string, { badge: string | null; highlight: boolean; cta: string; note: string; contactUs?: boolean }> = {
-  free:             { badge: null,               highlight: false, cta: 'Create Free Account',  note: 'Free forever. No credit card required.' },
-  starter:          { badge: '30-day free trial', highlight: false, cta: 'Start Free Trial',    note: 'Try free for 30 days — no card needed.' },
-  professional:     { badge: 'Most popular',      highlight: true,  cta: 'Start Free Trial',    note: 'Try free for 30 days — no card needed.' },
-  business:         { badge: '30-day free trial', highlight: false, cta: 'Start Free Trial',    note: 'Try free for 30 days — no card needed.' },
-  ultimate_business:{ badge: 'Best value',        highlight: false, cta: 'Start Free Trial',    note: 'Try free for 30 days — no card needed.' },
-  ultimate_plus:    { badge: 'Enterprise',        highlight: false, cta: 'Contact Us',          note: 'Tailored pricing — speak to our team.', contactUs: true },
-  // lifetime is intentionally omitted — it is not publicly listed
-};
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   PAGE
-═══════════════════════════════════════════════════════════════════════════ */
 export default function HomePage() {
   usePwaRedirect();
-  const navigate = useNavigate();
-  const [plans, setPlans] = useState<ApiPlan[]>([]);
-  const [plansLoading, setPlansLoading] = useState(true);
-  const [hpContent, setHpContent] = useState<HomepageContent>(HOMEPAGE_DEFAULTS);
+  const [content, setContent] = useState<Required<HomepageContent>>(defaults);
 
   useEffect(() => {
-    fetch('/api/homepage-content')
-      .then(r => r.json())
-      .then(d => { if (d.success && d.data) setHpContent(d.data); })
-      .catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    fetch('/api/plans')
-      .then(r => r.json())
-      .then(d => {
-        if (d.success) {
-          const raw: ApiPlan[] = d.plans ?? [];
-          // Ensure ultimate_plus always renders last regardless of server sort
-          raw.sort((a, b) => {
-            if (a.slug === 'ultimate_plus') return 1;
-            if (b.slug === 'ultimate_plus') return -1;
-            return (a.price_monthly ?? 0) - (b.price_monthly ?? 0);
-          });
-          setPlans(raw);
-        }
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), 8000);
+    fetch('/api/homepage-content', { signal: controller.signal, headers: { accept: 'application/json' } })
+      .then(response => response.json())
+      .then(payload => {
+        if (!payload?.success || !payload?.data) return;
+        setContent(current => ({ ...current, ...Object.fromEntries(Object.entries(payload.data).filter(([, value]) => value !== null && value !== undefined)) }));
       })
-      .catch(() => {})
-      .finally(() => setPlansLoading(false));
+      .catch(() => undefined)
+      .finally(() => window.clearTimeout(timer));
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
   }, []);
-
-  const handleTrialCta = (planSlug: string) => {
-    // Pass trial intent as URL params — no sessionStorage needed
-    navigate(`/login?trial=1&plan=${encodeURIComponent(planSlug)}`);
-  };
-
-  const site = 'https://sousamurrayprofiles.jagroupservices.co.uk';
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'WebSite',
-        '@id': `${site}/#website`,
-        name: 'Sousa Murray Profiles',
-        alternateName: 'Sousa Murray Profiles by JA Group Services',
-        url: `${site}/`,
-        potentialAction: {
-          '@type': 'SearchAction',
-          target: { '@type': 'EntryPoint', urlTemplate: `${site}/search?q={search_term_string}` },
-          'query-input': 'required name=search_term_string',
-        },
-      },
-      {
-        '@type': 'Organization',
-        '@id': `${site}/#organization`,
-        name: 'Sousa Murray Profiles',
-        legalName: 'JA Group Services Ltd',
-        url: `${site}/`,
-        logo: `${site}/airo-assets/images/logo/main`,
-        sameAs: [],
-      },
-      {
-        '@type': 'WebPage', '@id': `${site}/#webpage`, url: `${site}/`,
-        name: 'Sousa Murray Profiles | Your Digital Profile, Ready to Share',
-        isPartOf: { '@id': `${site}/#website` },
-        about: { '@id': `${site}/#organization` },
-        datePublished: '2025-01-01', dateModified: '2026-07-12',
-      },
-    ],
-  };
 
   return (
     <>
-    <div className="relative">
       <Helmet>
-        <title>Sousa Murray Profiles | Your Digital Profile, Ready to Share</title>
-        <meta name="description" content="Create a professional personal or business digital profile with contact details, links and a QR code. Share it anywhere — online, in person or via your unique profile link." />
-        <meta property="og:title" content="Sousa Murray Profiles | Your Digital Profile, Ready to Share" />
-        <meta property="og:description" content="Create a professional personal or business digital profile with contact details, links and a QR code." />
+        <title>Sousa Murray Profiles — Professional Digital Profiles</title>
+        <meta name="description" content="Build a professional personal or organisation profile, share it by link, QR code and social apps, embed it on your website, and add business tools as you grow." />
+        <link rel="canonical" href={`${SITE}/`} />
+        <meta property="og:title" content="Sousa Murray Profiles — Professional Digital Profiles" />
+        <meta property="og:description" content="One live professional profile, ready to share anywhere." />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={`${site}/`} />
-        <meta property="og:image" content={`${site}/og-image.png`} />
+        <meta property="og:url" content={`${SITE}/`} />
         <meta property="og:site_name" content="Sousa Murray Profiles" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Sousa Murray Profiles | Your Digital Profile, Ready to Share" />
-        <meta name="twitter:description" content="Create a professional personal or business digital profile with contact details, links and a QR code." />
-        <meta name="twitter:image" content={`${site}/og-image.png`} />
-        <link rel="canonical" href={`${site}/`} />
-        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
 
-      {/* ── Ambient background ── */}
-      <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none" aria-hidden="true">
-        <div className="absolute top-0 left-1/4 w-[700px] h-[700px] rounded-full bg-blue-300/15 dark:bg-blue-600/15 blur-[120px]" />
-        <div className="absolute top-1/3 right-0 w-[500px] h-[500px] rounded-full bg-indigo-300/10 dark:bg-purple-600/10 blur-[100px]" />
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] rounded-full bg-sky-300/10 dark:bg-blue-800/12 blur-[120px]" />
-        <div
-          className="absolute inset-0 opacity-[0.03] dark:opacity-[0.04]"
-          style={{
-            backgroundImage: 'linear-gradient(hsl(221 83% 53%) 1px, transparent 1px), linear-gradient(90deg, hsl(221 83% 53%) 1px, transparent 1px)',
-            backgroundSize: '60px 60px',
-          }}
-        />
-      </div>
-
-      {/* ══════════════════════════════════════════════════════════
-          1. HERO
-      ══════════════════════════════════════════════════════════ */}
-      <section className="relative pt-20 pb-28 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        <div className="max-w-7xl mx-auto">
-
-          {/* Announcement banner */}
-          {hpContent.announcement_enabled && hpContent.announcement_text && (
-            <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary/10 border border-primary/20 text-sm text-primary mb-8 max-w-3xl mx-auto">
-              <Megaphone className="w-4 h-4 shrink-0" />
-              <span className="flex-1">{hpContent.announcement_text}</span>
-              {hpContent.announcement_link && hpContent.announcement_link_label && (
-                <a href={hpContent.announcement_link} className="font-semibold underline hover:no-underline shrink-0">
-                  {hpContent.announcement_link_label}
-                </a>
-              )}
+      <main className="overflow-hidden">
+        {content.announcement_enabled && content.announcement_text && (
+          <div className="border-b border-primary/20 bg-primary/10">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 text-center text-sm text-foreground">
+              {content.announcement_text}{' '}
+              {content.announcement_link && <a className="font-semibold text-primary underline" href={content.announcement_link}>{content.announcement_link_label}</a>}
             </div>
-          )}
+          </div>
+        )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-
-            {/* Left — copy */}
-            <motion.div
-              initial={{ opacity: 0, y: 28 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: 'easeOut' as const }}
-              style={{ isolation: 'isolate' }}
-            >
-              <SectionBadge>{hpContent.hero_badge}</SectionBadge>
-              <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] font-extrabold text-foreground leading-[1.1] tracking-tight mb-6">
-                {hpContent.hero_title_line1}{' '}
-                <span className="bg-gradient-to-r from-blue-500 to-blue-700 bg-clip-text text-transparent">
-                  {hpContent.hero_title_highlight}
-                </span>
+        <section className="relative border-b border-border">
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_20%_20%,hsl(var(--primary)/0.16),transparent_38%),radial-gradient(circle_at_80%_35%,rgba(99,102,241,0.12),transparent_34%)]" aria-hidden="true" />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 grid lg:grid-cols-[1.05fr_.95fr] gap-14 items-center">
+            <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+              <span className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">{content.hero_badge}</span>
+              <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.05] text-foreground">
+                {content.hero_title_line1}{' '}<span className="text-primary">{content.hero_title_highlight}</span>
               </h1>
-              <p className="text-lg text-foreground/80 leading-relaxed mb-8 max-w-lg font-normal">
-                {hpContent.hero_subtitle}
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <Link to="/login">
-                  <Button
-                    size="lg"
-                    className="bg-blue-600 hover:bg-blue-500 text-white font-semibold shadow-xl shadow-blue-600/25 px-7 rounded-xl transition-all duration-200 hover:-translate-y-px"
-                  >
-                    {hpContent.hero_cta_primary} <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </Link>
-                <a href="#how-it-works">
-                  <Button size="lg" variant="outline" className="border-border text-foreground hover:bg-muted px-7 rounded-xl font-medium">
-                    {hpContent.hero_cta_secondary}
-                  </Button>
-                </a>
+              <p className="mt-6 text-lg text-muted-foreground leading-relaxed max-w-2xl">{content.hero_subtitle}</p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link to="/login"><Button size="lg" className="gap-2">{content.hero_cta_primary}<ArrowRight className="w-4 h-4" /></Button></Link>
+                <Link to="/plans"><Button size="lg" variant="outline">{content.hero_cta_secondary}</Button></Link>
               </div>
-
-            </motion.div>
-
-            {/* Right — demo cards */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.94 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.7, delay: 0.15, ease: 'easeOut' as const }}
-              className="relative flex items-center justify-center"
-            >
-              <div className="relative w-full max-w-sm mx-auto">
-                <DemoProfileCard />
-                <motion.div
-                  animate={{ y: [0, -8, 0] }}
-                  transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' as const }}
-                  className="absolute -bottom-10 -right-4 hidden sm:block z-10"
-                >
-                  <DemoBusinessCard />
-                </motion.div>
+              <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
+                {['Free plan available', 'Social sharing from Free', 'Website embed from Free', 'Secure central sign-in'].map(item => <span key={item} className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" />{item}</span>)}
               </div>
             </motion.div>
+            <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.55, delay: 0.1 }}><ProfilePreview /></motion.div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── Trust strip ── */}
-      <TrustStrip />
-
-      {/* ══════════════════════════════════════════════════════════
-          2. PERSONAL vs BUSINESS
-      ══════════════════════════════════════════════════════════ */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-14"
-          >
-            <SectionBadge>Two profile types</SectionBadge>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight mb-3">
-              Personal profile or organisation profile — you choose
-            </h2>
-            <p className="text-muted-foreground text-base max-w-2xl mx-auto">
-              Whether you are an individual sharing your contact details or an organisation presenting your brand, Sousa Murray Profiles has a profile type for you.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Personal */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className={`${glass} p-7`}
-            >
-              <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500 mb-5">
-                <UserCheck className="w-6 h-6" />
-              </div>
-              <h3 className="text-foreground font-bold text-xl mb-3">Personal Profile</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed mb-5">
-                Your own digital contact card. Add your name, job title, phone, email, website and social links. Share it with a link or QR code so anyone can save your details instantly.
-              </p>
-              <ul className="space-y-2.5">
-                {[
-                  'Your name, photo and job title',
-                  'Phone, email and website links',
-                  'Social media and booking links',
-                  'QR code for in-person sharing',
-                  'Save contact / vCard download',
-                  'Profile Poster PDF',
-                ].map(f => (
-                  <li key={f} className="flex items-start gap-2.5 text-sm text-foreground/80">
-                    <Check className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-
-            {/* Business */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className={`${glass} p-7`}
-            >
-              <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-500 mb-5">
-                <Building2 className="w-6 h-6" />
-              </div>
-              <h3 className="text-foreground font-bold text-xl mb-3">Organisation Profile</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed mb-5">
-                A dedicated profile page for your organisation. Present your brand, services, contact details and team. Ideal for small businesses, agencies and growing teams.
-              </p>
-              <ul className="space-y-2.5">
-                {[
-                  'Organisation name, logo and description',
-                  'Organisation contact details and address',
-                  'Services, links and social media',
-                  'Team directory (on Organisation plan)',
-                  'Organisation seats for staff members',
-                  'Organisation QR code and vCard',
-                ].map(f => (
-                  <li key={f} className="flex items-start gap-2.5 text-sm text-foreground/80">
-                    <Check className="w-4 h-4 text-purple-500 flex-shrink-0 mt-0.5" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════
-          3. DASHBOARD
-      ══════════════════════════════════════════════════════════ */}
-      <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/20">
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-14"
-          >
-            <SectionBadge>Your dashboard</SectionBadge>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight mb-3">
-              Everything managed from one place
-            </h2>
-            <p className="text-muted-foreground text-base max-w-2xl mx-auto">
-              Your Sousa Murray Profiles dashboard gives you full control over your profile, links, analytics, messages and settings — all in one clean interface.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <section className="border-b border-border bg-muted/25">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { icon: <Layout className="w-5 h-5" />,    title: 'Profile Editor',          desc: 'Edit your personal or organisation profile details, photo and contact information.' },
-              { icon: <Link2 className="w-5 h-5" />,     title: 'Link Manager',            desc: 'Add, reorder and manage all your links — social, booking, website and more.' },
-              { icon: <QrCode className="w-5 h-5" />,    title: 'QR Code',                 desc: 'Download your profile QR code to use on displays, printed materials or anywhere you share your details.' },
-              { icon: <BarChart3 className="w-5 h-5" />, title: 'Analytics',               desc: 'See how many people have viewed your profile and which links they clicked.' },
-              { icon: <Mail className="w-5 h-5" />,      title: 'Enquiries',               desc: 'Receive contact enquiries from your profile visitors and manage them from your dashboard.' },
-              { icon: <Palette className="w-5 h-5" />,   title: 'Themes',                  desc: 'Choose a theme that matches your personal or organisation brand identity.' },
-              { icon: <Users className="w-5 h-5" />,     title: 'Organisation Seats',      desc: 'Invite team members to your organisation profile with role-based access control.' },
-              { icon: <Shield className="w-5 h-5" />,    title: 'Security',                desc: 'Manage your account security, sessions and privacy settings.' },
-              { icon: <Share2 className="w-5 h-5" />,    title: 'Sharing Tools',           desc: 'Share your profile link, QR code or vCard from your dashboard at any time.' },
-            ].map((f, i) => (
-              <motion.div
-                key={f.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.05 }}
-                className={`${glass} ${glassHover} p-5 group cursor-default`}
-              >
-                <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-3 group-hover:bg-primary/20 transition-colors">
-                  {f.icon}
-                </div>
-                <h3 className="text-foreground font-semibold text-sm mb-1.5">{f.title}</h3>
-                <p className="text-muted-foreground text-xs leading-relaxed">{f.desc}</p>
-              </motion.div>
-            ))}
+              { icon: Smartphone, title: 'Works anywhere', text: 'Open on phones, tablets and desktop browsers.' },
+              { icon: Share2, title: 'Built to share', text: 'Link, social app, messaging and website embed.' },
+              { icon: LockKeyhole, title: 'Central sign-in', text: 'Customer access uses JA Group Services ID.' },
+              { icon: ShieldCheck, title: 'UK operated', text: 'Operated by JA Group Services Ltd.' },
+            ].map(item => { const Icon = item.icon; return <div key={item.title} className="flex gap-3 p-3"><Icon className="w-5 h-5 text-primary shrink-0 mt-0.5" /><div><p className="font-semibold text-foreground text-sm">{item.title}</p><p className="text-xs text-muted-foreground mt-1 leading-relaxed">{item.text}</p></div></div>; })}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ══════════════════════════════════════════════════════════
-          4. HOW IT WORKS
-      ══════════════════════════════════════════════════════════ */}
-      <section id="how-it-works" className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-14"
-          >
-            <SectionBadge>How it works</SectionBadge>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
-              Up and running in minutes
-            </h2>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <section id="features" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <SectionHeading eyebrow="What you can build" title="More useful than a static business card" text="Your public profile stays live when details change. Update it once, then keep using the same URL, QR code and embed wherever you have already shared it." />
+          <div className="mt-10 grid md:grid-cols-2 xl:grid-cols-3 gap-5">
             {[
-              { step: '01', title: 'Sign in and create your profile', desc: 'Sign in with your JA Group Services ID. Your account is created automatically. Add your name, contact details and links.' },
-              { step: '02', title: 'Share your link or QR code', desc: 'Use your unique profile link or QR code to share your details online, in person, or anywhere you connect with people.' },
-              { step: '03', title: 'Manage everything from your dashboard', desc: 'Update your profile, check analytics, manage enquiries and control your settings — all from your dashboard.' },
-            ].map((s, i) => (
-              <motion.div
-                key={s.step}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
-                className={`${glass} p-7 relative overflow-hidden`}
-              >
-                <div className="absolute top-3 right-4 text-6xl font-black text-blue-600/6 dark:text-white/5 select-none leading-none">
-                  {s.step}
-                </div>
-                <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm mb-4 shadow-lg shadow-blue-600/30">
-                  {parseInt(s.step)}
-                </div>
-                <h3 className="text-foreground font-bold text-base mb-2">{s.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">{s.desc}</p>
-              </motion.div>
-            ))}
+              { icon: ContactRound, title: 'Professional profile', text: 'Present your name, role, business, contact routes and the information visitors need to understand who you are.' },
+              { icon: QrCode, title: 'QR sharing', text: 'Use a QR code for events, printed material, counters, networking or in-person introductions.' },
+              { icon: Share2, title: 'Social and messaging share', text: 'Share through Facebook and WhatsApp directly, or use your device share sheet for Instagram, Snapchat, Messenger and other apps.' },
+              { icon: Globe2, title: 'Website embedding', text: 'Copy an iframe snippet and place the live profile inside a website builder or site that accepts custom HTML.' },
+              { icon: Palette, title: 'Profile presentation', text: 'Use the profile and theme options available on your plan to keep the page consistent with your professional identity.' },
+              { icon: BarChart3, title: 'Business tools as you grow', text: 'Eligible plans add organisation profiles, team seats, analytics, custom domains and expanded profile limits.' },
+            ].map(item => { const Icon = item.icon; return (
+              <article key={item.title} className="rounded-2xl border border-border bg-card p-6 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5 transition-all">
+                <div className="w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center"><Icon className="w-5 h-5" /></div>
+                <h3 className="mt-4 text-lg font-bold text-foreground">{item.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{item.text}</p>
+              </article>
+            ); })}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ══════════════════════════════════════════════════════════
-          5. WHO IT'S FOR
-      ══════════════════════════════════════════════════════════ */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/20">
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-12"
-          >
-            <SectionBadge>Who it's for</SectionBadge>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
-              Built for professionals, organisations and businesses of all sizes
-            </h2>
-          </motion.div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {[
-              { icon: <Briefcase className="w-5 h-5" />,  label: 'Organisations & Businesses' },
-              { icon: <UserCheck className="w-5 h-5" />,  label: 'Freelancers' },
-              { icon: <Scissors className="w-5 h-5" />,   label: 'Barbers & Beauty' },
-              { icon: <Wrench className="w-5 h-5" />,     label: 'Tradespeople' },
-              { icon: <Star className="w-5 h-5" />,       label: 'Consultants' },
-              { icon: <Users className="w-5 h-5" />,      label: 'Sales Professionals' },
-              { icon: <Zap className="w-5 h-5" />,        label: 'Creators' },
-              { icon: <Globe className="w-5 h-5" />,      label: 'Event Staff' },
-            ].map((w, i) => (
-              <motion.div
-                key={w.label}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: i * 0.05 }}
-                className={`${glass} ${glassHover} p-5 flex flex-col items-center text-center gap-3 cursor-default`}
-              >
-                <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
-                  {w.icon}
-                </div>
-                <span className="text-foreground text-sm font-semibold">{w.label}</span>
-              </motion.div>
-            ))}
-          </div>
-          <p className="text-center text-muted-foreground text-sm mt-6">
-            And anyone who wants a simple, professional digital contact profile.
-          </p>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════
-          6. PRICING
-      ══════════════════════════════════════════════════════════ */}
-      <section id="pricing" className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-12"
-          >
-            <SectionBadge>Pricing</SectionBadge>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight mb-3">
-              Simple, transparent pricing
-            </h2>
-            <p className="text-muted-foreground text-base">
-              Start free. Upgrade when you need more.
-            </p>
-          </motion.div>
-
-          {plansLoading ? (
-            <div className="flex items-center justify-center py-16">
-              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <section className="border-y border-border bg-muted/25">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <SectionHeading eyebrow="Who it is for" title="One platform for independent professionals and organisations" text="Profiles is designed around business and professional use, from a single self-employed person through to an organisation managing multiple profiles and team members." />
+            <div className="mt-10 grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+              {[
+                { icon: ContactRound, title: 'Sole traders & self-employed', text: 'Create one professional place for customers and contacts to find the right information.' },
+                { icon: MessageSquareText, title: 'Freelancers & consultants', text: 'Share services, contact routes, professional links and a profile that is easier to remember than a list of URLs.' },
+                { icon: Building2, title: 'Businesses & organisations', text: 'Use organisation features and eligible custom-domain tools to bring profiles closer to your own brand.' },
+                { icon: Users, title: 'Teams & clubs', text: 'Eligible plans can manage organisation profiles and seats for multiple people under one account structure.' },
+              ].map(item => { const Icon = item.icon; return <article key={item.title} className="rounded-2xl border border-border bg-card p-6"><Icon className="w-6 h-6 text-primary" /><h3 className="font-bold text-foreground mt-4">{item.title}</h3><p className="mt-2 text-sm text-muted-foreground leading-relaxed">{item.text}</p></article>; })}
             </div>
-          ) : (
-            <>
-              {/* Plan cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch mb-4">
-                {plans.filter(p => !p.is_lifetime).map((plan, i) => {
-                  const display = PLAN_META[plan.slug] ?? { badge: null, highlight: false, cta: 'Get Started', note: '' };
-                  const isEnterprise = plan.slug === 'ultimate_plus';
-                  const priceLabel = isEnterprise ? 'Contact us' : plan.price_monthly === 0 ? 'Free' : `£${plan.price_monthly}`;
-                  const period = (isEnterprise || plan.price_monthly === 0) ? '' : '/mo';
-                  const isPaid = plan.price_monthly > 0 && !isEnterprise;
-
-                  return (
-                    <motion.div
-                      key={plan.id}
-                      initial={{ opacity: 0, y: 16 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.35, delay: i * 0.07 }}
-                      className={`relative flex flex-col rounded-2xl overflow-hidden ${
-                        isEnterprise
-                          ? 'bg-gradient-to-br from-amber-500/8 to-orange-500/5 border-2 border-amber-500/40 shadow-md shadow-amber-500/10'
-                          : display.highlight
-                            ? 'bg-blue-600 shadow-2xl shadow-blue-600/30 ring-2 ring-blue-500'
-                            : 'bg-card border border-border shadow-md'
-                      }`}
-                    >
-                      {display.badge && (
-                        <div className="px-5 pt-4 pb-0">
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                            isEnterprise
-                              ? 'bg-amber-500/10 text-amber-600 border border-amber-500/20'
-                              : display.highlight
-                                ? 'bg-white/20 text-white'
-                                : 'bg-primary/10 text-primary border border-primary/20'
-                          }`}>
-                            {display.badge}
-                          </span>
-                        </div>
-                      )}
-
-                      <div className="p-5 flex flex-col flex-1 gap-4">
-                        {/* Name + price */}
-                        <div>
-                          <h3 className={`font-bold text-base mb-0.5 ${display.highlight ? 'text-white' : 'text-foreground'}`}>
-                            {plan.name}
-                          </h3>
-                          <div className="flex items-baseline gap-0.5">
-                            <span className={`text-3xl font-extrabold ${isEnterprise ? 'text-amber-600' : display.highlight ? 'text-white' : 'text-foreground'}`}>
-                              {priceLabel}
-                            </span>
-                            {period && (
-                              <span className={`text-sm ml-0.5 ${display.highlight ? 'text-blue-100' : 'text-muted-foreground'}`}>
-                                {period}
-                              </span>
-                            )}
-                          </div>
-                          <p className={`text-xs mt-1 leading-snug ${display.highlight ? 'text-blue-100' : 'text-muted-foreground'}`}>
-                            {display.note}
-                          </p>
-                        </div>
-
-                        {/* Profile allowance — the key differentiator */}
-                        <div className={`rounded-lg px-3 py-2 text-xs font-semibold ${
-                          isEnterprise
-                            ? 'bg-amber-500/10 text-amber-700 border border-amber-500/20'
-                            : display.highlight
-                              ? 'bg-white/15 text-white'
-                              : 'bg-primary/8 text-primary border border-primary/20'
-                        }`}>
-                          {(() => {
-                            const orgSlots = plan.max_org_profiles ?? 0;
-                            const seats = plan.max_seats ?? 1;
-                            if (plan.max_profiles === 999) return 'Unlimited profiles';
-                            if (orgSlots >= 10) return `1 personal + ${orgSlots} organisation profiles, ${seats} seats`;
-                            if (orgSlots >= 4)  return `1 personal + ${orgSlots} organisation profiles`;
-                            if (orgSlots === 1)  return '1 personal + 1 organisation profile';
-                            return '1 personal profile only';
-                          })()}
-                        </div>
-
-                        {/* Feature list */}
-                        {plan.core_features && plan.core_features.length > 0 && (
-                          <ul className="space-y-1.5">
-                            {plan.core_features.map((f: string, fi: number) => (
-                              <li key={fi} className={`flex items-start gap-1.5 text-xs ${display.highlight ? 'text-blue-100' : 'text-muted-foreground'}`}>
-                                <svg className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${isEnterprise ? 'text-amber-500' : display.highlight ? 'text-white' : 'text-primary'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                                {f}
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-
-                        {/* CTA */}
-                        <div className="mt-auto pt-1">
-                          {isEnterprise ? (
-                            <a href="mailto:contact@jagroupservices.co.uk?subject=Ultimate%20Organisation%2B%20Enquiry" className="block w-full">
-                              <Button className="w-full text-sm font-semibold rounded-xl py-2 bg-amber-500 hover:bg-amber-400 text-white shadow-sm shadow-amber-500/20">
-                                Get in touch
-                              </Button>
-                            </a>
-                          ) : !isPaid ? (
-                            <Link to="/login">
-                              <Button className="w-full text-sm font-semibold rounded-xl py-2 bg-muted text-foreground hover:bg-muted/80 border border-border">
-                                {display.cta}
-                              </Button>
-                            </Link>
-                          ) : (
-                            <Button
-                              onClick={() => handleTrialCta(plan.slug)}
-                              className={`w-full text-sm font-semibold rounded-xl py-2 ${
-                                display.highlight
-                                  ? 'bg-white text-blue-600 hover:bg-blue-50 shadow-md'
-                                  : 'bg-blue-600 hover:bg-blue-500 text-white shadow-sm shadow-blue-600/20'
-                              }`}
-                            >
-                              {display.cta}
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
-
-              <p className="text-center text-xs text-muted-foreground mt-5">
-                No credit card required to start. Sign in to see the full feature breakdown for each plan.
-              </p>
-            </>
-          )}
-
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════
-          7. FAQ
-      ══════════════════════════════════════════════════════════ */}
-      <section id="faq" className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/20">
-        <div className="max-w-3xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-12"
-          >
-            <SectionBadge>FAQ</SectionBadge>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
-              Frequently asked questions
-            </h2>
-          </motion.div>
-
-          <div className="space-y-3">
-            {[
-              { q: 'What is Sousa Murray Profiles?', a: 'Sousa Murray Profiles is a digital profile service that gives you a personal or organisation profile page with your contact details, links, QR code and business information in one place. You can share it online, in person or via your unique profile link.' },
-              { q: 'What is the difference between a personal profile and an organisation profile?', a: 'A personal profile is your individual digital contact card — your name, job title, phone, email and links. An organisation profile is a dedicated page for your business or organisation with your brand, services, team and contact details. Both are managed from the same dashboard.' },
-              { q: 'What does the dashboard include?', a: 'Your dashboard lets you edit your profile, manage links, download your QR code, view analytics, receive contact enquiries, manage organisation seats (on Organisation plan), choose themes, generate a Profile Poster PDF and control your account settings.' },
-              { q: 'Is there a free plan?', a: 'Yes. The Free plan is always free with no expiry. It includes a digital profile page, QR code sharing and basic links. Paid plans include a 30-day free trial — no credit card required to start.' },
-              { q: 'Can I use my QR code on physical materials?', a: 'Yes. Download your QR code from the dashboard and use it on any physical material — posters, flyers, name badges, or anywhere you share your contact details.' },
-              { q: 'Who can use Sousa Murray Profiles?', a: 'Sousa Murray Profiles is available to UK-based individuals and businesses aged 18 and over. Public profiles can be viewed worldwide.' },
-              { q: 'How do I get started?', a: 'Sign in through JA Group Services ID to create your account. Your profile is created automatically on first sign-in — no separate registration needed.' },
-              { q: 'Who operates Sousa Murray Profiles?', a: 'Sousa Murray Profiles is a service brand operated by JA Group Services Ltd, a company registered in England and Wales.' },
-            ].map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: i * 0.04 }}
-              >
-                <FaqItem q={item.q} a={item.a} />
-              </motion.div>
-            ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ══════════════════════════════════════════════════════════
-          8. FINAL CTA
-      ══════════════════════════════════════════════════════════ */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className={`${glassStrong} p-10 sm:p-14 text-center relative overflow-hidden`}
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/6 via-transparent to-indigo-600/4 pointer-events-none rounded-2xl" />
-            <div className="relative">
-              <div className="w-14 h-14 rounded-2xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center text-blue-600 mx-auto mb-6">
-                <QrCode className="w-7 h-7" />
-              </div>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight mb-4">
-                Ready to create your digital profile?
-              </h2>
-              <p className="text-muted-foreground mb-8 leading-relaxed text-base max-w-xl mx-auto">
-                Sign in through JA Group Services ID to get started. Your profile is created automatically on first sign-in. Free to start — no credit card required.
-              </p>
-              <div className="flex flex-wrap gap-3 justify-center mb-8">
-                <Link to="/login">
-                  <Button
-                    size="lg"
-                    className="bg-blue-600 hover:bg-blue-500 text-white font-semibold shadow-xl shadow-blue-600/25 px-8 rounded-xl transition-all duration-200 hover:-translate-y-px"
-                  >
-                    Create Your Profile <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </Link>
-                <Link to="/login">
-                  <Button size="lg" variant="outline" className="border-border text-foreground hover:bg-muted px-8 rounded-xl font-medium">
-                    Sign in to dashboard
-                  </Button>
-                </Link>
-              </div>
-              <div className="flex flex-wrap justify-center gap-5 pt-6 border-t border-border">
-                {['Free to get started', 'No credit card required', 'UK-based service'].map(t => (
-                  <div key={t} className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                    <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                    <span>{t}</span>
-                  </div>
-                ))}
-              </div>
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <SectionHeading eyebrow="Plans" title="Start simple. Add capability when you need it." text="Free and Starter customers can share and embed their public profiles. Higher plans add the business-management features that need more platform resources." />
+          <div className="mt-10"><PlanComparison compact /></div>
+          <div className="mt-8 text-center"><Link to="/plans"><Button variant="outline" size="lg" className="gap-2">Open full comparison table <ArrowRight className="w-4 h-4" /></Button></Link></div>
+        </section>
+
+        <section className="border-y border-border bg-gradient-to-br from-primary/8 via-muted/20 to-indigo-500/5">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 grid lg:grid-cols-2 gap-10 items-center">
+            <div>
+              <SectionHeading eyebrow="Sousa Murray + JA Group Services" title="A customer-facing profile product with central operations behind it" text="Sousa Murray Profiles is part of the Sousa Murray brand and is operated by JA Group Services Ltd. Customer identity, payments and operational controls are designed to connect into the same central business infrastructure rather than becoming isolated systems." />
+              <div className="mt-6 flex flex-wrap gap-3"><Link to="/about"><Button className="gap-2">About the platform <ArrowRight className="w-4 h-4" /></Button></Link><Link to="/legal"><Button variant="outline">Legal centre</Button></Link></div>
             </div>
-          </motion.div>
-        </div>
-      </section>
-    </div>
-    <InstallAppBanner />
+            <div className="rounded-3xl border border-border bg-card p-6 sm:p-8">
+              <ul className="space-y-4">
+                {[
+                  'JA Group Services ID for customer authentication.',
+                  'Head Office customer and security authority integration.',
+                  'Central Payments for paid subscription checkout and billing.',
+                  'Dedicated Profiles customer and admin interfaces.',
+                  'Scoped integration credentials instead of exposing provider secrets to the website.',
+                ].map(text => <li key={text} className="flex items-start gap-3 text-sm text-muted-foreground"><ShieldCheck className="w-5 h-5 text-primary shrink-0 mt-0.5" /><span>{text}</span></li>)}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section id="faq" className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <SectionHeading eyebrow="Questions" title="Before you create your profile" text="A few of the things customers normally want to know before choosing a plan." />
+          <div className="mt-8 space-y-3">
+            <Faq question="Can I use Profiles if I am self-employed or a sole trader?" answer="Yes. Sousa Murray Profiles is a business/professional service and can be used by sole traders and self-employed professionals as well as companies and organisations." />
+            <Faq question="Can Free and Starter profiles be shared on social apps?" answer="Yes. Public profiles can be shared from Free upwards. Facebook and WhatsApp have direct web-share routes, while supported devices can use the system share sheet for Instagram, Snapchat, Messenger and other installed apps." />
+            <Faq question="Can I put my profile on my own website?" answer="Yes. The dashboard can generate website embed code for a published profile. Eligible higher plans can also include custom-domain functionality, which is a separate feature from embedding." />
+            <Faq question="Does Sousa Murray Profiles store Stripe secret keys?" answer="The customer-facing Profiles website is designed to call JA Group Services Ltd Central Payments with a scoped platform credential. The principal payment provider secret remains in the central payment service rather than being copied into this website." />
+            <Faq question="Where can I see the exact plan limits?" answer="Use the Plans page. It loads the current public plan catalogue and shows a detailed comparison table alongside the current plan cards." />
+          </div>
+        </section>
+
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+          <div className="rounded-3xl bg-primary text-primary-foreground px-6 py-10 sm:p-12 text-center shadow-xl shadow-primary/20">
+            <h2 className="text-3xl font-extrabold">Build a profile you can keep using</h2>
+            <p className="mt-3 max-w-2xl mx-auto text-primary-foreground/80 leading-relaxed">Create the profile once, then share the same live destination wherever customers, contacts or visitors need to find you.</p>
+            <div className="mt-7 flex flex-wrap gap-3 justify-center"><Link to="/login"><Button size="lg" variant="secondary" className="gap-2">Create your profile <ArrowRight className="w-4 h-4" /></Button></Link><Link to="/contact"><Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">Contact us</Button></Link></div>
+          </div>
+        </section>
+      </main>
+
+      <InstallAppBanner />
     </>
   );
 }

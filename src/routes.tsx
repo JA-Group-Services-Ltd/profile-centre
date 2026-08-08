@@ -10,8 +10,11 @@ const NotFoundPage = import.meta.env.DEV
   ? lazy(() => import('../export-plugins/PageNotFound'))
   : lazy(() => import('./pages/_404'));
 
-// Home page — lazy so it doesn't bloat the initial bundle
+// Public marketing pages
 const HomePage = lazy(() => import('./pages/index'));
+const AboutPage = lazy(() => import('./pages/about'));
+const PlansPage = lazy(() => import('./pages/plans'));
+const ContactPage = lazy(() => import('./pages/contact'));
 
 // Auth pages
 const LoginPage = lazy(() => import('./pages/login'));
@@ -50,8 +53,6 @@ const DashboardSecuritySettings = lazy(() => import('./pages/dashboard/security-
 const DashboardNotificationPreferences = lazy(() => import('./pages/dashboard/notification-preferences'));
 const DashboardSupportTickets = lazy(() => import('./pages/dashboard/support-tickets'));
 
-// WhatsApp/Gallery/Menu/PDF/SocialLinks are now embedded in the profile page — old routes redirect there
-
 // Admin pages
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
 const AdminDashboard = lazy(() => import('./pages/admin/index'));
@@ -69,14 +70,12 @@ const AdminSupportRequests = lazy(() => import('./pages/admin/support-requests')
 const AdminHomepage = lazy(() => import('./pages/admin/homepage'));
 const AdminAuthorityReport = lazy(() => import('./pages/admin/authority-report'));
 const AdminIssueReports = lazy(() => import('./pages/admin/issue-reports'));
-// AdminCRM removed — /admin/crm now redirects to /admin/users
 const AdminDataRequests = lazy(() => import('./pages/admin/data-requests'));
 const AdminClosureRequests = lazy(() => import('./pages/admin/closure-requests'));
 const AdminAdminAccounts = lazy(() => import('./pages/admin/admin-accounts'));
 const AdminUserDetail = lazy(() => import('./pages/admin/user-detail'));
 const AdminProfilePreview = lazy(() => import('./pages/admin/profile-preview'));
 const AdminBusinessCards = lazy(() => import('./pages/admin/business-cards'));
-// AdminFeatures removed — feature management is now handled per-user in the CRM user detail page
 const AdminAssistedAccess = lazy(() => import('./pages/admin/assisted-access'));
 const AdminComposeEmail = lazy(() => import('./pages/admin/compose-email'));
 const AdminAddons = lazy(() => import('./pages/admin/addons'));
@@ -102,12 +101,8 @@ const ReportingPolicyPage = lazy(() => import('./pages/legal/reporting'));
 const SecurityPolicyPage = lazy(() => import('./pages/legal/security'));
 const DataRightsPage = lazy(() => import('./pages/legal/data-rights'));
 const ReportIssuePage = lazy(() => import('./pages/report-issue'));
-
 const SupportPage = lazy(() => import('./pages/support'));
-
-// Public pages
 const PublicHelpCentrePage = lazy(() => import('./pages/help'));
-
 const ComingSoonPage = lazy(() => import('./pages/coming-soon'));
 
 const Spin = () => (
@@ -116,53 +111,31 @@ const Spin = () => (
   </div>
 );
 
-// Inline redirect component — used for retired pages
 const RedirectToHome = () => <Navigate to="/" replace />;
-
-const S = ({ children }: { children: React.ReactNode }) => (
-  <Suspense fallback={<Spin />}>{children}</Suspense>
+const S = ({ children }: { children: React.ReactNode }) => <Suspense fallback={<Spin />}>{children}</Suspense>;
+const PublicPage = ({ children }: { children: React.ReactNode }) => (
+  <AuthProvider><RootLayout><S>{children}</S></RootLayout></AuthProvider>
 );
 
 export const routes: RouteObject[] = [
   {
     path: '/',
-    element: (
-      <AuthProvider>
-        <SiteStatusGate>
-          <RootLayout><S><HomePage /></S></RootLayout>
-        </SiteStatusGate>
-      </AuthProvider>
-    ),
+    element: <AuthProvider><SiteStatusGate><RootLayout><S><HomePage /></S></RootLayout></SiteStatusGate></AuthProvider>,
   },
-  {
-    path: '/login',
-    element: <AuthProvider><RootLayout><S><LoginPage /></S></RootLayout></AuthProvider>,
-  },
-  {
-    path: '/register',
-    element: <RootLayout><S><RegisterPage /></S></RootLayout>,
-  },
-  {
-    path: '/logged-out',
-    element: <RootLayout><S><LoggedOutPage /></S></RootLayout>,
-  },
-  {
-    path: '/admin/logged-out',
-    element: <S><AdminLoggedOutPage /></S>,
-  },
-  {
-    path: '/conversation/:threadId',
-    element: <S><ConversationPage /></S>,
-  },
-  {
-    path: '/admin/login',
-    element: <AdminAuthProvider><S><AdminLoginPage /></S></AdminAuthProvider>,
-  },
+  { path: '/about', element: <PublicPage><AboutPage /></PublicPage> },
+  { path: '/plans', element: <PublicPage><PlansPage /></PublicPage> },
+  { path: '/contact', element: <PublicPage><ContactPage /></PublicPage> },
+  { path: '/login', element: <AuthProvider><RootLayout><S><LoginPage /></S></RootLayout></AuthProvider> },
+  { path: '/register', element: <RootLayout><S><RegisterPage /></S></RootLayout> },
+  { path: '/logged-out', element: <RootLayout><S><LoggedOutPage /></S></RootLayout> },
+  { path: '/admin/logged-out', element: <S><AdminLoggedOutPage /></S> },
+  { path: '/conversation/:threadId', element: <S><ConversationPage /></S> },
+  { path: '/admin/login', element: <AdminAuthProvider><S><AdminLoginPage /></S></AdminAuthProvider> },
+
   {
     path: '/dashboard',
     element: <AuthProvider><S><DashboardLayout /></S></AuthProvider>,
     children: [
-      // Index: /dashboard → /dashboard/overview (covers PWA start_url and direct visits)
       { index: true, element: <Navigate to="overview" replace /> },
       { path: 'overview', element: <S><DashboardOverview /></S> },
       { path: 'profile', element: <S><DashboardProfile /></S> },
@@ -178,10 +151,9 @@ export const routes: RouteObject[] = [
       { path: 'security', element: <S><DashboardSecuritySettings /></S> },
       { path: 'account', element: <S><DashboardAccount /></S> },
       { path: 'organisation-profile', element: <S><DashboardOrganisationProfile /></S> },
-      { path: 'organisation-seats',   element: <S><DashboardOrganisationSeats /></S> },
-      // Legacy redirects — keep old URLs working
+      { path: 'organisation-seats', element: <S><DashboardOrganisationSeats /></S> },
       { path: 'business-profile', element: <Navigate to="/dashboard/organisation-profile" replace /> },
-      { path: 'business-seats',   element: <Navigate to="/dashboard/organisation-seats" replace /> },
+      { path: 'business-seats', element: <Navigate to="/dashboard/organisation-seats" replace /> },
       { path: 'data-requests', element: <S><DashboardDataRequests /></S> },
       { path: 'account-closure', element: <S><DashboardAccountClosure /></S> },
       { path: 'email-signature', element: <S><DashboardEmailSignature /></S> },
@@ -193,23 +165,19 @@ export const routes: RouteObject[] = [
       { path: 'support-tickets', element: <S><DashboardSupportTickets /></S> },
       { path: 'business-cards', element: <S><DashboardBusinessCards /></S> },
       { path: 'site-editor', element: <S><DashboardSiteEditor /></S> },
-      { path: 'whatsapp',        element: <Navigate to="/dashboard/profile" replace /> },
-      { path: 'gallery',         element: <Navigate to="/dashboard/profile" replace /> },
-      { path: 'menu',            element: <Navigate to="/dashboard/profile" replace /> },
+      { path: 'whatsapp', element: <Navigate to="/dashboard/profile" replace /> },
+      { path: 'gallery', element: <Navigate to="/dashboard/profile" replace /> },
+      { path: 'menu', element: <Navigate to="/dashboard/profile" replace /> },
       { path: 'pdf-attachments', element: <Navigate to="/dashboard/profile" replace /> },
-      { path: 'social-links',    element: <Navigate to="/dashboard/profile" replace /> },
-      // Retired routes — redirect to avoid dead links
+      { path: 'social-links', element: <Navigate to="/dashboard/profile" replace /> },
       { path: 'messages', element: <Navigate to="/dashboard/overview" replace /> },
       { path: 'demo', element: <Navigate to="/dashboard/overview" replace /> },
     ],
   },
+
   {
     path: '/admin',
-    element: (
-      <AdminAuthProvider>
-        <AdminGuard />
-      </AdminAuthProvider>
-    ),
+    element: <AdminAuthProvider><AdminGuard /></AdminAuthProvider>,
     children: [
       {
         element: <S><AdminLayout /></S>,
@@ -227,7 +195,6 @@ export const routes: RouteObject[] = [
           { path: 'legal', element: <S><AdminLegal /></S> },
           { path: 'homepage', element: <S><AdminHomepage /></S> },
           { path: 'authority-report', element: <S><AdminAuthorityReport /></S> },
-
           { path: 'support-requests', element: <S><AdminSupportRequests /></S> },
           { path: 'issue-reports', element: <S><AdminIssueReports /></S> },
           { path: 'crm', element: <Navigate to="/admin/users" replace /> },
@@ -241,7 +208,6 @@ export const routes: RouteObject[] = [
           { path: 'assisted-access', element: <S><AdminAssistedAccess /></S> },
           { path: 'compose-email', element: <S><AdminComposeEmail /></S> },
           { path: 'addons', element: <S><AdminAddons /></S> },
-          // Retired routes — redirect to avoid dead links
           { path: 'messaging', element: <Navigate to="/admin" replace /> },
           { path: 'affiliates', element: <Navigate to="/admin" replace /> },
           { path: 'referrals', element: <Navigate to="/admin" replace /> },
@@ -250,154 +216,49 @@ export const routes: RouteObject[] = [
       },
     ],
   },
+
+  { path: '/legal', element: <PublicPage><LegalIndexPage /></PublicPage> },
+  { path: '/legal/privacy', element: <PublicPage><PrivacyPage /></PublicPage> },
+  { path: '/legal/terms', element: <PublicPage><TermsPage /></PublicPage> },
+  { path: '/legal/cookies', element: <PublicPage><CookiesPage /></PublicPage> },
+  { path: '/legal/acceptable-use', element: <PublicPage><AcceptableUsePage /></PublicPage> },
+  { path: '/legal/refunds', element: <PublicPage><RefundsPage /></PublicPage> },
+  { path: '/legal/complaints', element: <PublicPage><ComplaintsPage /></PublicPage> },
+  { path: '/legal/accessibility', element: <PublicPage><AccessibilityPage /></PublicPage> },
+  { path: '/legal/service-status', element: <PublicPage><ServiceStatusPage /></PublicPage> },
+  { path: '/status', element: <PublicPage><StatusPage /></PublicPage> },
+  { path: '/legal/eligibility', element: <PublicPage><EligibilityPage /></PublicPage> },
+  { path: '/legal/data-retention', element: <PublicPage><DataRetentionPage /></PublicPage> },
+  { path: '/legal/reporting', element: <PublicPage><ReportingPolicyPage /></PublicPage> },
+  { path: '/legal/reporting-moderation', element: <PublicPage><ReportingPolicyPage /></PublicPage> },
+  { path: '/legal/security', element: <PublicPage><SecurityPolicyPage /></PublicPage> },
+  { path: '/legal/data-rights', element: <PublicPage><DataRightsPage /></PublicPage> },
+  { path: '/support', element: <PublicPage><SupportPage /></PublicPage> },
+  { path: '/report-issue', element: <PublicPage><ReportIssuePage /></PublicPage> },
+  { path: '/help', element: <PublicPage><PublicHelpCentrePage /></PublicPage> },
+
+  { path: '/services', element: <Navigate to="/" replace /> },
+  { path: '/partners', element: <Navigate to="/" replace /> },
+  { path: '/affiliates', element: <Navigate to="/" replace /> },
+  { path: '/partner-enquiries', element: <Navigate to="/" replace /> },
+  { path: '/partnership', element: <Navigate to="/" replace /> },
+  { path: '/become-a-partner', element: <Navigate to="/" replace /> },
+  { path: '/coming-soon', element: <RootLayout><S><ComingSoonPage /></S></RootLayout> },
+  { path: '/team-directory', element: <Navigate to="/" replace /> },
   {
-    path: '/legal',
-    element: <AuthProvider><RootLayout><S><LegalIndexPage /></S></RootLayout></AuthProvider>,
-  },
-  {
-    path: '/legal/privacy',
-    element: <AuthProvider><RootLayout><S><PrivacyPage /></S></RootLayout></AuthProvider>,
-  },
-  {
-    path: '/legal/terms',
-    element: <AuthProvider><RootLayout><S><TermsPage /></S></RootLayout></AuthProvider>,
-  },
-  {
-    path: '/legal/cookies',
-    element: <AuthProvider><RootLayout><S><CookiesPage /></S></RootLayout></AuthProvider>,
-  },
-  {
-    path: '/legal/acceptable-use',
-    element: <AuthProvider><RootLayout><S><AcceptableUsePage /></S></RootLayout></AuthProvider>,
-  },
-  {
-    path: '/legal/refunds',
-    element: <AuthProvider><RootLayout><S><RefundsPage /></S></RootLayout></AuthProvider>,
-  },
-  {
-    path: '/legal/complaints',
-    element: <AuthProvider><RootLayout><S><ComplaintsPage /></S></RootLayout></AuthProvider>,
-  },
-  {
-    path: '/legal/accessibility',
-    element: <AuthProvider><RootLayout><S><AccessibilityPage /></S></RootLayout></AuthProvider>,
-  },
-  {
-    path: '/legal/service-status',
-    element: <AuthProvider><RootLayout><S><ServiceStatusPage /></S></RootLayout></AuthProvider>,
-  },
-  {
-    path: '/status',
-    element: <AuthProvider><RootLayout><S><StatusPage /></S></RootLayout></AuthProvider>,
-  },
-  {
-    path: '/legal/eligibility',
-    element: <AuthProvider><RootLayout><S><EligibilityPage /></S></RootLayout></AuthProvider>,
-  },
-  {
-    path: '/legal/data-retention',
-    element: <AuthProvider><RootLayout><S><DataRetentionPage /></S></RootLayout></AuthProvider>,
-  },
-  {
-    path: '/legal/reporting',
-    element: <AuthProvider><RootLayout><S><ReportingPolicyPage /></S></RootLayout></AuthProvider>,
-  },
-  {
-    // Alias — profile footer links use this path
-    path: '/legal/reporting-moderation',
-    element: <AuthProvider><RootLayout><S><ReportingPolicyPage /></S></RootLayout></AuthProvider>,
-  },
-  {
-    path: '/legal/security',
-    element: <AuthProvider><RootLayout><S><SecurityPolicyPage /></S></RootLayout></AuthProvider>,
-  },
-  {
-    path: '/legal/data-rights',
-    element: <AuthProvider><RootLayout><S><DataRightsPage /></S></RootLayout></AuthProvider>,
-  },
-  {
-    path: '/support',
-    element: <AuthProvider><RootLayout><S><SupportPage /></S></RootLayout></AuthProvider>,
-  },
-  {
-    path: '/report-issue',
-    element: <AuthProvider><RootLayout><S><ReportIssuePage /></S></RootLayout></AuthProvider>,
-  },
-  {
-    path: '/help',
-    element: <AuthProvider><RootLayout><S><PublicHelpCentrePage /></S></RootLayout></AuthProvider>,
-  },
-  {
-    path: '/services',
-    element: <Navigate to="/" replace />,
-  },
-  {
-    path: '/partners',
-    element: <Navigate to="/" replace />,
-  },
-  {
-    path: '/affiliates',
-    element: <Navigate to="/" replace />,
-  },
-  {
-    path: '/partner-enquiries',
-    element: <Navigate to="/" replace />,
-  },
-  {
-    path: '/partnership',
-    element: <Navigate to="/" replace />,
-  },
-  {
-    path: '/become-a-partner',
-    element: <Navigate to="/" replace />,
-  },
-  {
-    path: '/coming-soon',
-    element: <RootLayout><S><ComingSoonPage /></S></RootLayout>,
-  },
-  {
-    path: '/team-directory',
-    element: <Navigate to="/" replace />,
-  },
-  {
-    // /services/ja-profile-studio is retired — Sousa Murray Profiles IS the platform.
-    // Redirect visitors to the homepage.
     path: '/services/ja-profile-studio',
     element: <AuthProvider><RootLayout><S><RedirectToHome /></S></RootLayout></AuthProvider>,
   },
-  {
-    // Seat invite acceptance — must come BEFORE /:seg1 catch-all
-    path: '/invite/:token',
-    element: <SiteStatusGate><S><InvitePage /></S></SiteStatusGate>,
-  },
-  {
-    path: '/profile/:seg1',
-    element: <SiteStatusGate><S><ProfileRouter /></S></SiteStatusGate>,
-  },
-  {
-    // Explicit team directory route — must come BEFORE the generic :seg1/:seg2 route
-    path: '/profile/:seg1/team',
-    element: <SiteStatusGate><S><ProfileRouter /></S></SiteStatusGate>,
-  },
-  {
-    path: '/profile/:seg1/:seg2',
-    element: <SiteStatusGate><S><ProfileRouter /></S></SiteStatusGate>,
-  },
-  {
-    path: '/:seg1/:seg2',
-    element: <SiteStatusGate><S><ProfileRouter /></S></SiteStatusGate>,
-  },
-  {
-    // Single-segment bare username: japrofilestudio.jagroupservices.co.uk/alex-johnson
-    // Must come AFTER all named routes so it doesn't shadow /login, /register, etc.
-    path: '/:seg1',
-    element: <SiteStatusGate><S><ProfileRouter /></S></SiteStatusGate>,
-  },
-  {
-    path: '*',
-    element: <NotFoundPage />,
-  },
+
+  // Public profile routes must remain after every named public route.
+  { path: '/invite/:token', element: <SiteStatusGate><S><InvitePage /></S></SiteStatusGate> },
+  { path: '/profile/:seg1', element: <SiteStatusGate><S><ProfileRouter /></S></SiteStatusGate> },
+  { path: '/profile/:seg1/team', element: <SiteStatusGate><S><ProfileRouter /></S></SiteStatusGate> },
+  { path: '/profile/:seg1/:seg2', element: <SiteStatusGate><S><ProfileRouter /></S></SiteStatusGate> },
+  { path: '/:seg1/:seg2', element: <SiteStatusGate><S><ProfileRouter /></S></SiteStatusGate> },
+  { path: '/:seg1', element: <SiteStatusGate><S><ProfileRouter /></S></SiteStatusGate> },
+  { path: '*', element: <NotFoundPage /> },
 ];
 
-export type Path = '/' | '/login' | '/admin/login';
+export type Path = '/' | '/login' | '/admin/login' | '/about' | '/plans' | '/contact';
 export type Params = Record<string, string | undefined>;

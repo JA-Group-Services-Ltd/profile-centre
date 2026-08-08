@@ -407,7 +407,11 @@ export default function BusinessProfileDashboard({ profileId: propProfileId }: {
         throw new Error(`Server error (${res.status} ${res.statusText}) — please try again`);
       }
       if (!res.ok) throw new Error(data.error || `Save failed (${res.status})`);
-      // Re-sync all form state from the server response so nothing appears lost on save
+      // Re-sync all form state from the server response so nothing appears lost on save.
+      // A successful HTTP status without a profile payload is still an invalid save response.
+      if (!data.success || !data.data) {
+        throw new Error(data.error || 'The server did not return the saved business profile.');
+      }
       const saved_p: BizProfile = data.data;
       setProfile(saved_p);
       setForm({

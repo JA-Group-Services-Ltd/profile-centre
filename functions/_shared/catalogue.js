@@ -4,10 +4,50 @@ import { writeAudit } from "./audit.js";
 const CUSTOM_DOMAIN_PLAN_SLUGS = new Set(["professional", "business", "ultimate_business", "ultimate_plus"]);
 
 const PLAN_FEATURES = {
-  free: ["1 personal profile", "1 social link", "Public profile page", "QR code sharing"],
-  starter: ["1 personal profile", "Up to 20 social links", "QR code download", "Contact form"],
-  professional: ["Personal and organisation profiles", "Unlimited links", "Advanced analytics"],
-  business: ["Organisation profile", "Team seats", "Priority support"],
+  free: [
+    "1 personal profile",
+    "1 social link",
+    "Public profile page",
+    "QR code sharing",
+    "Social profile sharing",
+    "Website embed code",
+  ],
+  starter: [
+    "1 personal profile",
+    "Up to 20 social links",
+    "QR code download",
+    "Contact form",
+    "Social profile sharing",
+    "Website embed code",
+  ],
+  professional: [
+    "Personal and organisation profiles",
+    "Unlimited links",
+    "Advanced analytics",
+    "Social profile sharing",
+    "Website embed code",
+  ],
+  business: [
+    "Organisation profile",
+    "Team seats",
+    "Priority support",
+    "Social profile sharing",
+    "Website embed code",
+  ],
+  ultimate_business: [
+    "Organisation profile",
+    "Expanded team and profile limits",
+    "Priority support",
+    "Social profile sharing",
+    "Website embed code",
+  ],
+  ultimate_plus: [
+    "Tailored organisation profile service",
+    "Expanded team and profile limits",
+    "Priority support",
+    "Social profile sharing",
+    "Website embed code",
+  ],
 };
 
 function planHasCustomDomain(plan) {
@@ -16,7 +56,12 @@ function planHasCustomDomain(plan) {
 
 export async function getPlans(database, includeLifetime = false, includeInactive = false) {
   const conditions = [];
-  if (!includeInactive) conditions.push("p.is_active = 1");
+  // Public catalogue calls only receive active, publicly listed plans. Admin
+  // calls pass includeInactive=true and deliberately see the complete catalogue.
+  if (!includeInactive) {
+    conditions.push("p.is_active = 1");
+    conditions.push("COALESCE(p.is_public, 1) = 1");
+  }
   const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
   const [plansResult, rulesResult, addonsResult] = await Promise.all([
     database.prepare(`
@@ -46,7 +91,7 @@ export async function getPlans(database, includeLifetime = false, includeInactiv
     .filter((plan) => includeLifetime || Number(plan.has_lifetime) !== 1)
     .map((plan) => {
       const rules = rulesByPlan.get(Number(plan.id)) ?? [];
-      const core = PLAN_FEATURES[plan.slug] ?? [];
+      const core = PLAN_FEATURES[plan.slug] ?? ["Social profile sharing", "Website embed code"];
       return {
         ...plan,
         has_custom_domain: planHasCustomDomain(plan) ? 1 : 0,
