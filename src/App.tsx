@@ -17,7 +17,6 @@ import AccessibilityWidget from '@/components/AccessibilityWidget';
 import { Toaster } from '@/components/ui/sonner';
 import { AuthProvider } from '@/lib/auth';
 import { AdminAuthProvider } from '@/lib/admin-auth';
-import CustomDomainPlanEntitlements from '@/components/custom-domains/CustomDomainPlanEntitlements';
 
 const CookieBanner = lazy(() =>
   import('@/components/CookieBanner').catch((error) => {
@@ -113,8 +112,8 @@ export default function App() {
     );
   }
 
-  // Standalone customer management page. Keeping this outside the historic route
-  // tree means the feature can ship without destabilising the very large dashboard router.
+  // Standalone customer management page. Using a normal full navigation keeps this
+  // isolated from the historic dashboard route tree while the feature settles in.
   if (pathname === '/dashboard/custom-domains' || pathname === '/dashboard/custom-domains/') {
     return (
       <SiteThemeProvider>
@@ -142,21 +141,13 @@ export default function App() {
 
   const dashboardShortcut = !customHostname && pathname.startsWith('/dashboard/') && pathname !== '/dashboard/custom-domains';
   const adminUserMatch = pathname.match(/^\/admin\/users\/(\d+)\/?$/);
-  const adminPlansPage = pathname === '/admin/plans' || pathname === '/admin/plans/';
 
   return (
     <SiteThemeProvider>
-      {/*
-        Toaster is mounted here — at the very root, outside the router,
-        sidebar, dashboard layout, and any overflow/transform container.
-        This guarantees it is always above the sidebar, mobile drawer,
-        overlays, and modals on every page and every device.
-      */}
       <Toaster />
       <RouterProvider router={router} />
       {dashboardShortcut && <FloatingShortcut href="/dashboard/custom-domains" label="Custom Domains" />}
       {adminUserMatch && <FloatingShortcut href={`/admin/users/${adminUserMatch[1]}/custom-domains`} label="Customer Domains" />}
-      {adminPlansPage && <CustomDomainPlanEntitlements />}
     </SiteThemeProvider>
   );
 }
