@@ -5,7 +5,7 @@ import GoogleAnalytics from '@/components/GoogleAnalytics';
 import {
   LayoutDashboard, User, Link2, QrCode, Mail, BarChart3,
   Palette, CreditCard, Settings, LogOut, Menu, X, UserCircle, PauseCircle, Phone,
-  Building2, Users, Shield, FileSignature, Bell, HelpCircle,
+  Building2, Users, Shield, FileSignature, Bell, HelpCircle, Globe2,
   ChevronDown, Sparkles, UserCheck, MessageCircle, Image, List, FileText, Share2,
   UserPlus, ArrowLeftRight, XCircle,
 } from 'lucide-react';
@@ -66,6 +66,9 @@ const ALL_NAV_ITEMS: NavItem[] = [
   // ── Free plan and above ─────────────────────────────────────────────────
   { path: '/dashboard/profile',                  label: 'All Profiles',             icon: User,                          tier: 'free' },
   { path: '/dashboard/profile?section=org',      label: 'Organisation Profiles',    icon: Building2,                     tier: 'professional' },
+  // Custom Domains has its own exact server-side entitlement. It must never be
+  // exposed to Free, Starter or trial-only accounts.
+  { path: '/dashboard/custom-domains',           label: 'Custom Domains',           icon: Globe2,                        tier: 'always' },
 
   { path: '/dashboard/themes',                   label: 'Themes',                   icon: Palette,                       tier: 'free' },
 
@@ -236,6 +239,7 @@ export default function DashboardLayout() {
   // Items hidden for seat-only users (they have no own profile to manage)
   const SEAT_ONLY_HIDDEN = [
     '/dashboard/profile',
+    '/dashboard/custom-domains',
     '/dashboard/links',
     '/dashboard/qr-code',
     '/dashboard/poster',
@@ -257,6 +261,10 @@ export default function DashboardLayout() {
   const navItems = ALL_NAV_ITEMS.filter(item => {
     // Seat-only: hide profile-management items
     if (isSeatOnly && SEAT_ONLY_HIDDEN.includes(item.path)) return false;
+
+    // Custom Domains is not a generic Professional+ gate: trials are excluded and
+    // Lifetime only qualifies when the granted plan itself is an eligible tier.
+    if (item.path === '/dashboard/custom-domains') return !!user.hasCustomDomainAccess;
 
     // Seat invites: only show when pending invites exist or user is already a seat member
     if (item.path === '/dashboard/seat-invites') return pendingInviteCount > 0 || user.isSeatUser;

@@ -3,6 +3,7 @@ import Database from "better-sqlite3";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { ensureCustomDomainPlanPolicy, planAllowsCustomDomain } from "../functions/_shared/custom-domain-policy.js";
 import { normaliseCustomHostname } from "../functions/_shared/custom-domains.js";
+import { getCurrentUserAccess } from "../functions/_shared/current-user-access.js";
 
 class D1Statement {
   constructor(database, sql, values = []) { this.database = database; this.sql = sql; this.values = values; }
@@ -34,6 +35,9 @@ describe("Sousa Murray Profiles custom domains", () => {
   beforeEach(() => {
     sqlite = new Database(":memory:");
     sqlite.exec(fs.readFileSync("migrations/0002_full_d1_schema.sql", "utf8"));
+    // customer_number was added after the full-schema snapshot used by this lightweight test DB.
+    const userColumns = sqlite.prepare("PRAGMA table_info(users)").all().map(row => row.name);
+    if (!userColumns.includes("customer_number")) sqlite.exec("ALTER TABLE users ADD COLUMN customer_number TEXT");
     sqlite.exec(`
       INSERT INTO plans (id,name,slug,price_monthly,max_links,is_active,is_public,has_custom_domain)
       VALUES
@@ -74,5 +78,37 @@ describe("Sousa Murray Profiles custom domains", () => {
     expect(() => normaliseCustomHostname("example.com")).toThrow(/subdomain/i);
     expect(() => normaliseCustomHostname("profile.jagroupservices.co.uk")).toThrow(/cannot be claimed/i);
     expect(() => normaliseCustomHostname("example.pages.dev")).toThrow(/cannot be claimed/i);
+  });
+
+  it("treats an admin-granted Lifetime Ultimate Organisation+ plan as active without Stripe", async () => {
+    await ensureCustomDomainPlanPolicy(d1);
+    sqlite.prepare(`
+      INSERT INTO users (id,email,name,plan_id,lifetime_access,account_status)
+      VALUES (101,'lifetime@example.test','Lifetime Customer',6,1,'lifetime')
+    `).run();
+
+    const access = await getCurrentUserAccess(d1, 101);
+    expect(access.hasLifetimeAccess).toBe(true);
+    expect(access.hasBusinessAccess).toBe(true);
+    expect(access.hasUltimateBusinessAccess).toBe(true);
+    expect(access.hasStarterAccess).toBe(true);
+    expect(access.hasFreeAccess).toBe(true);
+    expect(access.hasNoActivePlan).toBe(false);
+    expect(access.accountStatus).toBe("lifetime");
+    expect(access.hasCustomDomainAccess).toBe(true);
+  });
+
+  it("mounts Custom Domains in the real dashboard sidebar and route tree", () => {
+    const layout = fs.readFileSync("src/components/dashboard/DashboardLayout.tsx", "utf8");
+    const routes = fs.readFileSync("src/routes.tsx", "utf8");
+    const app = fs.readFileSync("src/App.tsx", "utf8");
+    const functionsEntry = fs.readFileSync("functions/[[path]].js", "utf8");
+
+    expect(layout).toContain("label: 'Custom Domains'");
+    expect(layout).toContain("return !!user.hasCustomDomainAccess");
+    expect(routes).toContain("path: 'custom-domains'");
+    expect(routes).toContain("DashboardCustomDomains");
+    expect(app).not.toContain("DashboardCustomDomains");
+    expect(functionsEntry).toContain("handleCurrentUserApiRequest");
   });
 });

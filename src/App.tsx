@@ -15,7 +15,6 @@ import { routes } from './routes';
 import { SiteThemeProvider } from './lib/site-theme';
 import AccessibilityWidget from '@/components/AccessibilityWidget';
 import { Toaster } from '@/components/ui/sonner';
-import { AuthProvider } from '@/lib/auth';
 import { AdminAuthProvider } from '@/lib/admin-auth';
 
 const CookieBanner = lazy(() =>
@@ -25,7 +24,6 @@ const CookieBanner = lazy(() =>
   })
 );
 const CustomDomainRoot = lazy(() => import('@/components/custom-domains/CustomDomainRoot'));
-const DashboardCustomDomains = lazy(() => import('@/pages/dashboard/custom-domains'));
 const AdminUserCustomDomains = lazy(() => import('@/pages/admin/user-custom-domains'));
 
 const SpinnerFallback = () => (
@@ -112,19 +110,6 @@ export default function App() {
     );
   }
 
-  // Standalone customer management page. Using a normal full navigation keeps this
-  // isolated from the historic dashboard route tree while the feature settles in.
-  if (pathname === '/dashboard/custom-domains' || pathname === '/dashboard/custom-domains/') {
-    return (
-      <SiteThemeProvider>
-        <Toaster />
-        <AuthProvider>
-          <Suspense fallback={<SpinnerFallback />}><DashboardCustomDomains /></Suspense>
-        </AuthProvider>
-      </SiteThemeProvider>
-    );
-  }
-
   const adminDomainsMatch = pathname.match(/^\/admin\/users\/(\d+)\/custom-domains\/?$/);
   if (adminDomainsMatch) {
     return (
@@ -139,14 +124,12 @@ export default function App() {
     );
   }
 
-  const dashboardShortcut = !customHostname && pathname.startsWith('/dashboard/') && pathname !== '/dashboard/custom-domains';
   const adminUserMatch = pathname.match(/^\/admin\/users\/(\d+)\/?$/);
 
   return (
     <SiteThemeProvider>
       <Toaster />
       <RouterProvider router={router} />
-      {dashboardShortcut && <FloatingShortcut href="/dashboard/custom-domains" label="Custom Domains" />}
       {adminUserMatch && <FloatingShortcut href={`/admin/users/${adminUserMatch[1]}/custom-domains`} label="Customer Domains" />}
     </SiteThemeProvider>
   );
