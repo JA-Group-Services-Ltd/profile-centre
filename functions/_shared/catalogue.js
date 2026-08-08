@@ -1,12 +1,18 @@
 import { HttpError, readJson } from "./http.js";
 import { writeAudit } from "./audit.js";
 
+const CUSTOM_DOMAIN_PLAN_SLUGS = new Set(["professional", "business", "ultimate_business", "ultimate_plus"]);
+
 const PLAN_FEATURES = {
   free: ["1 personal profile", "1 social link", "Public profile page", "QR code sharing"],
   starter: ["1 personal profile", "Up to 20 social links", "QR code download", "Contact form"],
   professional: ["Personal and organisation profiles", "Unlimited links", "Advanced analytics"],
   business: ["Organisation profile", "Team seats", "Priority support"],
 };
+
+function planHasCustomDomain(plan) {
+  return CUSTOM_DOMAIN_PLAN_SLUGS.has(String(plan?.slug || "").trim().toLowerCase());
+}
 
 export async function getPlans(database, includeLifetime = false, includeInactive = false) {
   const conditions = [];
@@ -40,10 +46,14 @@ export async function getPlans(database, includeLifetime = false, includeInactiv
     .filter((plan) => includeLifetime || Number(plan.has_lifetime) !== 1)
     .map((plan) => {
       const rules = rulesByPlan.get(Number(plan.id)) ?? [];
+      const core = PLAN_FEATURES[plan.slug] ?? [];
       return {
         ...plan,
+        has_custom_domain: planHasCustomDomain(plan) ? 1 : 0,
         is_lifetime: Number(plan.has_lifetime) === 1,
-        core_features: PLAN_FEATURES[plan.slug] ?? [],
+        core_features: planHasCustomDomain(plan) && !core.includes("Custom domain")
+          ? [...core, "Custom domain"]
+          : core,
         included_features: rules.filter((rule) => rule.access_type === "included").map((rule) => rule.feature_name),
         coming_soon_features: rules.filter((rule) => rule.access_type === "coming_soon").map((rule) => rule.feature_name),
         addon_features: rules.filter((rule) => rule.access_type === "paid_addon").map((rule) => rule.feature_name),
@@ -111,7 +121,7 @@ export async function getPublicSettings(database) {
 const PLAN_MUTABLE = [
   "name", "slug", "price_monthly", "price_yearly", "max_profiles", "max_org_profiles",
   "max_links", "max_seats", "max_themes", "has_qr_download", "has_contact_form",
-  "has_advanced_analytics", "has_vcard_download", "has_custom_themes", "has_custom_domain",
+  "has_advanced_analytics", "has_vcard_download", "has_custom_themes",
   "has_profile_link_customisation", "remove_branding", "has_messaging", "has_lifetime",
   "is_active", "is_public", "stripe_product_id", "stripe_price_monthly",
   "stripe_price_yearly", "stripe_price_lifetime",
