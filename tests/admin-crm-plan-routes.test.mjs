@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import Database from "better-sqlite3";
 import { beforeEach, afterEach, describe, expect, it } from "vitest";
 import { handleAdminPlanApiRequest } from "../functions/_shared/admin-plan-routes.js";
+import { handleApiRequest } from "../functions/_shared/router.js";
 
 class D1Statement {
   constructor(database, sql, values = []) { this.database = database; this.sql = sql; this.values = values; }
@@ -183,5 +184,64 @@ describe("Admin Centre User & CRM plan routes", () => {
     )));
     expect(toggled.response.status).toBe(200);
     expect(toggled.body.data.is_public).toBe(0);
+  });
+
+  it("covers the Admin Plans catalogue list, create, edit and deactivate routes", async () => {
+    let result = await jsonResponse(await handleApiRequest(context(d1, "/api/admin/plans")));
+    expect(result.response.status).toBe(200);
+    expect(result.body.data).toHaveLength(3);
+
+    result = await jsonResponse(await handleApiRequest(context(
+      d1,
+      "/api/admin/plans",
+      {
+        method: "POST",
+        body: {
+          name: "Business Plus",
+          slug: "business-plus",
+          price_monthly: 39,
+          max_profiles: 10,
+          has_profile_link_customisation: 1,
+          is_public: 1,
+        },
+      },
+    )));
+    expect(result.response.status).toBe(201);
+    const planId = result.body.data.id;
+    expect(result.body.data).toMatchObject({
+      name: "Business Plus",
+      slug: "business-plus",
+      has_profile_link_customisation: 1,
+      is_public: 1,
+    });
+
+    result = await jsonResponse(await handleApiRequest(context(
+      d1,
+      `/api/admin/plans/${planId}`,
+      {
+        method: "PUT",
+        body: {
+          price_monthly: 49,
+          has_profile_link_customisation: 0,
+          is_active: 1,
+          is_public: 0,
+        },
+      },
+    )));
+    expect(result.response.status).toBe(200);
+    expect(result.body.data).toMatchObject({
+      price_monthly: 49,
+      has_profile_link_customisation: 0,
+      is_active: 1,
+      is_public: 0,
+    });
+
+    result = await jsonResponse(await handleApiRequest(context(
+      d1,
+      `/api/admin/plans/${planId}`,
+      { method: "DELETE" },
+    )));
+    expect(result.response.status).toBe(200);
+    expect(sqlite.prepare("SELECT is_active FROM plans WHERE id=?").get(planId).is_active).toBe(0);
   });
 });
