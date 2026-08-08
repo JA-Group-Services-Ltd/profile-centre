@@ -10,7 +10,7 @@ const PLAN_CODES = Object.freeze({
   business: Object.freeze({ productCode: "PROFILES_ORGANISATION", priceCode: "PROFILES_ORGANISATION_MONTHLY" }),
   organisation: Object.freeze({ productCode: "PROFILES_ORGANISATION", priceCode: "PROFILES_ORGANISATION_MONTHLY" }),
   organization: Object.freeze({ productCode: "PROFILES_ORGANISATION", priceCode: "PROFILES_ORGANISATION_MONTHLY" }),
-  ultimate_plus: Object.freeze({ productCode: "PROFILES_ULTIMATE_ORGANISATION", priceCode: "PROFILES_ULTIMATE_ORGANISATION_MONTHLY" }),
+  ultimate_business: Object.freeze({ productCode: "PROFILES_ULTIMATE_ORGANISATION", priceCode: "PROFILES_ULTIMATE_ORGANISATION_MONTHLY" }),
   ultimate_organisation: Object.freeze({ productCode: "PROFILES_ULTIMATE_ORGANISATION", priceCode: "PROFILES_ULTIMATE_ORGANISATION_MONTHLY" }),
   ultimate_organization: Object.freeze({ productCode: "PROFILES_ULTIMATE_ORGANISATION", priceCode: "PROFILES_ULTIMATE_ORGANISATION_MONTHLY" }),
 });
@@ -19,7 +19,7 @@ const PRICE_TO_PLAN = Object.freeze({
   PROFILES_STARTER_MONTHLY: ["starter"],
   PROFILES_PROFESSIONAL_MONTHLY: ["professional"],
   PROFILES_ORGANISATION_MONTHLY: ["business", "organisation", "organization"],
-  PROFILES_ULTIMATE_ORGANISATION_MONTHLY: ["ultimate_plus", "ultimate_organisation", "ultimate_organization"],
+  PROFILES_ULTIMATE_ORGANISATION_MONTHLY: ["ultimate_business", "ultimate_organisation", "ultimate_organization"],
 });
 
 function legacyWebhookConfigured(env) {
@@ -77,9 +77,15 @@ function normalisePlanKey(value) {
 }
 
 function centralCodesForPlan(plan) {
-  const bySlug = PLAN_CODES[normalisePlanKey(plan?.slug)];
-  if (bySlug) return bySlug;
+  const slug = normalisePlanKey(plan?.slug);
   const name = normalisePlanKey(plan?.name);
+
+  // Ultimate Organisation+ remains a separately managed/tailored tier. Never
+  // silently charge it using the fixed Ultimate Organisation Central Price.
+  if (slug === "ultimate_plus" || name.includes("ultimate_plus") || name.includes("+")) return null;
+
+  const bySlug = PLAN_CODES[slug];
+  if (bySlug) return bySlug;
   if (name.includes("ultimate") && (name.includes("organisation") || name.includes("organization"))) {
     return PLAN_CODES.ultimate_organisation;
   }
@@ -132,7 +138,9 @@ async function planForCentralPrice(env, priceCode) {
     const slug = normalisePlanKey(plan.slug);
     const name = normalisePlanKey(plan.name);
     if (aliases.includes(slug)) return true;
-    if (priceCode === "PROFILES_ULTIMATE_ORGANISATION_MONTHLY") return name.includes("ultimate");
+    if (priceCode === "PROFILES_ULTIMATE_ORGANISATION_MONTHLY") {
+      return name.includes("ultimate") && !name.includes("+") && !name.includes("plus");
+    }
     if (priceCode === "PROFILES_ORGANISATION_MONTHLY") return name.includes("business") || name.includes("organisation") || name.includes("organization");
     return false;
   }) || null;
