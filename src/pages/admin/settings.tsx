@@ -7,7 +7,7 @@ import {
   Globe2, Radio, ImagePlus, Link2, Clock, Settings as SettingsIcon,
   Wrench, Search, UserCheck, LogIn, KeyRound, Info, ChevronDown, ChevronUp,
   Mail, ShieldCheck, AlertTriangle, Copy, CheckCheck, MailCheck, MailX,
-  BookOpen, FileDown, Database, HardDrive, Download, Calendar, RotateCcw,
+  BookOpen, FileDown, Database, HardDrive, Download, Calendar, RotateCcw, ChevronRight,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';

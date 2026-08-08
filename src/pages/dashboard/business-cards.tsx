@@ -554,12 +554,12 @@ function BuilderStep({ onSubmit, onBack }: { onSubmit: (data: BuilderData) => vo
                 { key: 'addon_thick_stock',    label: 'Extra Thick Stock',    hint: '600gsm or above — premium feel' },
               ].map(addon => (
                 <label key={addon.key} className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
-                  data[addon.key] ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/40'
+                  data[addon.key as keyof BuilderData] ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/40'
                 }`}>
                   <input
                     type="checkbox"
-                    checked={!!data[addon.key]}
-                    onChange={e => set(addon.key, e.target.checked)}
+                    checked={!!data[addon.key as keyof BuilderData]}
+                    onChange={e => set(addon.key as keyof BuilderData, e.target.checked)}
                     className="mt-0.5 rounded"
                   />
                   <div>
