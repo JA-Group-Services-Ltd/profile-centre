@@ -1,0 +1,37 @@
+name: One-off business profile response guard
+
+on:
+  push:
+    branches:
+      - upgrade/full-site-qa-public-legal-sharing
+    paths:
+      - scripts/one-off-business-profile-type-fix.mjs
+      - .github/workflows/one-off-business-profile-type-fix.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: upgrade/full-site-qa-public-legal-sharing
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Apply targeted response guard
+        run: node scripts/one-off-business-profile-type-fix.mjs
+      - name: Commit repair
+        run: |
+          if git diff --quiet; then
+            echo "No changes needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/pages/dashboard/business-profile.tsx
+          git commit -m "Guard business profile save response"
+          git push origin HEAD:upgrade/full-site-qa-public-legal-sharing
