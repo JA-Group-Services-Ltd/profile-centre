@@ -1,6 +1,8 @@
 import { beginOidc, completeOidc, logout } from "./_shared/auth.js";
 import { errorResponse, methodNotAllowed, withRequestId } from "./_shared/http.js";
 import { handleAdminPlanApiRequest } from "./_shared/admin-plan-routes.js";
+import { handleCustomDomainApiRequest } from "./_shared/custom-domain-routes.js";
+import { ensureCustomDomainPlanPolicy } from "./_shared/custom-domain-policy.js";
 import { handleApiRequest } from "./_shared/router.js";
 
 const AUTH_ROUTES = new Map([
@@ -15,6 +17,17 @@ const AUTH_ROUTES = new Map([
 export async function onRequest(context) {
   const pathname = new URL(context.request.url).pathname;
   if (pathname === "/api" || pathname.startsWith("/api/")) {
+    // Keep plan entitlement flags and the approved one-time price update in D1 aligned
+    // before either the public or Admin plan catalogue is read or changed.
+    if (
+      context.env.DB
+      && (pathname === "/api/plans" || pathname === "/api/admin/plans" || pathname.startsWith("/api/admin/plans/"))
+    ) {
+      await ensureCustomDomainPlanPolicy(context.env.DB);
+    }
+
+    const customDomainResponse = await handleCustomDomainApiRequest(context);
+    if (customDomainResponse) return customDomainResponse;
     const adminPlanResponse = await handleAdminPlanApiRequest(context);
     if (adminPlanResponse) return adminPlanResponse;
     return handleApiRequest(context);

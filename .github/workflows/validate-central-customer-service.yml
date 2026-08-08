@@ -32,5 +32,17 @@ jobs:
       - name: Validate Admin CRM plan routes
         run: npx vitest run tests/admin-crm-plan-routes.test.mjs
 
+      - name: Validate Custom Domains
+        run: npx vitest run tests/custom-domains.test.mjs
+
+      - name: Validate Custom Domain backend syntax
+        run: |
+          node --check functions/_shared/custom-domain-policy.js
+          node --check functions/_shared/cloudflare-saas.js
+          node --check functions/_shared/custom-domains.js
+          node --check functions/_shared/custom-domain-routes.js
+          node --check 'functions/[[path]].js'
+          node --check workers/custom-domain-router/index.js
+
       - name: Build Cloudflare website
         run: npm run build:cloudflare
