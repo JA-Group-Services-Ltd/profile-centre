@@ -1,149 +1,100 @@
 import { Link } from 'react-router-dom';
 import { Helmet } from '@dr.pogodin/react-helmet';
-import { FileText, Shield, Cookie, RefreshCw, MessageSquare, Accessibility, CheckCircle2, Radio, UserCheck, Globe, Lock, Database, Users, ExternalLink, Building2 } from 'lucide-react';
+import {
+  Accessibility,
+  Building2,
+  CheckCircle2,
+  Cookie,
+  Database,
+  ExternalLink,
+  FileText,
+  Globe,
+  Lock,
+  MessageSquare,
+  Radio,
+  RefreshCw,
+  Shield,
+  UserCheck,
+  Users,
+} from 'lucide-react';
 import { useBranding } from '@/lib/branding';
 
-const APP_URL = 'https://japrofilestudio.jagroupservices.co.uk';
+const APP_URL = 'https://sousamurrayprofiles.jagroupservices.co.uk';
 
 const legalDocs = [
-  { to: '/legal/terms',          icon: FileText,       title: 'Terms of Service',              desc: 'The terms and conditions governing your use of Sousa Murray Profiles.' },
-  { to: '/legal/privacy',        icon: Shield,         title: 'Privacy Policy',                desc: 'How JA Group Services Ltd collects, uses and protects your personal data under UK GDPR.' },
-  { to: '/legal/cookies',        icon: Cookie,         title: 'Cookie Policy',                 desc: 'How we use cookies and similar technologies on this platform.' },
-  { to: '/legal/acceptable-use', icon: CheckCircle2,   title: 'Acceptable Use Policy',         desc: 'Rules for acceptable use of the platform and its services. Applies to all users aged 18+.' },
-  { to: '/legal/refunds',        icon: RefreshCw,      title: 'Refund Policy',                 desc: 'Our policy on refunds, cancellations and billing disputes.' },
-  { to: '/legal/complaints',     icon: MessageSquare,  title: 'Complaints Policy',             desc: 'How to raise a complaint and what to expect from us.' },
-  { to: '/legal/accessibility',  icon: Accessibility,  title: 'Accessibility Statement',       desc: 'Our commitment to making this platform accessible to all users.' },
-  { to: '/legal/eligibility',    icon: UserCheck,      title: 'Eligibility Policy',            desc: 'This service is available to UK-based users aged 18 and over only.' },
-  { to: '/legal/data-retention', icon: Database,       title: 'Data Retention Policy',         desc: 'How long we keep your data and when it is deleted.' },
-  { to: '/legal/reporting',      icon: Globe,          title: 'Reporting & Moderation Policy', desc: 'How we handle reports of harmful or illegal content on public profiles.' },
-  { to: '/legal/security',       icon: Lock,           title: 'Security Policy',               desc: 'Our approach to keeping your account and data secure.' },
-  { to: '/legal/data-rights',    icon: Users,          title: 'Data Subject Rights',           desc: 'Your rights under UK GDPR including access, erasure, and portability.' },
+  { to: '/legal/terms', icon: FileText, title: 'Terms of Service', desc: 'The contract rules for accounts, profiles, plans, subscriptions, sharing, embeds, custom domains and acceptable use.' },
+  { to: '/legal/privacy', icon: Shield, title: 'Privacy Policy', desc: 'How JA Group Services Ltd uses personal data when operating Sousa Murray Profiles, including lawful bases, recipients and rights.' },
+  { to: '/legal/cookies', icon: Cookie, title: 'Cookie & Storage Technologies Policy', desc: 'How cookies and similar technologies are used, including essential technology and choices for non-essential uses.' },
+  { to: '/legal/acceptable-use', icon: CheckCircle2, title: 'Acceptable Use Policy', desc: 'Rules protecting customers and visitors from fraud, abuse, malicious content, impersonation and misuse of the platform.' },
+  { to: '/legal/refunds', icon: RefreshCw, title: 'Refund & Cancellation Policy', desc: 'How subscription cancellation, billing mistakes, duplicate charges and refund requests are handled.' },
+  { to: '/legal/complaints', icon: MessageSquare, title: 'Complaints Policy', desc: 'How to raise a complaint, what our investigation covers and how to request a review.' },
+  { to: '/legal/accessibility', icon: Accessibility, title: 'Accessibility Statement', desc: 'Our approach to accessible design, WCAG 2.2 AA principles and reporting accessibility barriers.' },
+  { to: '/legal/eligibility', icon: UserCheck, title: 'Eligibility Policy', desc: 'Age, authority and business/professional-use requirements for opening and operating an account.' },
+  { to: '/legal/data-retention', icon: Database, title: 'Data Retention Policy', desc: 'How retention is decided for active accounts, closed accounts, payments, security records, complaints and backups.' },
+  { to: '/legal/reporting', icon: Globe, title: 'Reporting & Moderation Policy', desc: 'How public profile reports are assessed and the types of moderation action we may take.' },
+  { to: '/legal/security', icon: Lock, title: 'Security Policy', desc: 'The security principles used to protect accounts, integrations, administrative functions and operational systems.' },
+  { to: '/legal/data-rights', icon: Users, title: 'Data Subject Rights', desc: 'How to exercise UK data-protection rights including access, correction, erasure, restriction, objection and portability.' },
 ];
 
 export default function LegalIndexPage() {
   const branding = useBranding();
+  const contact = branding.support_email || branding.contact_email || 'contact@jagroupservices.co.uk';
+
   return (
     <>
       <Helmet>
-        <title>{`Legal — ${branding.platform_name}`}</title>
-        <meta name="description" content="Legal documents for Sousa Murray Profiles, operated by JA Group Services Ltd. Terms, Privacy Policy, Cookie Policy, Refund Policy and more." />
+        <title>{`Legal & Policies — ${branding.platform_name || 'Sousa Murray Profiles'}`}</title>
+        <meta name="description" content="Terms, privacy, cookies, refunds, complaints, security, accessibility, moderation and data-protection policies for Sousa Murray Profiles." />
         <link rel="canonical" href={`${APP_URL}/legal`} />
         <meta name="robots" content="index, follow" />
-        <meta property="og:title" content={`Legal — ${branding.platform_name}`} />
-        <meta property="og:description" content="Legal documents for Sousa Murray Profiles." />
+        <meta property="og:title" content={`Legal & Policies — ${branding.platform_name || 'Sousa Murray Profiles'}`} />
+        <meta property="og:description" content="The legal and policy centre for Sousa Murray Profiles." />
         <meta property="og:url" content={`${APP_URL}/legal`} />
         <meta property="og:type" content="website" />
       </Helmet>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="mb-12">
-          <p className="text-sm text-muted-foreground mb-2">Legal</p>
-          <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-3">Legal Documents</h1>
-          <p className="text-muted-foreground leading-relaxed max-w-2xl">
-            The following documents govern your use of Sousa Murray Profiles, operated by JA Group Services Ltd. This service is available to UK-based users aged 18 and over only.
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <section className="rounded-3xl border border-border bg-gradient-to-br from-primary/10 via-card to-card p-7 sm:p-10 mb-10">
+          <p className="text-xs font-semibold uppercase tracking-widest text-primary">Legal & policies</p>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground mt-2">Clear rules for using Sousa Murray Profiles</h1>
+          <p className="text-muted-foreground leading-relaxed max-w-3xl mt-4">
+            These documents explain the contract, privacy, security, billing, content and operational rules that apply to Sousa Murray Profiles. The service is operated by JA Group Services Ltd.
           </p>
-        </div>
+        </section>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-4" aria-label="Sousa Murray Profiles policies">
           {legalDocs.map(doc => {
             const Icon = doc.icon;
             return (
-              <Link
-                key={doc.to}
-                to={doc.to}
-                className="group flex items-start gap-4 p-5 rounded-2xl border border-border bg-card hover:border-primary/40 hover:bg-muted/30 transition-all duration-200"
-              >
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
-                  <Icon className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <p className="font-semibold text-foreground text-sm mb-1 group-hover:text-primary transition-colors">{doc.title}</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{doc.desc}</p>
-                </div>
+              <Link key={doc.to} to={doc.to} className="group flex items-start gap-4 p-5 rounded-2xl border border-border bg-card hover:border-primary/40 hover:shadow-md hover:shadow-primary/5 transition-all duration-200">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/15 transition-colors"><Icon className="w-5 h-5 text-primary" /></div>
+                <div><h2 className="font-semibold text-foreground text-sm mb-1 group-hover:text-primary transition-colors">{doc.title}</h2><p className="text-xs text-muted-foreground leading-relaxed">{doc.desc}</p></div>
               </Link>
             );
           })}
-        </div>
+        </section>
 
-        {/* Service Status — separate from legal docs */}
-        <div className="mt-6 p-5 rounded-2xl border border-border bg-card flex items-start gap-4 hover:border-primary/40 hover:bg-muted/30 transition-all duration-200">
-          <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center flex-shrink-0">
-            <Radio className="w-5 h-5 text-green-600" />
-          </div>
-          <div className="flex-1">
-            <p className="font-semibold text-foreground text-sm mb-1">Service Status</p>
-            <p className="text-xs text-muted-foreground leading-relaxed">Live operational status of all Sousa Murray Profiles services.</p>
-          </div>
-          <Link to="/status" className="text-xs font-medium text-primary hover:underline flex-shrink-0 mt-0.5">
-            View status →
-          </Link>
-        </div>
+        <section className="mt-6 p-5 rounded-2xl border border-border bg-card flex items-start gap-4">
+          <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center flex-shrink-0"><Radio className="w-5 h-5 text-green-600" /></div>
+          <div className="flex-1"><h2 className="font-semibold text-foreground text-sm mb-1">Service Status</h2><p className="text-xs text-muted-foreground leading-relaxed">Check the operational status of Sousa Murray Profiles services separately from the policy documents.</p></div>
+          <Link to="/status" className="text-xs font-medium text-primary hover:underline flex-shrink-0 mt-0.5">View status →</Link>
+        </section>
 
-        {/* JA Group Services corporate policies */}
-        <div className="mt-8">
-          <div className="flex items-center gap-2 mb-4">
-            <Building2 className="w-4 h-4 text-muted-foreground" />
-            <h2 className="text-sm font-semibold text-foreground">JA Group Services Ltd — Corporate Policies</h2>
-          </div>
-          <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-            Sousa Murray Profiles is operated by JA Group Services Ltd. The following corporate policies also apply to your use of this service and JA Group Services ID.
+        <section className="mt-10 rounded-2xl border border-border bg-muted/20 p-6">
+          <div className="flex items-center gap-2 mb-3"><Building2 className="w-5 h-5 text-primary" /><h2 className="font-bold text-foreground">JA Group Services Ltd</h2></div>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Sousa Murray Profiles is operated by JA Group Services Ltd, registered in England and Wales under company number 16314179, with registered office at 167–169 Great Portland Street, 5th Floor, London W1W 5PF. ICO registration ZB877370.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {[
-              {
-                href: 'https://www.jagroupservices.co.uk/legal/privacy',
-                label: 'JA Group Services Privacy Policy',
-                desc: 'How JA Group Services Ltd handles personal data across all its services, including JA Group Services ID.',
-              },
-              {
-                href: 'https://www.jagroupservices.co.uk/legal/terms',
-                label: 'JA Group Services Terms of Service',
-                desc: 'The overarching terms governing your relationship with JA Group Services Ltd.',
-              },
-              {
-                href: 'https://www.jagroupservices.co.uk/legal/id-terms',
-                label: 'JA Group Services ID Terms',
-                desc: 'Terms governing the use of JA Group Services ID, the single sign-on identity service used to access Sousa Murray Profiles.',
-              },
-              {
-                href: 'https://www.jagroupservices.co.uk/legal/cookies',
-                label: 'JA Group Services Cookie Policy',
-                desc: 'How JA Group Services Ltd uses cookies across its websites and services.',
-              },
-            ].map(doc => (
-              <a
-                key={doc.href}
-                href={doc.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex items-start gap-3 p-4 rounded-xl border border-border bg-card hover:border-primary/40 hover:bg-muted/30 transition-all duration-200"
-              >
-                <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0 group-hover:bg-primary/10 transition-colors">
-                  <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-foreground text-xs mb-1 group-hover:text-primary transition-colors">{doc.label}</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{doc.desc}</p>
-                </div>
-              </a>
-            ))}
+          <div className="mt-4 flex flex-wrap gap-3">
+            <a href="https://www.jagroupservices.co.uk/legal/privacy" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline">Corporate privacy information <ExternalLink className="w-3 h-3" /></a>
+            <a href="https://www.jagroupservices.co.uk/legal/terms" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline">Corporate terms <ExternalLink className="w-3 h-3" /></a>
           </div>
-          <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
-            These documents are hosted on <a href="https://www.jagroupservices.co.uk" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">jagroupservices.co.uk</a> and open in a new tab.
-          </p>
-        </div>
+        </section>
 
-        <div className="mt-8 p-5 rounded-2xl bg-muted/40 border border-border text-sm text-muted-foreground">
-          <p>
-            Sousa Murray Profiles is a service operated by <strong className="text-foreground">JA Group Services Ltd</strong>, a company registered in England and Wales.
-            This service is available to UK-based users aged 18 and over only. Public profiles may be viewed worldwide.
-            If you have questions about any of these documents, please contact us at{' '}
-            <a href={`mailto:${branding.support_email || branding.contact_email}`} className="text-primary hover:underline break-all">
-              {branding.support_email || branding.contact_email}
-            </a>.
-          </p>
-        </div>
-      </div>
+        <section className="mt-6 p-5 rounded-2xl bg-muted/40 border border-border text-sm text-muted-foreground leading-relaxed">
+          Questions about a policy can be sent to <a href={`mailto:${contact}`} className="text-primary hover:underline break-all">{contact}</a>. For an account-specific problem, use the <Link to="/support" className="text-primary hover:underline">customer support route</Link>; for a formal complaint, follow the <Link to="/legal/complaints" className="text-primary hover:underline">Complaints Policy</Link>.
+        </section>
+      </main>
     </>
   );
 }
