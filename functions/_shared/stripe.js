@@ -1,153 +1,261 @@
 import { HttpError } from "./http.js";
 
-const STRIPE_API = "https://api.stripe.com/v1";
-const STRIPE_ACCOUNT_ID = "acct_1TfUSWDLIZgCwhkL";
+const HEAD_OFFICE_DEFAULT = "https://customerops.jagroupservices.co.uk";
+const CENTRAL_BRAND = "SOUSA_MURRAY_PROFILES";
 const encoder = new TextEncoder();
 
-function configured(env) {
-  return Boolean(env.STRIPE_SECRET_KEY && env.STRIPE_WEBHOOK_SECRET);
+const PLAN_CODES = Object.freeze({
+  starter: Object.freeze({ productCode: "PROFILES_STARTER", priceCode: "PROFILES_STARTER_MONTHLY" }),
+  professional: Object.freeze({ productCode: "PROFILES_PROFESSIONAL", priceCode: "PROFILES_PROFESSIONAL_MONTHLY" }),
+  business: Object.freeze({ productCode: "PROFILES_ORGANISATION", priceCode: "PROFILES_ORGANISATION_MONTHLY" }),
+  organisation: Object.freeze({ productCode: "PROFILES_ORGANISATION", priceCode: "PROFILES_ORGANISATION_MONTHLY" }),
+  organization: Object.freeze({ productCode: "PROFILES_ORGANISATION", priceCode: "PROFILES_ORGANISATION_MONTHLY" }),
+  ultimate_plus: Object.freeze({ productCode: "PROFILES_ULTIMATE_ORGANISATION", priceCode: "PROFILES_ULTIMATE_ORGANISATION_MONTHLY" }),
+  ultimate_organisation: Object.freeze({ productCode: "PROFILES_ULTIMATE_ORGANISATION", priceCode: "PROFILES_ULTIMATE_ORGANISATION_MONTHLY" }),
+  ultimate_organization: Object.freeze({ productCode: "PROFILES_ULTIMATE_ORGANISATION", priceCode: "PROFILES_ULTIMATE_ORGANISATION_MONTHLY" }),
+});
+
+const PRICE_TO_PLAN = Object.freeze({
+  PROFILES_STARTER_MONTHLY: ["starter"],
+  PROFILES_PROFESSIONAL_MONTHLY: ["professional"],
+  PROFILES_ORGANISATION_MONTHLY: ["business", "organisation", "organization"],
+  PROFILES_ULTIMATE_ORGANISATION_MONTHLY: ["ultimate_plus", "ultimate_organisation", "ultimate_organization"],
+});
+
+function legacyWebhookConfigured(env) {
+  return Boolean(env.STRIPE_WEBHOOK_SECRET);
 }
 
-function formBody(entries) {
-  const form = new URLSearchParams();
-  for (const [key, value] of entries) if (value !== null && value !== undefined) form.append(key, String(value));
-  return form.toString();
+function centralConnector(env) {
+  const token = String(env.CUSTOMEROPS_API_KEY || env.HEAD_OFFICE_PLATFORM_KEY || "").trim();
+  const base = String(env.CUSTOMEROPS_BASE_URL || env.HEAD_OFFICE_API_BASE_URL || HEAD_OFFICE_DEFAULT)
+    .trim().replace(/\/+$/, "");
+  return { token, base };
 }
 
-async function stripeRequest(env, path, { method = "GET", entries = [], idempotencyKey } = {}) {
-  if (!env.STRIPE_SECRET_KEY) throw new HttpError(503, "Stripe is not configured.", "stripe_not_configured");
-  const response = await fetch(`${STRIPE_API}${path}`, {
-    method,
-    headers: {
-      authorization: `Bearer ${env.STRIPE_SECRET_KEY}`,
-      ...(method === "POST" ? { "content-type": "application/x-www-form-urlencoded" } : {}),
-      ...(idempotencyKey ? { "idempotency-key": idempotencyKey } : {}),
-    },
-    ...(method === "POST" ? { body: formBody(entries) } : {}),
-  });
-  const payload = await response.json().catch(() => null);
-  if (!response.ok) throw new HttpError(response.status >= 500 ? 503 : 400,
-    "Stripe could not complete the billing request.", "stripe_request_failed");
-  return payload;
+async function centralRequest(env, path, init = {}) {
+  const { token, base } = centralConnector(env);
+  if (!token) throw new HttpError(503, "Head Office Central Payments is not connected.", "central_payments_not_connected");
+  const target = new URL(path, `${base}/`);
+  if (target.protocol !== "https:" && !["localhost", "127.0.0.1"].includes(target.hostname)) {
+    throw new HttpError(503, "Head Office Central Payments must use HTTPS.", "central_payments_insecure_endpoint");
+  }
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 12_000);
+  try {
+    const response = await fetch(target.toString(), {
+      ...init,
+      signal: controller.signal,
+      headers: {
+        accept: "application/json",
+        authorization: `Bearer ${token}`,
+        ...(init.body ? { "content-type": "application/json" } : {}),
+        ...(init.headers || {}),
+      },
+    });
+    const payload = await response.json().catch(() => null);
+    if (!response.ok) {
+      const code = payload?.error?.code || payload?.code || "central_payments_request_failed";
+      const message = payload?.error?.message || payload?.message || "Head Office Central Payments could not complete the billing request.";
+      throw new HttpError(response.status >= 500 ? 503 : response.status, message, code);
+    }
+    return payload;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function validUcn(value) {
+  return /^\d{10}$/.test(String(value || "").replace(/\s/g, ""));
+}
+
+function normalisePlanKey(value) {
+  return String(value || "").trim().toLowerCase().replace(/[\s-]+/g, "_");
+}
+
+function centralCodesForPlan(plan) {
+  const bySlug = PLAN_CODES[normalisePlanKey(plan?.slug)];
+  if (bySlug) return bySlug;
+  const name = normalisePlanKey(plan?.name);
+  if (name.includes("ultimate") && (name.includes("organisation") || name.includes("organization"))) {
+    return PLAN_CODES.ultimate_organisation;
+  }
+  if (name.includes("organisation") || name.includes("organization") || name.includes("business")) {
+    return PLAN_CODES.business;
+  }
+  if (name.includes("professional")) return PLAN_CODES.professional;
+  if (name.includes("starter")) return PLAN_CODES.starter;
+  return null;
+}
+
+async function billingUser(env, userId) {
+  const user = await env.DB.prepare(`SELECT id,email,name,customer_number,stripe_customer_id,plan_id FROM users WHERE id=?1`)
+    .bind(userId).first();
+  if (!user) throw new HttpError(404, "Customer account not found.", "customer_not_found");
+  if (!validUcn(user.customer_number)) throw new HttpError(409, "Head Office UCN linkage is required.", "ucn_required");
+  return user;
 }
 
 export async function verifyStripeAccount(env) {
-  const account = await stripeRequest(env, "/account");
-  if (account?.id !== STRIPE_ACCOUNT_ID) {
-    throw new HttpError(503, "The configured Stripe account is not Sousa Murray Profiles.", "stripe_account_mismatch");
+  const account = await centralRequest(env, "/api/v1/payments/account-info");
+  const stripeAccountId = String(account?.stripeAccountId || "").trim();
+  if (!stripeAccountId.startsWith("acct_")) {
+    throw new HttpError(503, "Head Office did not return a valid Central Payments Stripe account.", "central_stripe_account_invalid");
   }
-  return { id: account.id, livemode: true };
+  return {
+    id: stripeAccountId,
+    livemode: account?.liveMode === true,
+    mode: account?.mode || null,
+    displayName: account?.displayName || null,
+  };
 }
 
-async function customerForUser(env, user) {
-  if (user.stripe_customer_id) return user.stripe_customer_id;
-  const matches = await stripeRequest(env, `/customers?email=${encodeURIComponent(user.email)}&limit=2`);
-  if ((matches?.data?.length || 0) > 1) {
-    throw new HttpError(409, "More than one Stripe customer matches this account.", "stripe_customer_ambiguous");
+function subscriptionRank(status) {
+  const order = ["active", "trialing", "past_due", "unpaid", "incomplete", "paused", "cancelled", "canceled"];
+  const index = order.indexOf(String(status || "").toLowerCase());
+  return index < 0 ? 999 : index;
+}
+
+function localSubscriptionStatus(value) {
+  const status = String(value || "").toLowerCase();
+  return status === "canceled" ? "cancelled" : status || "incomplete";
+}
+
+async function planForCentralPrice(env, priceCode) {
+  const aliases = PRICE_TO_PLAN[String(priceCode || "").toUpperCase()] || [];
+  if (!aliases.length) return null;
+  const rows = await env.DB.prepare("SELECT id,slug,name FROM plans WHERE is_active=1").all();
+  return (rows.results || []).find((plan) => {
+    const slug = normalisePlanKey(plan.slug);
+    const name = normalisePlanKey(plan.name);
+    if (aliases.includes(slug)) return true;
+    if (priceCode === "PROFILES_ULTIMATE_ORGANISATION_MONTHLY") return name.includes("ultimate");
+    if (priceCode === "PROFILES_ORGANISATION_MONTHLY") return name.includes("business") || name.includes("organisation") || name.includes("organization");
+    return false;
+  }) || null;
+}
+
+export async function synchroniseCentralProfileBilling(env, userId) {
+  const user = await env.DB.prepare("SELECT id,customer_number FROM users WHERE id=?1").bind(userId).first();
+  if (!user || !validUcn(user.customer_number)) return { skipped: true, reason: "ucn_required" };
+
+  const payload = await centralRequest(env, `/api/v1/payments/status?customerNumber=${encodeURIComponent(user.customer_number)}`);
+  const subscriptions = Array.isArray(payload?.subscriptions) ? payload.subscriptions : [];
+  const profilesSubscriptions = subscriptions
+    .filter((item) => PRICE_TO_PLAN[String(item?.price_code || "").toUpperCase()])
+    .sort((a, b) => subscriptionRank(a.status) - subscriptionRank(b.status));
+  const current = profilesSubscriptions[0] || null;
+  if (!current?.stripe_subscription_id) return { synced: false, reason: "no_central_subscription" };
+
+  const plan = await planForCentralPrice(env, String(current.price_code || "").toUpperCase());
+  if (!plan) throw new HttpError(503, "The Central Payments subscription cannot be mapped to a Sousa Murray Profiles plan.", "central_plan_mapping_missing");
+
+  const status = localSubscriptionStatus(current.status);
+  const cancelled = ["cancelled", "canceled"].includes(String(current.status || "").toLowerCase());
+  let localPlanId = plan.id;
+  if (cancelled) {
+    const free = await env.DB.prepare("SELECT id FROM plans WHERE slug='free' LIMIT 1").first();
+    if (free?.id) localPlanId = free.id;
   }
-  const existing = matches?.data?.[0] || null;
-  if (existing?.metadata?.head_office_ucn && existing.metadata.head_office_ucn !== user.customer_number) {
-    throw new HttpError(409, "The Stripe customer belongs to a different Head Office UCN.", "stripe_customer_ucn_mismatch");
-  }
-  if (existing) {
-    await stripeRequest(env, `/customers/${encodeURIComponent(existing.id)}`, {
-      method: "POST",
-      idempotencyKey: `profile-centre-customer-link-${user.id}-${user.customer_number}`,
-      entries: [
-        ["metadata[profile_centre_user_id]", user.id],
-        ["metadata[head_office_ucn]", user.customer_number],
-        ["metadata[platform_code]", "PROFILE_CENTRE"],
-      ],
-    });
-    await env.DB.prepare("UPDATE users SET stripe_customer_id=?1,updated_at=CURRENT_TIMESTAMP WHERE id=?2")
-      .bind(existing.id, user.id).run();
-    return existing.id;
-  }
-  const customer = await stripeRequest(env, "/customers", {
-    method: "POST",
-    idempotencyKey: `profile-centre-customer-${user.id}`,
-    entries: [
-      ["email", user.email], ["name", user.name || user.email],
-      ["metadata[profile_centre_user_id]", user.id],
-      ["metadata[head_office_ucn]", user.customer_number],
-      ["metadata[platform_code]", "PROFILE_CENTRE"],
-    ],
-  });
-  await env.DB.prepare("UPDATE users SET stripe_customer_id=?1,updated_at=CURRENT_TIMESTAMP WHERE id=?2")
-    .bind(customer.id, user.id).run();
-  return customer.id;
+
+  await env.DB.prepare(`INSERT INTO subscriptions
+    (user_id,plan_id,status,billing_interval,stripe_subscription_id,stripe_customer_id,current_period_start,current_period_end,cancelled_at,cancel_at_period_end)
+    VALUES (?1,?2,?3,'monthly',?4,?5,?6,?7,?8,?9)
+    ON CONFLICT(stripe_subscription_id) DO UPDATE SET plan_id=excluded.plan_id,status=excluded.status,
+      billing_interval='monthly',stripe_customer_id=excluded.stripe_customer_id,
+      current_period_start=excluded.current_period_start,current_period_end=excluded.current_period_end,
+      cancelled_at=excluded.cancelled_at,cancel_at_period_end=excluded.cancel_at_period_end`)
+    .bind(
+      user.id,
+      localPlanId,
+      status,
+      current.stripe_subscription_id,
+      current.stripe_customer_id || null,
+      current.current_period_start || null,
+      current.current_period_end || null,
+      current.cancelled_at || null,
+      current.cancel_at_period_end ? 1 : 0,
+    ).run();
+
+  await env.DB.prepare(`UPDATE users SET plan_id=?1,stripe_customer_id=COALESCE(?2,stripe_customer_id),updated_at=CURRENT_TIMESTAMP WHERE id=?3`)
+    .bind(localPlanId, current.stripe_customer_id || null, user.id).run();
+  return { synced: true, status, planId: localPlanId, stripeSubscriptionId: current.stripe_subscription_id };
 }
 
 export async function initialiseStripeCustomer(env, userId) {
   await verifyStripeAccount(env);
-  const user = await env.DB.prepare(`SELECT id,email,name,customer_number,stripe_customer_id FROM users WHERE id=?1`)
-    .bind(userId).first();
-  if (!user?.customer_number) throw new HttpError(409, "Head Office UCN linkage is required.", "ucn_required");
-  await customerForUser(env, user);
-  return { success: true, linked: true };
+  const user = await billingUser(env, userId);
+  await synchroniseCentralProfileBilling(env, user.id).catch(() => undefined);
+  return { success: true, linked: true, centralPayments: true };
 }
 
 export async function createStripeCheckout(env, userId, input, origin) {
   await verifyStripeAccount(env);
-  const planId = Number(input.plan_id);
-  const interval = ["monthly", "yearly", "lifetime"].includes(input.interval) ? input.interval : "monthly";
-  const plan = await env.DB.prepare(`SELECT id,name,stripe_price_monthly,stripe_price_yearly,stripe_price_lifetime
-    FROM plans WHERE id=?1 AND is_active=1`).bind(planId).first();
+  const interval = String(input?.interval || "monthly").toLowerCase();
+  if (interval !== "monthly") {
+    throw new HttpError(400, "Sousa Murray Profiles currently offers Central Payments checkout monthly only.", "billing_interval_not_supported");
+  }
+  const planId = Number(input?.plan_id);
+  if (!Number.isInteger(planId) || planId < 1) throw new HttpError(400, "Plan not found.", "plan_not_found");
+  const plan = await env.DB.prepare(`SELECT id,name,slug,price_monthly FROM plans WHERE id=?1 AND is_active=1`).bind(planId).first();
   if (!plan) throw new HttpError(404, "Plan not found.", "plan_not_found");
-  const priceId = interval === "yearly" ? plan.stripe_price_yearly
-    : interval === "lifetime" ? plan.stripe_price_lifetime : plan.stripe_price_monthly;
-  if (!priceId) throw new HttpError(400, "This billing interval is not configured.", "stripe_price_missing");
-  const user = await env.DB.prepare(`SELECT id,email,name,customer_number,stripe_customer_id FROM users WHERE id=?1`)
-    .bind(userId).first();
-  if (!user?.customer_number) throw new HttpError(409, "Head Office UCN linkage is required.", "ucn_required");
-  const customer = await customerForUser(env, user);
-  const mode = interval === "lifetime" ? "payment" : "subscription";
-  const metadata = [
-    ["metadata[profile_centre_user_id]", user.id], ["metadata[head_office_ucn]", user.customer_number],
-    ["metadata[plan_id]", plan.id], ["metadata[interval]", interval], ["metadata[platform_code]", "PROFILE_CENTRE"],
-  ];
-  const session = await stripeRequest(env, "/checkout/sessions", {
+  const codes = centralCodesForPlan(plan);
+  if (!codes) throw new HttpError(400, "This plan is not configured for Central Payments.", "central_plan_not_configured");
+  const user = await billingUser(env, userId);
+  const canonicalOrigin = new URL(origin).origin;
+  const checkout = await centralRequest(env, "/api/v1/payments/checkout", {
     method: "POST",
-    idempotencyKey: `profile-centre-checkout-${user.id}-${plan.id}-${interval}-${new Date().toISOString().slice(0, 10)}`,
-    entries: [
-      ["mode", mode], ["customer", customer], ["line_items[0][price]", priceId], ["line_items[0][quantity]", 1],
-      ["success_url", `${origin}/dashboard/billing?checkout=success&session_id={CHECKOUT_SESSION_ID}`],
-      ["cancel_url", `${origin}/dashboard/billing?checkout=cancelled`], ["allow_promotion_codes", "true"],
-      ...metadata,
-      ...(mode === "subscription" ? metadata.map(([key,value]) => [key.replace("metadata", "subscription_data[metadata]"), value]) : []),
-      ...(mode === "payment" ? metadata.map(([key,value]) => [key.replace("metadata", "payment_intent_data[metadata]"), value]) : []),
-    ],
+    body: JSON.stringify({
+      brand: CENTRAL_BRAND,
+      customerNumber: user.customer_number,
+      productCode: codes.productCode,
+      priceCode: codes.priceCode,
+      orderReference: `PROFILES-${plan.id}-${crypto.randomUUID()}`,
+      serviceReference: `profiles:${user.id}:${plan.slug}:monthly`,
+      successUrl: `${canonicalOrigin}/dashboard/billing?checkout=success`,
+      cancelUrl: `${canonicalOrigin}/dashboard/billing?checkout=cancelled`,
+    }),
   });
-  return { success: true, url: session.url };
+  if (!checkout?.checkout?.url) throw new HttpError(503, "Head Office did not return a Central Payments Checkout URL.", "central_checkout_invalid");
+  return {
+    success: true,
+    url: checkout.checkout.url,
+    central_payment_reference: checkout.checkout.reference || null,
+    session_id: checkout.checkout.sessionId || null,
+  };
 }
 
 export async function createBillingPortal(env, userId, origin) {
   await verifyStripeAccount(env);
-  const user = await env.DB.prepare(`SELECT id,email,name,customer_number,stripe_customer_id FROM users WHERE id=?1`)
-    .bind(userId).first();
-  if (!user?.customer_number) throw new HttpError(409, "Head Office UCN linkage is required.", "ucn_required");
-  if (!/^cus_[A-Za-z0-9]+$/.test(user.stripe_customer_id || "")) {
-    throw new HttpError(409, "Complete Checkout before managing Stripe billing.", "stripe_customer_required");
-  }
-  const session = await stripeRequest(env, "/billing_portal/sessions", {
-    method: "POST", idempotencyKey: `profile-centre-portal-${user.id}-${crypto.randomUUID()}`,
-    entries: [["customer", user.stripe_customer_id], ["return_url", `${origin}/dashboard/billing`]],
+  const user = await billingUser(env, userId);
+  const canonicalOrigin = new URL(origin).origin;
+  const payload = await centralRequest(env, "/api/v1/payments/portal", {
+    method: "POST",
+    body: JSON.stringify({
+      brand: CENTRAL_BRAND,
+      customerNumber: user.customer_number,
+      returnUrl: `${canonicalOrigin}/dashboard/billing`,
+    }),
   });
-  return { success: true, url: session.url };
+  if (!payload?.portal?.url) throw new HttpError(503, "Head Office did not return a Central Payments billing portal URL.", "central_portal_invalid");
+  return { success: true, url: payload.portal.url };
 }
 
 export async function cancelStripeSubscription(env, userId) {
   await verifyStripeAccount(env);
-  const subscription = await env.DB.prepare(`SELECT id,stripe_subscription_id,status FROM subscriptions
-    WHERE user_id=?1 AND stripe_subscription_id IS NOT NULL ORDER BY id DESC LIMIT 1`).bind(userId).first();
-  if (!subscription) throw new HttpError(404, "No Stripe subscription was found.", "subscription_not_found");
-  if (subscription.status === "cancelled") throw new HttpError(409, "Subscription is already cancelled.", "subscription_cancelled");
-  const result = await stripeRequest(env, `/subscriptions/${encodeURIComponent(subscription.stripe_subscription_id)}`, {
-    method: "POST", idempotencyKey: `profile-centre-cancel-${subscription.stripe_subscription_id}`,
-    entries: [["cancel_at_period_end", "true"]],
+  const user = await billingUser(env, userId);
+  const payload = await centralRequest(env, "/api/v1/payments/subscription", {
+    method: "POST",
+    body: JSON.stringify({
+      customerNumber: user.customer_number,
+      action: "cancel_at_period_end",
+    }),
   });
-  await env.DB.prepare(`UPDATE subscriptions SET cancel_at_period_end=1,status=?1 WHERE id=?2`)
-    .bind(result.status || subscription.status, subscription.id).run();
+  const subscription = payload?.subscription;
+  if (!subscription?.id) throw new HttpError(503, "Head Office did not return the Central Payments subscription.", "central_subscription_invalid");
+  await env.DB.prepare(`UPDATE subscriptions SET cancel_at_period_end=1,status=?1,current_period_end=COALESCE(?2,current_period_end)
+    WHERE user_id=?3 AND stripe_subscription_id=?4`)
+    .bind(subscription.status || "active", subscription.currentPeriodEnd || null, user.id, subscription.id).run();
   return { success: true, cancel_at_period_end: true };
 }
 
@@ -222,8 +330,10 @@ async function processEvent(env, event) {
   }
 }
 
+// Kept temporarily for legacy Profile Centre Stripe subscriptions created before
+// the move to Head Office Central Payments. New checkouts never use this route.
 export async function handleStripeWebhook(request, env) {
-  if (!configured(env)) throw new HttpError(503, "Stripe webhook is not configured.", "stripe_not_configured");
+  if (!legacyWebhookConfigured(env)) throw new HttpError(503, "Legacy Stripe webhook is not configured.", "stripe_not_configured");
   const rawBody = await request.text();
   if (!await verifyWebhookSignature(rawBody, request.headers.get("stripe-signature"), env.STRIPE_WEBHOOK_SECRET)) {
     throw new HttpError(400, "Invalid Stripe signature.", "stripe_signature_invalid");
