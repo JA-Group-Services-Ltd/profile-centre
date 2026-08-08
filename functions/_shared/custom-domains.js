@@ -3,9 +3,7 @@ import { writeAudit } from "./audit.js";
 import {
   cloudflareSaasConfig,
   createCustomHostname,
-  deleteCustomDomainWorkerRoute,
   deleteCustomHostname,
-  ensureCustomDomainWorkerRoute,
   getCustomHostname,
   restartCustomHostnameValidation,
 } from "./cloudflare-saas.js";
@@ -18,6 +16,22 @@ const RESERVED_SUFFIXES = [
 
 const UK_SECOND_LEVEL_SUFFIXES = new Set([
   "co.uk", "org.uk", "me.uk", "ltd.uk", "plc.uk", "net.uk", "ac.uk", "gov.uk", "sch.uk",
+]);
+
+// Product decision: Custom Domains are available only on these four tiers.
+// This is enforced server-side even if a plan record is edited incorrectly later.
+const CUSTOM_DOMAIN_PLAN_SLUGS = new Set([
+  "professional",
+  "business",
+  "ultimate_business",
+  "ultimate_plus",
+]);
+
+const CUSTOM_DOMAIN_PLAN_NAMES = new Set([
+  "professional",
+  "organisation",
+  "ultimate organisation",
+  "ultimate organisation+",
 ]);
 
 function asInt(value, label = "ID") {
@@ -35,6 +49,16 @@ function serialise(value) {
 function parseJson(value, fallback = null) {
   if (!value) return fallback;
   try { return JSON.parse(value); } catch { return fallback; }
+}
+
+function normalisePlan(value) {
+  return String(value ?? "").trim().toLowerCase().replace(/[\s-]+/g, "_");
+}
+
+function planAllowsCustomDomain(row) {
+  const slug = normalisePlan(row?.plan_slug ?? row?.slug);
+  const name = String(row?.plan_name ?? row?.name ?? "").trim().toLowerCase();
+  return CUSTOM_DOMAIN_PLAN_SLUGS.has(slug) || CUSTOM_DOMAIN_PLAN_NAMES.has(name);
 }
 
 export function normaliseCustomHostname(input) {
@@ -138,8 +162,7 @@ export async function ensureCustomDomainSchema(database) {
   await addColumnIfMissing(database, columns, "ssl_validation_json", "TEXT");
   await addColumnIfMissing(database, columns, "last_checked_at", "DATETIME");
 
-  // Replace the legacy permanent domain uniqueness rule with active-only uniqueness so
-  // disconnected domains can be safely reconnected later while history is preserved.
+  // Keep history, but allow a disconnected hostname to be reconnected later.
   await database.prepare("DROP INDEX IF EXISTS idx_custom_domains_domain").run();
   await database.prepare(`
     CREATE UNIQUE INDEX IF NOT EXISTS idx_custom_domains_active_domain
@@ -166,10 +189,11 @@ async function entitlement(database, userId) {
   `).bind(userId).first();
   if (!row) throw new HttpError(404, "Customer account not found.", "user_not_found");
   return {
-    allowed: Number(row.has_custom_domain) === 1,
+    allowed: planAllowsCustomDomain(row),
     plan_id: row.plan_id ?? null,
     plan_name: row.plan_name ?? null,
     plan_slug: row.plan_slug ?? null,
+    configured_flag: Number(row.has_custom_domain ?? 0) === 1,
     lifetime_access: Number(row.lifetime_access ?? 0),
   };
 }
@@ -210,7 +234,7 @@ async function domainRow(database, id) {
   `).bind(id).first();
 }
 
-async function updateFromSnapshot(database, id, snapshot, routeId = undefined) {
+async function updateFromSnapshot(database, id, snapshot) {
   const failure = snapshot.validation_errors?.length ? snapshot.validation_errors.join("; ") : null;
   const ready = snapshot.ready ? 1 : 0;
   await database.prepare(`
@@ -223,13 +247,12 @@ async function updateFromSnapshot(database, id, snapshot, routeId = undefined) {
         ssl_validation_json = ?6,
         failure_reason = ?7,
         cloudflare_hostname_id = COALESCE(?8, cloudflare_hostname_id),
-        cloudflare_route_id = CASE WHEN ?9 IS NULL THEN cloudflare_route_id ELSE ?9 END,
-        dns_verified_at = CASE WHEN ?10 = 1 THEN COALESCE(dns_verified_at, CURRENT_TIMESTAMP) ELSE dns_verified_at END,
-        ssl_activated_at = CASE WHEN ?10 = 1 THEN COALESCE(ssl_activated_at, CURRENT_TIMESTAMP) ELSE ssl_activated_at END,
-        activated_at = CASE WHEN ?10 = 1 THEN COALESCE(activated_at, CURRENT_TIMESTAMP) ELSE activated_at END,
+        dns_verified_at = CASE WHEN ?9 = 1 THEN COALESCE(dns_verified_at, CURRENT_TIMESTAMP) ELSE dns_verified_at END,
+        ssl_activated_at = CASE WHEN ?9 = 1 THEN COALESCE(ssl_activated_at, CURRENT_TIMESTAMP) ELSE ssl_activated_at END,
+        activated_at = CASE WHEN ?9 = 1 THEN COALESCE(activated_at, CURRENT_TIMESTAMP) ELSE activated_at END,
         last_checked_at = CURRENT_TIMESTAMP,
         updated_at = CURRENT_TIMESTAMP
-    WHERE id = ?11
+    WHERE id = ?10
   `).bind(
     ready ? "active" : "pending",
     snapshot.hostname_status,
@@ -239,7 +262,6 @@ async function updateFromSnapshot(database, id, snapshot, routeId = undefined) {
     serialise(snapshot.ssl_validation),
     failure,
     snapshot.cloudflare_hostname_id,
-    routeId === undefined ? null : routeId,
     ready,
     id,
   ).run();
@@ -248,7 +270,6 @@ async function updateFromSnapshot(database, id, snapshot, routeId = undefined) {
 
 async function provision(database, env, row) {
   let hostnameId = row.cloudflare_hostname_id;
-  let routeId = row.cloudflare_route_id;
   try {
     let snapshot;
     if (hostnameId) {
@@ -257,19 +278,15 @@ async function provision(database, env, row) {
       snapshot = await createCustomHostname(env, row.domain);
       hostnameId = snapshot.cloudflare_hostname_id;
     }
-
-    const route = await ensureCustomDomainWorkerRoute(env, row.domain);
-    routeId = route?.id ?? routeId;
-    return updateFromSnapshot(database, row.id, snapshot, routeId);
+    return updateFromSnapshot(database, row.id, snapshot);
   } catch (error) {
     await database.prepare(`
       UPDATE custom_domains
       SET status='failed', failure_reason=?1,
           cloudflare_hostname_id=COALESCE(?2,cloudflare_hostname_id),
-          cloudflare_route_id=COALESCE(?3,cloudflare_route_id),
           last_checked_at=CURRENT_TIMESTAMP, updated_at=CURRENT_TIMESTAMP
-      WHERE id=?4
-    `).bind(String(error?.message ?? "Cloudflare provisioning failed."), hostnameId, routeId, row.id).run();
+      WHERE id=?3
+    `).bind(String(error?.message ?? "Cloudflare provisioning failed."), hostnameId, row.id).run();
     throw error;
   }
 }
@@ -304,7 +321,11 @@ export async function createCustomerCustomDomain(context, user, body) {
   await ensureCustomDomainSchema(database);
   const access = await entitlement(database, user.id);
   if (!access.allowed) {
-    throw new HttpError(403, "Your current plan does not include Custom Domains.", "custom_domain_not_in_plan");
+    throw new HttpError(
+      403,
+      "Custom Domains are available on Professional, Organisation, Ultimate Organisation and Ultimate Organisation+ plans.",
+      "custom_domain_not_in_plan",
+    );
   }
 
   // Fail before touching D1 if Cloudflare has not been configured yet.
@@ -371,7 +392,11 @@ async function ownedDomain(database, id, userId = null) {
 export async function refreshCustomerCustomDomain(context, user, id) {
   const database = context.env.DB;
   await ensureCustomDomainSchema(database);
-  let row = await ownedDomain(database, id, user.id);
+  const access = await entitlement(database, user.id);
+  if (!access.allowed) {
+    throw new HttpError(403, "Your current plan no longer includes Custom Domains.", "custom_domain_not_in_plan");
+  }
+  const row = await ownedDomain(database, id, user.id);
 
   if (!row.cloudflare_hostname_id || row.status === "failed") {
     const data = await provision(database, context.env, row);
@@ -381,23 +406,15 @@ export async function refreshCustomerCustomDomain(context, user, id) {
 
   let snapshot = await getCustomHostname(context.env, row.cloudflare_hostname_id);
   if (!snapshot.ready) {
-    // Cloudflare requires a PATCH with the existing HTTP DCV configuration once
-    // the customer has placed the CNAME, so every manual check safely retriggers DCV.
     snapshot = await restartCustomHostnameValidation(context.env, row.cloudflare_hostname_id);
   }
-  const route = await ensureCustomDomainWorkerRoute(context.env, row.domain);
-  const data = await updateFromSnapshot(database, row.id, snapshot, route?.id ?? row.cloudflare_route_id);
+  const data = await updateFromSnapshot(database, row.id, snapshot);
   await writeAudit(database, context.request, user, data.status === "active" ? "custom_domain_verified" : "custom_domain_checked", "custom_domain", JSON.stringify({ custom_domain_id: data.id, hostname: data.domain, status: data.status, ssl_status: data.ssl_status }));
   return { success: true, data };
 }
 
 async function removeCloudflareResources(env, row) {
-  const errors = [];
-  try { await deleteCustomDomainWorkerRoute(env, row.cloudflare_route_id, row.domain); }
-  catch (error) { errors.push(error); }
-  try { await deleteCustomHostname(env, row.cloudflare_hostname_id); }
-  catch (error) { errors.push(error); }
-  if (errors.length) throw errors[0];
+  await deleteCustomHostname(env, row.cloudflare_hostname_id);
 }
 
 export async function disconnectCustomerCustomDomain(context, user, id) {
@@ -424,9 +441,11 @@ export async function resolvePublicCustomDomain(database, hostnameInput) {
   const row = await database.prepare(`
     SELECT cd.id,cd.domain,cd.status,cd.ssl_status,p.id AS profile_id,p.username,
            p.display_name,p.profile_type,p.biz_slug,p.person_slug,p.is_published,
-           p.is_suspended,p.is_hidden
+           p.is_suspended,p.is_hidden,pl.slug AS plan_slug,pl.name AS plan_name
     FROM custom_domains cd
     JOIN profiles p ON p.id=cd.profile_id
+    JOIN users u ON u.id=p.user_id
+    LEFT JOIN plans pl ON pl.id=u.plan_id
     WHERE lower(cd.domain)=lower(?1)
       AND cd.removed_at IS NULL
       AND cd.status='active'
@@ -437,7 +456,9 @@ export async function resolvePublicCustomDomain(database, hostnameInput) {
       AND COALESCE(p.is_hidden,0)=0
     LIMIT 1
   `).bind(hostname).first();
-  if (!row) throw new HttpError(404, "This custom domain is not active.", "custom_domain_not_active");
+  if (!row || !planAllowsCustomDomain(row)) {
+    throw new HttpError(404, "This custom domain is not active.", "custom_domain_not_active");
+  }
 
   let kind = "personal";
   let publicPath = `/profile/${encodeURIComponent(row.username)}`;
@@ -482,15 +503,14 @@ export async function refreshAdminCustomDomain(context, admin, userId, domainId)
   const database = context.env.DB;
   await ensureCustomDomainSchema(database);
   const ownerId = asInt(userId, "User ID");
-  let row = await ownedDomain(database, domainId, ownerId);
+  const row = await ownedDomain(database, domainId, ownerId);
   let data;
   if (!row.cloudflare_hostname_id || row.status === "failed") {
     data = await provision(database, context.env, row);
   } else {
     let snapshot = await getCustomHostname(context.env, row.cloudflare_hostname_id);
     if (!snapshot.ready) snapshot = await restartCustomHostnameValidation(context.env, row.cloudflare_hostname_id);
-    const route = await ensureCustomDomainWorkerRoute(context.env, row.domain);
-    data = await updateFromSnapshot(database, row.id, snapshot, route?.id ?? row.cloudflare_route_id);
+    data = await updateFromSnapshot(database, row.id, snapshot);
   }
   await writeAudit(database, context.request, admin, "custom_domain_admin_checked", "custom_domain", JSON.stringify({ customer_id: ownerId, custom_domain_id: data.id, hostname: data.domain, status: data.status }));
   return { success: true, data };
