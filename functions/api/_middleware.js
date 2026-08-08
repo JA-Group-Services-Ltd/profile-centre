@@ -8,7 +8,15 @@ export async function onRequest(context) {
       const session = await getSession(context.request, context.env.DB);
       const userId = Number(session?.data?.userId);
       if (Number.isInteger(userId) && userId > 0) {
-        await synchroniseCentralProfileBilling(context.env, userId);
+        const entitlement = await context.env.DB.prepare(
+          "SELECT lifetime_access,lifetime_plan_id FROM users WHERE id=?1 LIMIT 1",
+        ).bind(userId).first();
+        // Lifetime access is an explicit admin entitlement. A historic or
+        // cancelling Central Payments subscription must not overwrite the plan
+        // chosen for that lifetime grant.
+        if (Number(entitlement?.lifetime_access || 0) !== 1) {
+          await synchroniseCentralProfileBilling(context.env, userId);
+        }
       }
     } catch (error) {
       // Billing reconciliation must not make the core authenticated account API
