@@ -1,41 +1,69 @@
 import { HttpError } from "./http.js";
+import { verifyStripeAccount } from "./stripe.js";
 
 const PLATFORM_CODE = "PROFILE_CENTRE";
+const HEAD_OFFICE_DEFAULT = "https://customerops.jagroupservices.co.uk";
 const DEGRADED_ALLOW_WINDOW_MS = 5 * 60 * 1000;
 const HEARTBEAT_INTERVAL_MS = 5 * 60 * 1000;
+const HEAD_OFFICE_TIMEOUT_MS = 12_000;
 const HEARTBEAT_SETTING_KEY = "head_office_last_heartbeat_at";
 const ALLOWED_DECISIONS = new Set(["allow", "deny", "review", "step_up"]);
 
 function configured(env) {
-  return Boolean(env.HEAD_OFFICE_API_BASE_URL && env.HEAD_OFFICE_PLATFORM_KEY);
+  return Boolean(String(env.HEAD_OFFICE_PLATFORM_KEY || "").trim());
+}
+
+function connectorBase(env) {
+  return String(env.HEAD_OFFICE_API_BASE_URL || HEAD_OFFICE_DEFAULT).trim().replace(/\/+$/, "");
 }
 
 function endpoint(env, path) {
-  return new URL(path, `${String(env.HEAD_OFFICE_API_BASE_URL).replace(/\/+$/, "")}/`).toString();
+  const target = new URL(path, `${connectorBase(env)}/`);
+  if (target.protocol !== "https:" && !["localhost", "127.0.0.1"].includes(target.hostname)) {
+    throw new HttpError(503, "Head Office must use HTTPS.", "head_office_insecure_endpoint");
+  }
+  return target.toString();
 }
 
 export async function requestHeadOffice(env, path, init = {}) {
-  if (!configured(env)) {
+  const token = String(env.HEAD_OFFICE_PLATFORM_KEY || "").trim();
+  if (!configured(env) || !token) {
     throw new HttpError(503, "Head Office security authority is not configured.", "head_office_not_configured");
   }
-  const response = await fetch(endpoint(env, path), {
-    ...init,
-    headers: {
-      accept: "application/json",
-      authorization: `Bearer ${env.HEAD_OFFICE_PLATFORM_KEY}`,
-      ...(init.body ? { "content-type": "application/json" } : {}),
-      ...(init.headers || {}),
-    },
-  });
-  const payload = await response.json().catch(() => null);
-  if (!response.ok) {
-    const code = payload?.error?.code || payload?.code || "head_office_request_failed";
-    const error = new HttpError(response.status >= 500 ? 503 : response.status,
-      "Head Office could not authorise this customer request.", code);
-    error.headOfficeStatus = response.status;
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), HEAD_OFFICE_TIMEOUT_MS);
+  try {
+    const response = await fetch(endpoint(env, path), {
+      ...init,
+      signal: controller.signal,
+      headers: {
+        accept: "application/json",
+        authorization: `Bearer ${token}`,
+        ...(init.body ? { "content-type": "application/json" } : {}),
+        ...(init.headers || {}),
+      },
+    });
+    const payload = await response.json().catch(() => null);
+    if (!response.ok) {
+      const code = payload?.error?.code || payload?.code || "head_office_request_failed";
+      const error = new HttpError(
+        response.status >= 500 ? 503 : response.status,
+        "Head Office could not authorise this customer request.",
+        code,
+      );
+      error.headOfficeStatus = response.status;
+      throw error;
+    }
+    return payload;
+  } catch (error) {
+    if (error?.name === "AbortError") {
+      throw new HttpError(503, "Head Office did not respond in time.", "head_office_timeout");
+    }
     throw error;
+  } finally {
+    clearTimeout(timeout);
   }
-  return payload;
 }
 
 function safeJson(value, fallback) {
@@ -43,6 +71,15 @@ function safeJson(value, fallback) {
     return JSON.stringify(value ?? fallback);
   } catch {
     return JSON.stringify(fallback);
+  }
+}
+
+async function centralPaymentsAvailable(env) {
+  try {
+    const account = await verifyStripeAccount(env);
+    return Boolean(account?.id && String(account.id).startsWith("acct_"));
+  } catch {
+    return false;
   }
 }
 
@@ -58,7 +95,7 @@ export async function reportPlatformHeartbeat(env, options = {}) {
   }
 
   const now = new Date().toISOString();
-  const [customerRow, sessionRow, errorRow, stripeRow] = await Promise.all([
+  const [customerRow, sessionRow, errorRow, paymentsHealthy] = await Promise.all([
     env.DB.prepare("SELECT COUNT(*) count FROM users WHERE customer_number IS NOT NULL AND TRIM(customer_number)<>''").first(),
     env.DB.prepare("SELECT COUNT(*) count FROM sessions WHERE expires_at>?1")
       .bind(Date.now()).first(),
@@ -66,7 +103,7 @@ export async function reportPlatformHeartbeat(env, options = {}) {
       SELECT COUNT(*) count FROM users
       WHERE head_office_connector_error IS NOT NULL AND TRIM(head_office_connector_error)<>''
     `).first(),
-    env.DB.prepare("SELECT value FROM app_settings WHERE key='stripe_production_verified_at' LIMIT 1").first(),
+    centralPaymentsAvailable(env),
   ]);
   const branch = String(env.CF_PAGES_BRANCH || "");
   const environment = !branch || branch === "main" ? "production" : "preview";
@@ -85,11 +122,12 @@ export async function reportPlatformHeartbeat(env, options = {}) {
       customerCount: Number(customerRow?.count || 0),
       activeSessionCount: Number(sessionRow?.count || 0),
       openErrorCount: Number(errorRow?.count || 0),
-      capabilities: ["customer-sync", "ucn", "access-decisions", "security-commands", "events"],
+      capabilities: ["customer-sync", "ucn", "access-decisions", "security-commands", "events", "central-payments"],
       integrations: {
         headOfficeCustomerAuthority: true,
         microsoftEntraExternalId: true,
-        stripe: Boolean(stripeRow?.value),
+        stripe: paymentsHealthy,
+        centralPayments: paymentsHealthy,
       },
       occurredAt: now,
       metadata: { platformCode: PLATFORM_CODE },
