@@ -35,7 +35,10 @@ jobs:
       - name: Validate Custom Domains and dashboard entitlements
         run: npx vitest run tests/custom-domains.test.mjs
 
-      - name: Validate Custom Domain backend syntax
+      - name: Validate Head Office event outbox
+        run: npx vitest run tests/head-office-event-outbox.test.mjs
+
+      - name: Validate Cloudflare backend syntax
         run: |
           node --check functions/_shared/current-user-access.js
           node --check functions/_shared/current-user-route.js
@@ -43,6 +46,7 @@ jobs:
           node --check functions/_shared/cloudflare-saas.js
           node --check functions/_shared/custom-domains.js
           node --check functions/_shared/custom-domain-routes.js
+          node --check functions/_shared/head-office-schema.js
           node --check 'functions/[[path]].js'
           node --check workers/custom-domain-router/index.js
 
