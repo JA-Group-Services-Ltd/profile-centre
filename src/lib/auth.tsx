@@ -54,6 +54,7 @@ export interface User {
   hasFreeAccess: boolean;
   hasNoActivePlan: boolean;
   hasLifetimeAccess: boolean;
+  hasCustomDomainAccess: boolean;
   isDowngraded: boolean;
   isSeatUser: boolean;
   seatWorkspaces: SeatWorkspace[];
