@@ -1,0 +1,391 @@
+SOUSA MURRAY PROFILES API INVENTORY
+Generated: 2026-08-08T19:49:03.652Z
+
+=== FRONTEND API CALLS ===
+/api/account/closure-request <- src/pages/dashboard/account-closure.tsx
+/api/account/update <- src/pages/dashboard/account.tsx
+/api/admin/addons <- src/pages/admin/addons.tsx
+/api/admin/addons/:param <- src/pages/admin/addons.tsx
+/api/admin/addons/:param/customers <- src/pages/admin/addons.tsx
+/api/admin/addons/assign <- src/pages/admin/addons.tsx
+/api/admin/addons/assign/:param/:param <- src/pages/admin/addons.tsx
+/api/admin/analytics <- src/pages/admin/analytics.tsx, src/pages/admin/index.tsx
+/api/admin/assisted-access <- src/pages/admin/assisted-access.tsx
+/api/admin/assisted-access/:param/enter <- src/pages/admin/assisted-access.tsx
+/api/admin/assisted-access/:param/exit <- src/pages/admin/assisted-access.tsx
+/api/admin/assisted-access/:param/generate-launch-url <- src/pages/admin/assisted-access.tsx
+/api/admin/assisted-access/end-impersonation <- src/components/AssistedSessionBanner.tsx
+/api/admin/assisted-access/request <- src/pages/admin/assisted-access.tsx
+/api/admin/audit <- src/pages/admin/audit.tsx
+/api/admin/audit/clear <- src/pages/admin/audit.tsx
+/api/admin/authority-report/generate <- src/pages/admin/authority-report.tsx
+/api/admin/backup/:param <- src/pages/admin/settings.tsx
+/api/admin/backup/create <- src/pages/admin/settings.tsx
+/api/admin/backup/export/csv/:param <- src/pages/admin/settings.tsx
+/api/admin/backup/export/json <- src/pages/admin/settings.tsx
+/api/admin/backup/export/tables <- src/pages/admin/settings.tsx
+/api/admin/backup/list <- src/pages/admin/settings.tsx
+/api/admin/backup/schedule <- src/pages/admin/settings.tsx
+/api/admin/branding <- src/pages/admin/settings.tsx
+/api/admin/business-cards <- src/pages/admin/business-cards.tsx
+/api/admin/business-cards/:param/final-file <- src/pages/admin/business-cards.tsx
+/api/admin/business-cards/:param/messages <- src/pages/admin/business-cards.tsx
+/api/admin/business-cards/feature-flag <- src/pages/admin/business-cards.tsx
+/api/admin/business-cards/pos <- src/pages/admin/business-cards.tsx
+/api/admin/closure-requests <- src/pages/admin/closure-requests.tsx
+/api/admin/closure-requests/:param/:param <- src/pages/admin/closure-requests.tsx
+/api/admin/coming-soon <- src/pages/admin/settings.tsx
+/api/admin/crm/data-requests <- src/pages/admin/data-requests.tsx
+/api/admin/crm/data-requests/:param <- src/pages/admin/crm.tsx, src/pages/admin/data-requests.tsx
+/api/admin/crm/users <- src/pages/admin/crm.tsx
+/api/admin/crm/users/:param <- src/pages/admin/crm.tsx, src/pages/admin/user-detail.tsx
+/api/admin/crm/users/:param/notes <- src/pages/admin/crm.tsx, src/pages/admin/user-detail.tsx
+/api/admin/crm/users/:param/notes/:param <- src/pages/admin/crm.tsx, src/pages/admin/user-detail.tsx
+/api/admin/email/compose <- src/pages/admin/compose-email.tsx
+/api/admin/email/test <- src/pages/admin/settings.tsx
+/api/admin/enquiries <- src/pages/admin/enquiries.tsx
+/api/admin/enquiries/:param <- src/pages/admin/enquiries.tsx
+/api/admin/enquiries/:param/read <- src/pages/admin/enquiries.tsx
+/api/admin/features <- src/pages/admin/features.tsx
+/api/admin/features/:param <- src/pages/admin/features.tsx
+/api/admin/features/:param/interest <- src/pages/admin/features.tsx
+/api/admin/features/:param/plan-rules <- src/pages/admin/features.tsx
+/api/admin/homepage-content <- src/pages/admin/homepage.tsx
+/api/admin/issue-reports <- src/pages/admin/issue-reports.tsx
+/api/admin/issue-reports/:param <- src/pages/admin/issue-reports.tsx
+/api/admin/legal <- src/pages/admin/legal.tsx
+/api/admin/legal/:param <- src/pages/admin/legal.tsx
+/api/admin/notifications <- src/pages/admin/notifications.tsx
+/api/admin/notifications/:param <- src/pages/admin/notifications.tsx
+/api/admin/notifications/send <- src/pages/admin/notifications.tsx
+/api/admin/notifications/user-search <- src/pages/admin/addons.tsx, src/pages/admin/notifications.tsx
+/api/admin/pause <- src/pages/admin/index.tsx, src/pages/admin/users.tsx
+/api/admin/pin/challenge <- src/components/admin/PinChallenge.tsx
+/api/admin/pin/clear <- src/components/admin/AdminLayout.tsx
+/api/admin/pin/heartbeat <- src/components/admin/AdminPinGate.tsx
+/api/admin/pin/remove <- src/pages/admin/admin-accounts.tsx, src/pages/admin/settings.tsx
+/api/admin/pin/reset-lockout <- src/components/admin/AdminPinGate.tsx
+/api/admin/pin/set <- src/components/admin/AdminPinGate.tsx, src/pages/admin/admin-accounts.tsx, src/pages/admin/settings.tsx
+/api/admin/pin/status <- src/components/admin/AdminPinGate.tsx, src/pages/admin/admin-accounts.tsx, src/pages/admin/settings.tsx
+/api/admin/pin/verify <- src/components/admin/AdminPinGate.tsx, src/components/admin/CrmPinGate.tsx, src/components/admin/PinChallenge.tsx
+/api/admin/plans <- src/pages/admin/compose-email.tsx, src/pages/admin/index.tsx, src/pages/admin/plans.tsx, src/pages/admin/settings.tsx, src/pages/admin/users.tsx
+/api/admin/plans/:param <- src/pages/admin/plans.tsx, src/pages/admin/settings.tsx
+/api/admin/plans/:param/toggle-public <- src/pages/admin/settings.tsx
+/api/admin/points-overview <- src/pages/admin/points.tsx
+/api/admin/profiles <- src/pages/admin/profiles.tsx
+/api/admin/profiles/:param <- src/pages/admin/profiles.tsx
+/api/admin/profiles/:param/:param <- src/pages/admin/issue-reports.tsx
+/api/admin/profiles/:param/preview <- src/pages/admin/profile-preview.tsx
+/api/admin/profiles/:param/verify <- src/pages/admin/profiles.tsx
+/api/admin/profiles/lookup <- src/pages/admin/authority-report.tsx
+/api/admin/sar/:param/data <- src/pages/admin/user-detail.tsx
+/api/admin/sar/:param/pdf <- src/pages/admin/crm.tsx, src/pages/admin/data-requests.tsx, src/pages/admin/user-detail.tsx
+/api/admin/scans/:param <- src/pages/admin/issue-reports.tsx
+/api/admin/scans/:param/:param <- src/pages/admin/issue-reports.tsx
+/api/admin/scans/:param/rescan <- src/pages/admin/issue-reports.tsx
+/api/admin/settings <- src/pages/admin/index.tsx, src/pages/admin/settings.tsx
+/api/admin/settings/business-cards <- src/pages/admin/business-cards.tsx
+/api/admin/store-items <- src/pages/admin/points.tsx
+/api/admin/store-items/:param <- src/pages/admin/points.tsx
+/api/admin/stripe/config <- src/pages/admin/settings.tsx
+/api/admin/stripe/products <- src/pages/admin/settings.tsx
+/api/admin/stripe/sync-products <- src/pages/admin/settings.tsx
+/api/admin/support-pin-lookup <- src/pages/admin/verify-customer.tsx
+/api/admin/support-pin-verify <- src/pages/admin/crm.tsx, src/pages/admin/verify-customer.tsx
+/api/admin/support-requests <- src/pages/admin/support-requests.tsx
+/api/admin/support-requests/:param/messages <- src/pages/admin/support-requests.tsx
+/api/admin/support-requests/:param/reply <- src/pages/admin/support-requests.tsx
+/api/admin/sync <- src/pages/admin/settings.tsx
+/api/admin/test-notification <- src/pages/admin/settings.tsx
+/api/admin/theme <- src/pages/admin/settings.tsx
+/api/admin/upload-image <- src/pages/admin/settings.tsx
+/api/admin/users <- src/pages/admin/admin-accounts.tsx, src/pages/admin/index.tsx, src/pages/admin/settings.tsx, src/pages/admin/users.tsx
+/api/admin/users/:param <- src/pages/admin/admin-accounts.tsx, src/pages/admin/index.tsx, src/pages/admin/users.tsx
+/api/admin/users/:param/assign-plan <- src/pages/admin/index.tsx, src/pages/admin/settings.tsx, src/pages/admin/user-detail.tsx
+/api/admin/users/:param/block <- src/pages/admin/crm.tsx
+/api/admin/users/:param/custom-domains <- src/pages/admin/user-custom-domains.tsx
+/api/admin/users/:param/custom-domains/:param <- src/pages/admin/user-custom-domains.tsx
+/api/admin/users/:param/custom-domains/:param/check <- src/pages/admin/user-custom-domains.tsx
+/api/admin/users/:param/email-signature-beta <- src/pages/admin/crm.tsx
+/api/admin/users/:param/head-office-security <- src/pages/admin/user-detail.tsx
+/api/admin/users/:param/lifetime <- src/components/admin/LifetimeAccessPanel.tsx, src/pages/admin/crm.tsx, src/pages/admin/index.tsx, src/pages/admin/users.tsx
+/api/admin/users/:param/lifetime-log <- src/components/admin/LifetimeAccessPanel.tsx
+/api/admin/users/:param/pause <- src/pages/admin/crm.tsx, src/pages/admin/index.tsx, src/pages/admin/users.tsx
+/api/admin/users/:param/unblock <- src/pages/admin/crm.tsx
+/api/admin/users/lookup <- src/pages/admin/authority-report.tsx
+/api/admin/visitor-reports <- src/pages/admin/enquiries.tsx
+/api/analytics/:param <- src/pages/dashboard/analytics.tsx, src/pages/dashboard/overview.tsx
+/api/analytics/config <- src/components/GoogleAnalytics.tsx
+/api/analytics/view/:param <- src/pages/business-profile.tsx, src/pages/profile.tsx
+/api/assisted-access/:param/:param <- src/components/dashboard/AssistedAccessBanner.tsx
+/api/assisted-access/pending <- src/components/dashboard/AssistedAccessBanner.tsx
+/api/assisted-access/session-info <- src/components/AssistedSessionBanner.tsx
+/api/audit/consent <- src/components/CookieBanner.tsx
+/api/auth/admin/me <- src/components/SiteStatusGate.tsx, src/lib/admin-auth.tsx
+/api/auth/me <- src/lib/auth.tsx
+/api/billing/cancel <- src/pages/dashboard/billing.tsx
+/api/billing/checkout <- src/pages/dashboard/billing.tsx
+/api/billing/portal <- src/pages/dashboard/billing.tsx
+/api/billing/select-free <- src/pages/dashboard/billing.tsx
+/api/branding <- src/lib/branding.ts, src/lib/site-theme.tsx
+/api/business-cards <- src/pages/dashboard/business-cards.tsx
+/api/business-cards/:param/approve <- src/pages/dashboard/business-cards.tsx
+/api/business-cards/:param/messages <- src/pages/dashboard/business-cards.tsx
+/api/business-cards/feature-flag <- src/pages/admin/business-cards.tsx, src/pages/dashboard/business-cards.tsx
+/api/business-cards/templates <- src/pages/dashboard/business-cards.tsx
+/api/business/:param <- src/pages/dashboard/business-profile.tsx, src/pages/dashboard/overview.tsx
+/api/business/:param/invites/:param <- src/pages/dashboard/business-seats.tsx
+/api/business/:param/public <- src/pages/profile-router.tsx
+/api/business/:param/seats <- src/pages/dashboard/business-seats.tsx
+/api/business/:param/seats/:param <- src/pages/dashboard/business-seats.tsx
+/api/business/:param/seats/invite <- src/pages/dashboard/business-seats.tsx
+/api/business/:param/team <- src/pages/team-directory.tsx
+/api/business/:param/team-directory <- src/pages/dashboard/business-profile.tsx
+/api/business/invites/:param <- src/pages/invite.tsx
+/api/business/invites/:param/accept <- src/pages/dashboard/seat-invites.tsx, src/pages/invite.tsx
+/api/business/invites/:param/decline <- src/pages/dashboard/seat-invites.tsx, src/pages/invite.tsx
+/api/business/invites/me <- src/components/dashboard/DashboardLayout.tsx, src/pages/dashboard/seat-invites.tsx
+/api/business/seats/me <- src/pages/dashboard/seat-invites.tsx
+/api/business/seats/me/leave <- src/pages/dashboard/seat-invites.tsx
+/api/coming-soon-config <- src/pages/admin/settings.tsx, src/pages/coming-soon.tsx
+/api/custom-domains <- src/pages/dashboard/custom-domains.tsx
+/api/custom-domains/:param <- src/pages/dashboard/custom-domains.tsx
+/api/custom-domains/:param/check <- src/pages/dashboard/custom-domains.tsx
+/api/custom-domains/resolve <- src/components/custom-domains/CustomDomainRoot.tsx
+/api/enquiries <- src/components/dashboard/DashboardLayout.tsx, src/pages/dashboard/enquiries.tsx, src/pages/dashboard/overview.tsx
+/api/enquiries/:param <- src/pages/business-profile.tsx, src/pages/profile.tsx
+/api/enquiries/:param/read <- src/pages/dashboard/enquiries.tsx
+/api/feature-flags <- src/components/dashboard/DashboardLayout.tsx, src/pages/dashboard/help-centre.tsx, src/pages/dashboard/overview.tsx
+/api/features/me <- src/lib/use-features.ts
+/api/homepage-content <- src/pages/index.tsx
+/api/legal-version <- src/components/ConsentModal.tsx, src/components/dashboard/DashboardLayout.tsx
+/api/legal/:param <- src/pages/legal/DynamicLegalPage.tsx
+/api/legal/reaccept <- src/components/dashboard/LegalReacceptGate.tsx
+/api/links <- src/pages/dashboard/links.tsx
+/api/links/:param <- src/pages/dashboard/links.tsx, src/pages/dashboard/overview.tsx
+/api/links/:param/click <- src/pages/profile.tsx
+/api/links/reorder <- src/pages/dashboard/links.tsx
+/api/me/appearance <- src/components/ThemeToggle.tsx, src/lib/site-theme.tsx
+/api/me/consent <- src/components/ConsentModal.tsx, src/components/dashboard/DashboardLayout.tsx, src/pages/dashboard/data-requests.tsx
+/api/me/data-requests <- src/pages/dashboard/data-requests.tsx
+/api/messages/thread/:param/visitor <- src/pages/conversation.tsx
+/api/messages/thread/:param/visitor-reply <- src/pages/conversation.tsx
+/api/messages/threads <- src/pages/dashboard/messages.tsx
+/api/messages/threads/:param <- src/pages/dashboard/messages.tsx
+/api/messages/threads/:param/accept <- src/pages/dashboard/messages.tsx
+/api/messages/threads/:param/block <- src/pages/dashboard/messages.tsx
+/api/messages/threads/:param/reply <- src/pages/dashboard/messages.tsx
+/api/messages/threads/:param/report <- src/pages/dashboard/messages.tsx
+/api/messages/threads/:param/status <- src/pages/dashboard/messages.tsx
+/api/notifications <- src/components/NotificationBell.tsx, src/components/dashboard/DashboardLayout.tsx, src/pages/dashboard/notifications.tsx, src/pages/dashboard/service-communications.tsx
+/api/notifications/:param <- src/pages/dashboard/notifications.tsx
+/api/notifications/read <- src/pages/dashboard/notifications.tsx, src/pages/dashboard/service-communications.tsx
+/api/onboarding/dismiss <- src/lib/useOnboarding.ts
+/api/onboarding/reset <- src/pages/dashboard/help-centre.tsx
+/api/onboarding/state <- src/lib/useOnboarding.ts
+/api/onboarding/step <- src/lib/useOnboarding.ts
+/api/plans <- src/components/admin/LifetimeAccessPanel.tsx, src/components/public/PlanComparison.tsx, src/pages/_home_page.tsx, src/pages/admin/crm.tsx, src/pages/admin/user-detail.tsx, src/pages/dashboard/billing.tsx, src/pages/dashboard/links.tsx
+/api/points <- src/pages/dashboard/points.tsx, src/pages/dashboard/rewards.tsx
+/api/points/redeem <- src/pages/dashboard/points.tsx
+/api/pos/history <- src/pages/dashboard/pos.tsx
+/api/pos/initiate <- src/pages/dashboard/pos.tsx
+/api/profiles <- src/pages/dashboard/business-profile.tsx
+/api/profiles/:param <- src/components/dashboard/ProfileFeatureTabs.tsx, src/pages/dashboard/gallery.tsx, src/pages/dashboard/menu.tsx, src/pages/dashboard/pdf-attachments.tsx, src/pages/dashboard/social-links.tsx, src/pages/dashboard/themes.tsx, src/pages/dashboard/whatsapp.tsx
+/api/profiles/:param/contact-hours <- src/pages/dashboard/messages.tsx
+/api/profiles/:param/enquiry <- src/pages/dashboard/enquiries.tsx, src/pages/dashboard/profile.tsx
+/api/profiles/:param/messaging <- src/pages/dashboard/messages.tsx
+/api/profiles/:param/pin/status <- src/pages/dashboard/enquiries.tsx, src/pages/dashboard/messages.tsx, src/pages/dashboard/profile.tsx
+/api/profiles/:param/public <- src/pages/profile-router.tsx, src/pages/profile.tsx
+/api/profiles/:param/public-pin <- src/pages/dashboard/profile.tsx
+/api/profiles/:param/public-pin/verify <- src/pages/profile.tsx
+/api/profiles/:param/report <- src/pages/profile.tsx
+/api/profiles/:param/request-verification <- src/pages/dashboard/profile.tsx
+/api/profiles/me <- src/pages/dashboard/analytics.tsx, src/pages/dashboard/business-profile.tsx, src/pages/dashboard/business-seats.tsx, src/pages/dashboard/email-signature.tsx, src/pages/dashboard/enquiries.tsx, src/pages/dashboard/gallery.tsx, src/pages/dashboard/links.tsx, src/pages/dashboard/menu.tsx, src/pages/dashboard/messages.tsx, src/pages/dashboard/overview.tsx, src/pages/dashboard/pdf-attachments.tsx, src/pages/dashboard/poster.tsx, src/pages/dashboard/profile.tsx, src/pages/dashboard/qr-code.tsx, src/pages/dashboard/settings.tsx, src/pages/dashboard/social-links.tsx, src/pages/dashboard/themes.tsx, src/pages/dashboard/whatsapp.tsx
+/api/profiles/report <- src/pages/business-profile.tsx
+/api/qr/:param <- src/pages/dashboard/email-signature.tsx, src/pages/dashboard/qr-code.tsx
+/api/qr/:param/person <- src/pages/dashboard/qr-code.tsx
+/api/qr/public/:param <- src/pages/business-profile.tsx, src/pages/profile.tsx
+/api/report-issue <- src/pages/report-issue.tsx
+/api/rewards <- src/pages/dashboard/rewards.tsx
+/api/security/heartbeat <- src/components/security/AutoLogoutProvider.tsx
+/api/security/logout-idle <- src/components/security/AutoLogoutProvider.tsx
+/api/security/pin <- src/pages/dashboard/security-settings.tsx
+/api/security/pin/self-unlock <- src/pages/dashboard/security-settings.tsx
+/api/security/pin/status <- src/pages/dashboard/security-settings.tsx
+/api/security/session-status <- src/components/security/AutoLogoutProvider.tsx
+/api/security/sessions <- src/pages/dashboard/security-settings.tsx
+/api/security/sessions/logout-all <- src/pages/dashboard/security-settings.tsx
+/api/security/support-pin <- src/components/security/SupportPinCard.tsx, src/pages/dashboard/security-settings.tsx
+/api/security/support-pin/rotate <- src/components/security/SupportPinCard.tsx
+/api/security/support-pin/set <- src/components/security/SupportPinCard.tsx
+/api/security/support-pin/verify-email <- src/components/security/SupportPinCard.tsx
+/api/signatures/me <- src/pages/dashboard/email-signature.tsx
+/api/signatures/me/audit <- src/pages/dashboard/email-signature.tsx
+/api/signatures/upload-image <- src/pages/dashboard/email-signature.tsx
+/api/site-status <- src/components/SiteStatusGate.tsx, src/pages/admin/index.tsx, src/pages/admin/settings.tsx
+/api/status <- src/pages/status.tsx
+/api/support/request <- src/pages/dashboard/account.tsx, src/pages/dashboard/support-tickets.tsx, src/pages/support.tsx
+/api/support/tickets <- src/components/dashboard/DashboardLayout.tsx, src/pages/dashboard/support-tickets.tsx
+/api/support/tickets/:param/messages <- src/pages/dashboard/support-tickets.tsx
+/api/support/tickets/:param/reply <- src/pages/dashboard/support-tickets.tsx
+/api/themes <- src/pages/dashboard/themes.tsx
+/api/themes/allowed <- src/pages/dashboard/themes.tsx
+/api/trial/claim <- src/pages/dashboard/billing.tsx, src/pages/dashboard/overview.tsx
+/api/upload/profile-image <- src/components/dashboard/ProfileFeatureTabs.tsx, src/pages/dashboard/gallery.tsx
+/api/users/${user <- src/pages/dashboard/settings.tsx
+/api/users/me/notification-prefs <- src/pages/dashboard/notification-preferences.tsx
+/api/users/me/preferences <- src/pages/dashboard/settings.tsx
+
+=== CLOUDFLARE FUNCTION FILES ===
+functions/[[path]].js
+functions/_middleware.js
+functions/_shared/account.js
+functions/_shared/admin-lifetime.js
+functions/_shared/admin-pin-challenge.js
+functions/_shared/admin-pin.js
+functions/_shared/admin-plan-actions.js
+functions/_shared/admin-plan-routes.js
+functions/_shared/admin-plan-utils.js
+functions/_shared/audit.js
+functions/_shared/auth.js
+functions/_shared/business-cards.js
+functions/_shared/catalogue.js
+functions/_shared/cloudflare-saas.js
+functions/_shared/current-user-access.js
+functions/_shared/current-user-route.js
+functions/_shared/custom-domain-policy.js
+functions/_shared/custom-domain-routes.js
+functions/_shared/custom-domains.js
+functions/_shared/head-office-schema.js
+functions/_shared/head-office.js
+functions/_shared/http.js
+functions/_shared/legal-policies.js
+functions/_shared/profile-interactions.js
+functions/_shared/profiles.js
+functions/_shared/public-profile-pin.js
+functions/_shared/router.js
+functions/_shared/stripe.js
+functions/admin/auth/callback.js
+functions/admin/auth/start.js
+functions/admin/logout.js
+functions/api/_middleware.js
+functions/api/admin/legal.js
+functions/api/admin/legal/[key].js
+functions/api/analytics/[id].js
+functions/api/analytics/view/[username].js
+functions/api/customer-service/[[path]].js
+functions/api/enquiries.js
+functions/api/enquiries/[id]/read.js
+functions/api/enquiries/[username].js
+functions/api/health.js
+functions/api/import-production-data.js
+functions/api/legal/[key].js
+functions/api/links/[id]/click.js
+functions/api/profiles/[id]/enquiry.js
+functions/api/profiles/[id]/pin/status.js
+functions/api/profiles/[id]/public-pin.js
+functions/api/profiles/[id]/request-verification.js
+functions/api/profiles/[username]/public-pin/verify.js
+functions/api/profiles/[username]/public.js
+functions/api/profiles/[username]/report.js
+functions/api/qr/[id].js
+functions/api/qr/[id]/person.js
+functions/api/qr/public/[username].js
+functions/auth/callback.js
+functions/auth/login.js
+functions/auth/logout.js
+
+=== RETIRED JA PROFILE STUDIO HOST REFERENCES IN FRONTEND ===
+src/pages/_404.tsx
+src/pages/admin/addons.tsx
+src/pages/admin/admin-accounts.tsx
+src/pages/admin/affiliates.tsx
+src/pages/admin/analytics.tsx
+src/pages/admin/assisted-access.tsx
+src/pages/admin/audit.tsx
+src/pages/admin/authority-report.tsx
+src/pages/admin/business-cards.tsx
+src/pages/admin/closure-requests.tsx
+src/pages/admin/compose-email.tsx
+src/pages/admin/crm.tsx
+src/pages/admin/data-requests.tsx
+src/pages/admin/enquiries.tsx
+src/pages/admin/features.tsx
+src/pages/admin/homepage.tsx
+src/pages/admin/index.tsx
+src/pages/admin/issue-reports.tsx
+src/pages/admin/logged-out.tsx
+src/pages/admin/messaging.tsx
+src/pages/admin/notifications.tsx
+src/pages/admin/partner-enquiries.tsx
+src/pages/admin/points.tsx
+src/pages/admin/profile-preview.tsx
+src/pages/admin/profiles.tsx
+src/pages/admin/referrals.tsx
+src/pages/admin/settings.tsx
+src/pages/admin/support-requests.tsx
+src/pages/admin/user-detail.tsx
+src/pages/admin/users.tsx
+src/pages/admin/verify-customer.tsx
+src/pages/coming-soon.tsx
+src/pages/conversation.tsx
+src/pages/dashboard/account-closure.tsx
+src/pages/dashboard/account.tsx
+src/pages/dashboard/affiliate.tsx
+src/pages/dashboard/analytics.tsx
+src/pages/dashboard/billing.tsx
+src/pages/dashboard/business-cards.tsx
+src/pages/dashboard/business-seats.tsx
+src/pages/dashboard/data-requests.tsx
+src/pages/dashboard/demo.tsx
+src/pages/dashboard/email-signature.tsx
+src/pages/dashboard/enquiries.tsx
+src/pages/dashboard/gallery.tsx
+src/pages/dashboard/help-centre.tsx
+src/pages/dashboard/links.tsx
+src/pages/dashboard/menu.tsx
+src/pages/dashboard/notification-preferences.tsx
+src/pages/dashboard/notifications.tsx
+src/pages/dashboard/overview.tsx
+src/pages/dashboard/pdf-attachments.tsx
+src/pages/dashboard/points.tsx
+src/pages/dashboard/pos.tsx
+src/pages/dashboard/poster.tsx
+src/pages/dashboard/profile.tsx
+src/pages/dashboard/qr-code.tsx
+src/pages/dashboard/referral.tsx
+src/pages/dashboard/rewards.tsx
+src/pages/dashboard/seat-invites.tsx
+src/pages/dashboard/service-communications.tsx
+src/pages/dashboard/settings.tsx
+src/pages/dashboard/social-links.tsx
+src/pages/dashboard/support-tickets.tsx
+src/pages/dashboard/whatsapp.tsx
+src/pages/demo.tsx
+src/pages/help.tsx
+src/pages/invite.tsx
+src/pages/legal/acceptable-use.tsx
+src/pages/legal/accessibility.tsx
+src/pages/legal/complaints.tsx
+src/pages/legal/data-retention.tsx
+src/pages/legal/data-rights.tsx
+src/pages/legal/eligibility.tsx
+src/pages/legal/refunds.tsx
+src/pages/legal/reporting.tsx
+src/pages/legal/security.tsx
+src/pages/legal/service-status.tsx
+src/pages/logged-out.tsx
+src/pages/maintenance.tsx
+src/pages/partners.tsx
+src/pages/profile-router.tsx
+src/pages/report-issue.tsx
+src/pages/services/index.tsx
+src/pages/services/ja-smart-profile.tsx
+src/pages/status.tsx
+src/pages/support.tsx
+
+=== COUNTS ===
+Frontend API patterns: 233
+Function files: 57
+Retired host frontend files: 87
+
