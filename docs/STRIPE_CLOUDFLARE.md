@@ -1,31 +1,75 @@
-# Sousa Murray Profiles Stripe on Cloudflare
+# Sousa Murray Profiles — Head Office Central Payments
 
-Sousa Murray Profiles uses its dedicated Stripe account (`acct_1TfUSWDLIZgCwhkL`) for customer purchases, orders, Checkout, subscriptions and Billing Portal access.
+Sousa Murray Profiles no longer creates new customer purchases directly against a Profiles-specific Stripe account. New plan Checkout, Billing Portal access and subscription cancellation are routed through **JA Group Services Ltd Head Office Central Payments**.
+
+## Production architecture
+
+```text
+Sousa Murray Profiles
+        |
+        | scoped Head Office platform credential
+        | UCN + governed product/price code
+        v
+JA Group Services Head Office Central Payments
+        |
+        v
+Approved JA Group Services Ltd Stripe account
+```
+
+The Profiles website never receives the principal Central Payments Stripe secret or webhook signing secret.
 
 ## Production endpoints
 
-- Store webhook: `https://sousamurrayprofiles.jagroupservices.co.uk/api/stripe/webhook`
-- Head Office tracking webhook: `https://customerops.jagroupservices.co.uk/api/webhooks/stripe/profile-centre`
+Profiles keeps its customer-facing API contract:
+
 - Authenticated Checkout: `POST /api/billing/checkout`
 - Authenticated Billing Portal: `POST /api/billing/portal`
 - Authenticated cancellation: `POST /api/billing/cancel`
 
-The two webhook endpoints are intentional. The Sousa Murray Profiles endpoint updates the store's D1 customer and subscription records. The CustomerOps endpoint is a separate Head Office oversight and reconciliation feed.
+Those routes now call Head Office:
 
-## Cloudflare production bindings
+- `GET /api/v1/payments/account-info`
+- `POST /api/v1/payments/checkout`
+- `GET /api/v1/payments/status`
+- `POST /api/v1/payments/portal`
+- `POST /api/v1/payments/subscription`
 
-- `STRIPE_PUBLISHABLE_KEY` - Pages secret
-- `STRIPE_SECRET_KEY` - Pages secret
-- `STRIPE_WEBHOOK_SECRET` - Pages secret for the Sousa Murray Profiles store webhook only
+The approved payment brand is `SOUSA_MURRAY_PROFILES`.
 
-Secret values must never be stored in D1, source control, documentation, browser responses or logs. The webhook handler verifies Stripe's signature against the unmodified request body before parsing JSON.
+## Governed monthly catalogue
 
-## Identity and idempotency
+The Profiles website sends Head Office product and price codes rather than Stripe Product/Price IDs:
 
-Checkout requires an authenticated Sousa Murray Profiles account with a Head Office UCN. Stripe customers, Checkout Sessions, subscriptions and PaymentIntents carry the Sousa Murray Profiles user ID and Head Office UCN as server-controlled metadata. Existing Stripe customers are reused only when there is one exact email match and any existing UCN metadata agrees.
+| Profiles plan | Product code | Price code |
+|---|---|---|
+| Starter | `PROFILES_STARTER` | `PROFILES_STARTER_MONTHLY` |
+| Professional | `PROFILES_PROFESSIONAL` | `PROFILES_PROFESSIONAL_MONTHLY` |
+| Organisation / Business | `PROFILES_ORGANISATION` | `PROFILES_ORGANISATION_MONTHLY` |
+| Ultimate Organisation | `PROFILES_ULTIMATE_ORGANISATION` | `PROFILES_ULTIMATE_ORGANISATION_MONTHLY` |
 
-Each Stripe event is recorded by event ID in `stripe_webhook_events`. Successfully processed duplicates receive HTTP 2xx without applying customer or subscription changes again. Processing failures receive HTTP 5xx so Stripe can retry.
+Head Office owns the Stripe Product/Price IDs and repairs/reprovisions the standard catalogue against the currently approved Stripe account when required.
 
-## Head Office status
+## Cloudflare production connection
 
-Sousa Murray Profiles reports Stripe as connected in its platform heartbeat only after a genuine signed production event has been processed and `app_settings.stripe_production_verified_at` has been recorded. This prevents a configured secret from being presented as an operational integration.
+Profiles accepts either of the existing server-only Head Office credential names:
+
+- `CUSTOMEROPS_API_KEY` — preferred Central Payments connection credential; or
+- `HEAD_OFFICE_PLATFORM_KEY` — supported where the existing Profiles Head Office credential has the required payment scopes.
+
+The Head Office base URL is read from `CUSTOMEROPS_BASE_URL` or `HEAD_OFFICE_API_BASE_URL`, with `https://customerops.jagroupservices.co.uk` as the production default.
+
+The credential must include the Central Payments scopes required by the operation, including `payments:checkout`, `payments:status` and `payments:portal`.
+
+Do not put `CENTRAL_STRIPE_SECRET_KEY` or `CENTRAL_STRIPE_WEBHOOK_SECRET` on the Profiles website.
+
+## Customer identity and local subscription state
+
+A valid ten-digit JA Group Services UCN remains the authoritative customer billing identity. After Checkout, Profiles reads its own platform-scoped Central Payments status and reconciles the active subscription into the local D1 `subscriptions` table so existing dashboard entitlement logic continues to work.
+
+The local `stripe_customer_id` and `stripe_subscription_id` fields are references returned through the governed Head Office status API; the Profiles website does not use them to make unrestricted Stripe API calls.
+
+## Legacy Profiles Stripe webhook
+
+`POST /api/stripe/webhook` remains temporarily available only for subscriptions created under the former dedicated Profiles Stripe integration. It is not used for new Central Payments Checkout sessions.
+
+This compatibility route can be retired separately once any legacy subscriptions, refunds, disputes, reporting and record-retention obligations have been reviewed.
