@@ -25,6 +25,7 @@ const ConversationPage = lazy(() => import('./pages/conversation'));
 const DashboardLayout = lazy(() => import('./components/dashboard/DashboardLayout'));
 const DashboardOverview = lazy(() => import('./pages/dashboard/overview'));
 const DashboardProfile = lazy(() => import('./pages/dashboard/profile'));
+const DashboardCustomDomains = lazy(() => import('./pages/dashboard/custom-domains'));
 const DashboardLinks = lazy(() => import('./pages/dashboard/links'));
 const DashboardQR = lazy(() => import('./pages/dashboard/qr-code'));
 const DashboardPoster = lazy(() => import('./pages/dashboard/poster'));
@@ -165,6 +166,7 @@ export const routes: RouteObject[] = [
       { index: true, element: <Navigate to="overview" replace /> },
       { path: 'overview', element: <S><DashboardOverview /></S> },
       { path: 'profile', element: <S><DashboardProfile /></S> },
+      { path: 'custom-domains', element: <S><DashboardCustomDomains /></S> },
       { path: 'links', element: <S><DashboardLinks /></S> },
       { path: 'qr-code', element: <S><DashboardQR /></S> },
       { path: 'poster', element: <S><DashboardPoster /></S> },
