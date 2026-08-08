@@ -4,6 +4,7 @@ import { handleAdminPlanApiRequest } from "./_shared/admin-plan-routes.js";
 import { handleCustomDomainApiRequest } from "./_shared/custom-domain-routes.js";
 import { ensureCustomDomainPlanPolicy } from "./_shared/custom-domain-policy.js";
 import { handleCurrentUserApiRequest } from "./_shared/current-user-route.js";
+import { ensureHeadOfficeEventOutbox } from "./_shared/head-office-schema.js";
 import { handleApiRequest } from "./_shared/router.js";
 
 const AUTH_ROUTES = new Map([
@@ -18,6 +19,11 @@ const AUTH_ROUTES = new Map([
 export async function onRequest(context) {
   const pathname = new URL(context.request.url).pathname;
   if (pathname === "/api" || pathname.startsWith("/api/")) {
+    // Operational events are best-effort, but their local queue must exist before
+    // any API action (profile saves, sign-ins, security actions, etc.) can emit one.
+    // Pages deployments do not automatically run D1 migrations, so repair it here.
+    if (context.env.DB) await ensureHeadOfficeEventOutbox(context.env.DB);
+
     // Keep plan entitlement flags and the approved one-time price update in D1 aligned
     // before either the public or Admin plan catalogue is read or changed.
     if (
