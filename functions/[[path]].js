@@ -1,6 +1,7 @@
 import { beginOidc, completeOidc, logout } from "./_shared/auth.js";
 import { errorResponse, methodNotAllowed, withRequestId } from "./_shared/http.js";
 import { handleAdminPlanApiRequest } from "./_shared/admin-plan-routes.js";
+import { handleCustomDomainApiRequest } from "./_shared/custom-domain-routes.js";
 import { handleApiRequest } from "./_shared/router.js";
 
 const AUTH_ROUTES = new Map([
@@ -15,6 +16,8 @@ const AUTH_ROUTES = new Map([
 export async function onRequest(context) {
   const pathname = new URL(context.request.url).pathname;
   if (pathname === "/api" || pathname.startsWith("/api/")) {
+    const customDomainResponse = await handleCustomDomainApiRequest(context);
+    if (customDomainResponse) return customDomainResponse;
     const adminPlanResponse = await handleAdminPlanApiRequest(context);
     if (adminPlanResponse) return adminPlanResponse;
     return handleApiRequest(context);
