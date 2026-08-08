@@ -29,5 +29,8 @@ jobs:
       - name: Validate customer service contract
         run: node tests/central-customer-service-bridge.test.mjs
 
+      - name: Validate Admin CRM plan routes
+        run: npx vitest run tests/admin-crm-plan-routes.test.mjs
+
       - name: Build Cloudflare website
         run: npm run build:cloudflare
